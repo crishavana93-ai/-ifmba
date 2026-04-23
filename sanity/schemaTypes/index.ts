@@ -7,4 +7,4 @@ import newsPost from './newsPost'
 import siteSettings from './siteSettings'
 
 export const schemaTypes = [player, match, standing, court, sponsor, newsPost, siteSettings]
-export const schema = schemaTypes
+export const schema = { types: schemaTypes }
