@@ -15,9 +15,10 @@ export default async function OG() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '72px',
-          background:
-            'linear-gradient(135deg,#FFCB05 0%,#FFCB05 40%,#4AB5DE 40%,#4AB5DE 70%,#1D7AA0 70%,#1D7AA0 100%)',
+          padding: 72,
+          backgroundColor: '#FFCB05',
+          backgroundImage:
+            'linear-gradient(135deg, #FFCB05 0%, #FFCB05 45%, #4AB5DE 45%, #4AB5DE 72%, #1D7AA0 72%, #1D7AA0 100%)',
           color: '#0b1220',
           fontFamily: 'sans-serif',
         }}
@@ -26,31 +27,33 @@ export default async function OG() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 20,
+            gap: 18,
             fontSize: 28,
             fontWeight: 700,
             letterSpacing: 4,
             textTransform: 'uppercase',
           }}
         >
-          <span
+          <div
             style={{
               width: 14,
               height: 14,
               borderRadius: 999,
-              background: '#0b1220',
+              backgroundColor: '#0b1220',
+              display: 'flex',
             }}
           />
-          <span>Säsong 2025/26 · Div 3 Skåne</span>
+          <div style={{ display: 'flex' }}>Säsong 2025/26 · Div 3 Skåne</div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div
             style={{
-              fontSize: 360,
+              display: 'flex',
+              fontSize: 340,
               fontWeight: 900,
-              lineHeight: 0.9,
-              letterSpacing: -18,
+              lineHeight: 1,
+              letterSpacing: -14,
               color: '#0b1220',
             }}
           >
@@ -58,15 +61,15 @@ export default async function OG() {
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 40,
               fontWeight: 600,
-              marginTop: 16,
+              marginTop: 20,
               color: '#0b1220',
-              maxWidth: 900,
+              maxWidth: 940,
             }}
           >
-            Malmös internationella basketfamilj.
-            <br />9 nationer. 1 tröja.
+            Malmös internationella basketfamilj — 9 nationer, 1 tröja.
           </div>
         </div>
 
@@ -82,8 +85,8 @@ export default async function OG() {
             color: '#0b1220',
           }}
         >
-          <span>ifmba.se</span>
-          <span>#1 i tabellen · 5–0</span>
+          <div style={{ display: 'flex' }}>ifmba.se</div>
+          <div style={{ display: 'flex' }}>#1 i tabellen · 5–0</div>
         </div>
       </div>
     ),
