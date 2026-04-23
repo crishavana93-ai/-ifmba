@@ -20,16 +20,34 @@ import BackToTop from '@/components/BackToTop'
 
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
+async function fetchSanityData() {
+  try {
+    const [players, standings, fixtures, results, courts, sponsors, settings] = await Promise.all([
+      client.fetch(QUERIES.players),
+      client.fetch(QUERIES.standings),
+      client.fetch(QUERIES.fixtures),
+      client.fetch(QUERIES.results),
+      client.fetch(QUERIES.courts),
+      client.fetch(QUERIES.sponsors),
+      client.fetch(QUERIES.settings),
+    ])
+    return { players, standings, fixtures, results, courts, sponsors, settings }
+  } catch (error) {
+    console.error('Sanity fetch error:', error)
+    return {
+      players: [],
+      standings: [],
+      fixtures: [],
+      results: [],
+      courts: [],
+      sponsors: [],
+      settings: null,
+    }
+  }
+}
+
 export default async function Home() {
-  const [players, standings, fixtures, results, courts, sponsors, settings] = await Promise.all([
-    client.fetch(QUERIES.players),
-    client.fetch(QUERIES.standings),
-    client.fetch(QUERIES.fixtures),
-    client.fetch(QUERIES.results),
-    client.fetch(QUERIES.courts),
-    client.fetch(QUERIES.sponsors),
-    client.fetch(QUERIES.settings),
-  ])
+  const { players, standings, fixtures, results, courts, sponsors, settings } = await fetchSanityData()
 
   return (
     <>
