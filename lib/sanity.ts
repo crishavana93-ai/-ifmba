@@ -47,12 +47,48 @@ export async function safeFetch<T>(query: string, fallback: T): Promise<T> {
 
 // ═══ QUERIES ═══
 export const QUERIES = {
-  players: `*[_type == "player" && active == true] | order(number asc)`,
+  players: `*[_type == "player" && active == true] | order(number asc){
+    _id, number, firstName, lastName, position, nationality, flag, quote, active,
+    "photoUrl": photo.asset->url
+  }`,
   standings: `*[_type == "standing"] | order(position asc)`,
   fixtures: `*[_type == "match" && played == false] | order(date asc)[0...5]`,
   results: `*[_type == "match" && played == true] | order(date desc)[0...5]{..., topScorer->{firstName, lastName, number}}`,
   courts: `*[_type == "court"]`,
   sponsors: `*[_type == "sponsor" && active == true] | order(tier asc)`,
   news: `*[_type == "newsPost"] | order(publishedAt desc)[0...6]{title, slug, coverImage, tag, publishedAt}`,
-  settings: `*[_type == "siteSettings"][0]{..., spotlightPlayer->{firstName, lastName, number, position, nationality, flag, photo}}`,
+  settings: `*[_type == "siteSettings"][0]{
+    ...,
+    spotlightPlayer->{
+      _id, firstName, lastName, number, position, nationality, flag,
+      "photoUrl": photo.asset->url
+    }
+  }`,
+
+  // Media assets — photos and videos uploaded via the Sanity Studio "Media" tab.
+  // Each row returns `url` for direct <img src> / <video src> use, plus metadata.
+  mediaAll: `*[_type == "mediaAsset" && active == true] | order(coalesce(order, 0) desc, takenAt desc){
+    _id, kind, category, placement, title, captionSv, captionEn, credit, takenAt,
+    "imageUrl": image.asset->url,
+    "videoUrl": video.asset->url,
+    "posterUrl": poster.asset->url
+  }`,
+  mediaByCategory: (cat: string) => `*[_type == "mediaAsset" && active == true && category == "${cat}"] | order(coalesce(order, 0) desc, takenAt desc){
+    _id, kind, category, placement, title, captionSv, captionEn, credit, takenAt,
+    "imageUrl": image.asset->url,
+    "videoUrl": video.asset->url,
+    "posterUrl": poster.asset->url
+  }`,
+  mediaByPlacement: (slot: string) => `*[_type == "mediaAsset" && active == true && placement == "${slot}"] | order(_updatedAt desc)[0]{
+    _id, kind, category, placement, title, captionSv, captionEn,
+    "imageUrl": image.asset->url,
+    "videoUrl": video.asset->url,
+    "posterUrl": poster.asset->url
+  }`,
+
+  // Sweden News — curated headlines from SBBF / leagues / Skåne / FIBA.
+  swedenNews: `*[_type == "swedenNews" && active == true] | order(publishedAt desc)[0...24]{
+    _id, headline, summary, source, sourceName, url, publishedAt,
+    "imageUrl": image.asset->url
+  }`,
 }

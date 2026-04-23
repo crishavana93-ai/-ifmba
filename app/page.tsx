@@ -6,11 +6,16 @@ import Countdown from '@/components/Countdown'
 import Marquee from '@/components/Marquee'
 import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
+import Journey from '@/components/Journey'
 import News from '@/components/News'
+import SwedenNews from '@/components/SwedenNews'
 import Standings from '@/components/Standings'
 import SwishMeter from '@/components/SwishMeter'
 import Squad from '@/components/Squad'
+import MediaWall from '@/components/MediaWall'
+import Highlights from '@/components/Highlights'
 import Courts from '@/components/Courts'
+import Apparel from '@/components/Apparel'
 import Sponsors from '@/components/Sponsors'
 import Spotlight from '@/components/Spotlight'
 import JoinCTA from '@/components/JoinCTA'
@@ -22,7 +27,18 @@ import BackToTop from '@/components/BackToTop'
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
 export default async function Home() {
-  const [players, standings, fixtures, results, courts, sponsors, news, settings] = await Promise.all([
+  const [
+    players,
+    standings,
+    fixtures,
+    results,
+    courts,
+    sponsors,
+    news,
+    settings,
+    media,
+    swedenNews,
+  ] = await Promise.all([
     safeFetch<any[]>(QUERIES.players, []),
     safeFetch<any[]>(QUERIES.standings, []),
     safeFetch<any[]>(QUERIES.fixtures, []),
@@ -31,6 +47,8 @@ export default async function Home() {
     safeFetch<any[]>(QUERIES.sponsors, []),
     safeFetch<any[]>(QUERIES.news, []),
     safeFetch<any>(QUERIES.settings, null),
+    safeFetch<any[]>(QUERIES.mediaAll, []),
+    safeFetch<any[]>(QUERIES.swedenNews, []),
   ])
 
   return (
@@ -53,7 +71,14 @@ export default async function Home() {
       <ScrollReveal>
         <News news={news} />
       </ScrollReveal>
-      {settings?.spotlightPlayer && <Spotlight settings={settings} />}
+      <ScrollReveal>
+        <SwedenNews items={swedenNews} />
+      </ScrollReveal>
+      {(settings?.spotlightPlayer || players.length > 0) && (
+        <ScrollReveal>
+          <Spotlight settings={settings} players={players} />
+        </ScrollReveal>
+      )}
       <ScrollReveal>
         <Standings standings={standings} />
       </ScrollReveal>
@@ -64,7 +89,19 @@ export default async function Home() {
         <Squad players={players} />
       </ScrollReveal>
       <ScrollReveal>
+        <MediaWall media={media} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <Highlights media={media} />
+      </ScrollReveal>
+      <ScrollReveal>
         <Courts courts={courts} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <Apparel media={media} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <Journey />
       </ScrollReveal>
       <ScrollReveal>
         <Sponsors sponsors={sponsors} />

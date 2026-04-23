@@ -42,7 +42,8 @@ export default function Navbar() {
           <a href="#news" onClick={(e) => { e.preventDefault(); scrollTo('news') }}>Nyheter</a>
           <a href="#standings" onClick={(e) => { e.preventDefault(); scrollTo('standings') }}>Tabell</a>
           <a href="#squad" onClick={(e) => { e.preventDefault(); scrollTo('squad') }}>Trupp</a>
-          <a href="#courts" onClick={(e) => { e.preventDefault(); scrollTo('courts') }}>Courts</a>
+          <a href="#media" onClick={(e) => { e.preventDefault(); scrollTo('media') }}>Galleri</a>
+          <a href="#apparel" onClick={(e) => { e.preventDefault(); scrollTo('apparel') }}>Merch</a>
           <a href="#sponsors" onClick={(e) => { e.preventDefault(); scrollTo('sponsors') }}>Partners</a>
         </div>
 
