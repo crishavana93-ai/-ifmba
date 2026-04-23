@@ -15,7 +15,7 @@ export default function Footer({ settings }: { settings: any }) {
         <div className="foot-grid">
           <div>
             <div className="foot-brand-name">MBA</div>
-            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 8 nationer, 1 tröja. Div 3 Skåne, 2025/26.</div>
+            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 9 nationer, 1 tröja. Div 3 Skåne, 2025/26.</div>
             <div className="foot-nl-wrap">
               <div className="foot-nl">
                 <input type="email" placeholder="din@email.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
@@ -47,7 +47,7 @@ export default function Footer({ settings }: { settings: any }) {
           </div>
         </div>
         <div className="foot-bottom">
-          <span>© 2026 MBA · Malmö Basket Amatörer</span>
+          <span>© 2026 MBA · Malmö Basket</span>
           <a href="https://www.profixio.com/app/leagueid16182/category/1150620" target="_blank" rel="noopener">Powered by Profixio</a>
         </div>
       </div>

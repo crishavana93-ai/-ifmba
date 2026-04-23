@@ -62,7 +62,7 @@ export default function Sponsors({ sponsors }: { sponsors: any[] }) {
         <h2 className="title r">Bli en del av <em>familjen</em></h2>
 
         <p className="sp-intro r">
-          MBA är <strong>Malmös mest internationella basketlag</strong> — 8 nationer, 1 tröja,
+          MBA är <strong>Malmös mest internationella basketlag</strong> — 9 nationer, 1 tröja,
           en oslagen säsong. Vi växer snabbt i Skåne och söker partners som delar värderingarna:
           gemenskap, disciplin och kärleken till spelet.
           Nå en internationell publik, stötta lokal idrott, och bli synlig där det händer.

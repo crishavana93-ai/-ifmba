@@ -5,8 +5,8 @@ export default defineType({
   title: 'Site Settings',
   type: 'document',
   fields: [
-    defineField({name: 'heroTaglineSv', title: 'Hero Tagline (Swedish)', type: 'string', initialValue: 'Inte bara ett lag — en familj, en rörelse, en stad. 8 nationer. 1 tröja. Malmös streetball headquarters.'}),
-    defineField({name: 'heroTaglineEn', title: 'Hero Tagline (English)', type: 'string', initialValue: 'Not just a team — a family, a movement, a city. 8 nations. 1 jersey. Malmö\'s streetball headquarters.'}),
+    defineField({name: 'heroTaglineSv', title: 'Hero Tagline (Swedish)', type: 'string', initialValue: 'Inte bara ett lag — en familj, en rörelse, en stad. 9 nationer. 1 tröja. Malmös streetball headquarters.'}),
+    defineField({name: 'heroTaglineEn', title: 'Hero Tagline (English)', type: 'string', initialValue: 'Not just a team — a family, a movement, a city. 9 nations. 1 jersey. Malmö\'s streetball headquarters.'}),
     defineField({name: 'season', title: 'Season', type: 'string', initialValue: '2025/26'}),
     defineField({name: 'division', title: 'Division', type: 'string', initialValue: 'Div 3 Skåne'}),
     defineField({name: 'heroImage', title: 'Hero Background Image', type: 'image'}),

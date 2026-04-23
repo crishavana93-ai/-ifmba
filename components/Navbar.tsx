@@ -21,8 +21,9 @@ export default function Navbar() {
     <nav className={`nav${shrink ? ' shrink' : ''}`} id="nav">
       <div className="contain nav-inner">
         <a
-          href="#"
+          href="#hero"
           className="nav-logo"
+          aria-label="MBA — till toppen"
           onClick={(e) => {
             e.preventDefault()
             scrollTo('hero')

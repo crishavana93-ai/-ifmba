@@ -38,7 +38,7 @@ export default function Hero({ settings }: { settings: any }) {
           {settings?.heroTaglineSv || (
             <>
               <strong>Malmö Basket.</strong> Inte bara ett lag — en familj, en rörelse, en stad.
-              8 nationer. 1 tröja.
+              9 nationer. 1 tröja.
             </>
           )}
         </p>
