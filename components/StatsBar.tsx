@@ -1,8 +1,9 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function animateCount(el: HTMLElement) {
   const target = parseInt(el.dataset.count || '0')
+  if (target === 0) { el.textContent = '0'; return }
   const dur = 1100
   const start = performance.now()
   const tick = (now: number) => {
@@ -16,29 +17,30 @@ function animateCount(el: HTMLElement) {
 
 export default function StatsBar({ players, standings }: { players: any[]; standings: any[] }) {
   const ref = useRef<HTMLDivElement>(null)
-  const mba = standings.find((s: any) => s.isUs)
-  const nations = new Set(players.map((p: any) => p.nationality)).size
+  const [animated, setAnimated] = useState(false)
+  const mba = standings?.find((s: any) => s.isUs)
+  const nations = players?.length ? new Set(players.map((p: any) => p.nationality)).size : 0
 
   useEffect(() => {
     const el = ref.current
-    if (!el) return
+    if (!el || animated) return
     const obs = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        el.classList.add('v')
+        setAnimated(true)
         el.querySelectorAll<HTMLElement>('[data-count]').forEach(animateCount)
         obs.unobserve(el)
       }
-    }, { threshold: 0.12 })
+    }, { threshold: 0.05 })
     obs.observe(el)
     return () => obs.disconnect()
-  }, [])
+  }, [animated, players, standings])
 
   return (
-    <div className="stats-bar r" ref={ref}>
-      <div className="stat d1"><div className="stat-num" data-count={players.length}>0</div><div className="stat-lbl">Spelare</div></div>
+    <div className="stats-bar" ref={ref} style={{ opacity: 1, transform: 'none' }}>
+      <div className="stat d1"><div className="stat-num" data-count={players?.length || 0}>0</div><div className="stat-lbl">Spelare</div></div>
       <div className="stat d2"><div className="stat-num"><span data-count={mba?.wins || 0}>0</span>–<span data-count={mba?.losses || 0}>0</span></div><div className="stat-lbl">V – F</div></div>
       <div className="stat d3"><div className="stat-num" data-count={nations}>0</div><div className="stat-lbl">Nationaliteter</div></div>
-      <div className="stat d4"><div className="stat-num"><em>#<span data-count={mba?.position || 1}>0</span></em></div><div className="stat-lbl">I tabellen</div></div>
+      <div className="stat d4"><div className="stat-num"><em>#<span data-count={mba?.position || 0}>0</span></em></div><div className="stat-lbl">I tabellen</div></div>
     </div>
   )
 }
