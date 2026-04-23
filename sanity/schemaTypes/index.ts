@@ -7,4 +7,7 @@ import newsPost from './newsPost'
 import siteSettings from './siteSettings'
 
 export const schemaTypes = [player, match, standing, court, sponsor, newsPost, siteSettings]
+
+// Sanity v3 `defineConfig` expects a `schema` object: `{ types: [...] }`.
+// Export both shapes so any `sanity.config.ts` style (schema or schemaTypes) resolves.
 export const schema = { types: schemaTypes }

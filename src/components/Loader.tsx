@@ -12,11 +12,11 @@ export default function Loader() {
   return (
     <div className={`loader${gone ? ' gone' : ''}`} id="loader">
       <div className="loader-word">
-        <span style={{animationDelay:'0.05s'}}>M</span>
-        <span style={{animationDelay:'0.1s'}}>B</span>
-        <span style={{animationDelay:'0.15s', color:'var(--orange)'}}>A</span>
+        <span style={{ animationDelay: '0.05s' }}>M</span>
+        <span style={{ animationDelay: '0.10s' }}>B</span>
+        <span style={{ animationDelay: '0.15s', color: 'var(--sky-deep)' }}>A</span>
       </div>
-      <div className="loader-sub">Malmö Basket Amatörer</div>
+      <div className="loader-sub">Malmö Basket</div>
     </div>
   )
 }
