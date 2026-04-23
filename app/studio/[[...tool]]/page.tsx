@@ -21,7 +21,7 @@ import {NextStudio} from 'next-sanity/studio'
 import config from '../../../sanity.config'
 
 // Force dynamic — the Studio is an authenticated editor UI, never static.
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 
 export default function StudioPage() {
   return <NextStudio config={config} />
