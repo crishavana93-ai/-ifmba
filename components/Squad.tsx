@@ -1,6 +1,6 @@
-export default function Squad({ players }: { players: any[] }) {
+export default function Squad({ players, num, numText, className }: { players: any[]; num?: string; numText?: string; className?: string }) {
   return (
-    <section className="squad section" id="squad">
+    <section className={`squad section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="squad">
       <div className="contain">
         <div className="label r">Säsong 2025/26</div>
         <h2 className="title r">Trupp</h2>

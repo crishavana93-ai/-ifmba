@@ -1,6 +1,6 @@
-export default function Courts({ courts }: { courts: any[] }) {
+export default function Courts({ courts, num, numText, className }: { courts: any[]; num?: string; numText?: string; className?: string }) {
   return (
-    <section className="courts section" id="courts">
+    <section className={`courts section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="courts">
       <div className="contain">
         <div className="label r">Malmö Basketball Map</div>
         <h2 className="title r">The <em>Courts</em></h2>

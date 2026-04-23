@@ -1,4 +1,4 @@
-export default function About({ settings }: { settings: any }) {
+export default function About({ settings, num, numText, className }: { settings: any; num?: string; numText?: string; className?: string }) {
   const flags = [
     { emoji: '🇸🇪', name: 'Sverige' }, { emoji: '🇬🇷', name: 'Grekland' },
     { emoji: '🇪🇷', name: 'Eritrea' }, { emoji: '🇳🇬', name: 'Nigeria' },
@@ -8,7 +8,7 @@ export default function About({ settings }: { settings: any }) {
   ]
 
   return (
-    <section className="about section">
+    <section className={`about section ${className || ''}`.trim()} data-num={num} data-num-text={numText}>
       <div className="contain about-inner">
         <div className="label r">Identitet</div>
         <h2 className="about-quote r">Inte bara ett lag.<br /><em>En familj. En rörelse.</em></h2>

@@ -1,6 +1,6 @@
-export default function Standings({ standings }: { standings: any[] }) {
+export default function Standings({ standings, num, numText, className }: { standings: any[]; num?: string; numText?: string; className?: string }) {
   return (
-    <section className="standings section" id="standings">
+    <section className={`standings section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="standings">
       <div className="contain">
         <div className="label r">Div 3 Skåne · 2025/26</div>
         <h2 className="title r">The Skåne <em>Grid</em></h2>

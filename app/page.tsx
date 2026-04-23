@@ -2,7 +2,7 @@ import { safeFetch, QUERIES } from '@/lib/sanity'
 import Loader from '@/components/Loader'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
-import Countdown from '@/components/Countdown'
+import Drop from '@/components/Drop'
 import Marquee from '@/components/Marquee'
 import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
@@ -57,56 +57,98 @@ export default async function Home() {
       <ScrollProgress />
       <BackToTop />
       <Navbar />
+
+      {/* HERO — 3-line MALMÖ / BASKET / AMATÖRER */}
       <Hero settings={settings} />
-      {settings?.nextMatchDate && (
-        <Countdown
-          date={settings.nextMatchDate}
-          opponent={settings.nextMatchOpponent}
-          venue={settings.nextMatchVenue}
-        />
-      )}
+
+      {/* DROP — Next tip-off split (video + countdown) */}
+      <Drop settings={settings} media={media} />
+
       <Marquee />
-      <StatsBar players={players} standings={standings} />
-      <About settings={settings} />
+
+      {/* 01 · IDENTITY (dark) */}
+      <About settings={settings} num="01" numText="IDENTITY" className="section-dark" />
+
+      {/* 02 · SEASON IN PHOTOS (alt) */}
       <ScrollReveal>
-        <News news={news} />
+        <MediaWall media={media} num="02" numText="SEASON IN PHOTOS" className="section-alt" />
       </ScrollReveal>
+
+      {/* 03 · TOP PLAYS (dark) */}
       <ScrollReveal>
-        <SwedenNews items={swedenNews} />
+        <Highlights media={media} num="03" numText="TOP PLAYS" className="section-dark" />
       </ScrollReveal>
+
+      {/* 04 · PLAYER OF THE MONTH (alt) */}
       {(settings?.spotlightPlayer || players.length > 0) && (
         <ScrollReveal>
-          <Spotlight settings={settings} players={players} />
+          <Spotlight
+            settings={settings}
+            players={players}
+            num="04"
+            numText="PLAYER OF THE MONTH"
+            className="section-alt"
+          />
         </ScrollReveal>
       )}
+
+      {/* 05 · THE GRID (dark) */}
       <ScrollReveal>
-        <Standings standings={standings} />
+        <Standings standings={standings} num="05" numText="THE GRID" className="section-dark" />
       </ScrollReveal>
+
+      {/* 06 · TERMINAL (alt) */}
       <ScrollReveal>
-        <SwishMeter fixtures={fixtures} results={results} />
+        <SwishMeter
+          fixtures={fixtures}
+          results={results}
+          num="06"
+          numText="TERMINAL"
+          className="section-alt"
+        />
       </ScrollReveal>
+
+      {/* 07 · THE FAMILY (dark) */}
       <ScrollReveal>
-        <Squad players={players} />
+        <Squad players={players} num="07" numText="THE FAMILY" className="section-dark" />
       </ScrollReveal>
+
+      {/* StatsBar — band between sections */}
+      <StatsBar players={players} standings={standings} />
+
+      {/* 08 · MALMÖ MAP (alt) */}
       <ScrollReveal>
-        <MediaWall media={media} />
+        <Courts courts={courts} num="08" numText="MALMÖ MAP" className="section-alt" />
       </ScrollReveal>
+
+      {/* 09 · THE DESK (dark) */}
       <ScrollReveal>
-        <Highlights media={media} />
+        <News news={news} num="09" numText="THE DESK" className="section-dark" />
       </ScrollReveal>
+
+      {/* 10 · COURT REPORT (alt) */}
       <ScrollReveal>
-        <Courts courts={courts} />
+        <SwedenNews items={swedenNews} num="10" numText="COURT REPORT" className="section-alt" />
       </ScrollReveal>
+
+      {/* 11 · APPAREL (dark) */}
       <ScrollReveal>
-        <Apparel media={media} />
+        <Apparel media={media} num="11" numText="APPAREL" className="section-dark" />
       </ScrollReveal>
+
+      {/* 12 · VÅR RESA (alt) */}
       <ScrollReveal>
-        <Journey />
+        <Journey num="12" numText="VÅR RESA" className="section-alt" />
       </ScrollReveal>
+
+      {/* 13 · PARTNERS (dark) */}
       <ScrollReveal>
-        <Sponsors sponsors={sponsors} />
+        <Sponsors sponsors={sponsors} num="13" numText="PARTNERS" className="section-dark" />
       </ScrollReveal>
-      <JoinCTA />
+
+      {/* 14 · BE PART OF IT (alt) */}
+      <JoinCTA num="14" numText="BE PART OF IT" className="section-alt" />
+
       <Footer settings={settings} />
     </>
   )

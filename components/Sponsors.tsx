@@ -54,9 +54,9 @@ const TIERS: Tier[] = [
   },
 ]
 
-export default function Sponsors({ sponsors }: { sponsors: any[] }) {
+export default function Sponsors({ sponsors, num, numText, className }: { sponsors: any[]; num?: string; numText?: string; className?: string }) {
   return (
-    <section className="sponsors section" id="sponsors">
+    <section className={`sponsors section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="sponsors">
       <div className="contain">
         <div className="label r">Partners</div>
         <h2 className="title r">Bli en del av <em>familjen</em></h2>

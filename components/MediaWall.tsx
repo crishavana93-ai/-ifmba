@@ -36,7 +36,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'gameday', label: 'Game Day' },
 ]
 
-export default function MediaWall({ media = [] }: { media?: MediaRow[] }) {
+export default function MediaWall({ media = [], num, numText, className }: { media?: MediaRow[]; num?: string; numText?: string; className?: string }) {
   const [tab, setTab] = useState<TabKey>('team')
 
   const counts = useMemo(() => {
@@ -53,7 +53,7 @@ export default function MediaWall({ media = [] }: { media?: MediaRow[] }) {
   )
 
   return (
-    <section className="mediawall section" id="media">
+    <section className={`mediawall section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="media">
       <div className="contain">
         <div className="label r">Galleri</div>
         <h2 className="title r">

@@ -22,7 +22,7 @@ type MediaRow = {
   posterUrl?: string | null
 }
 
-export default function Highlights({ media = [] }: { media?: MediaRow[] }) {
+export default function Highlights({ media = [], num, numText, className }: { media?: MediaRow[]; num?: string; numText?: string; className?: string }) {
   const clips = media
     .filter(
       (m) =>
@@ -37,7 +37,7 @@ export default function Highlights({ media = [] }: { media?: MediaRow[] }) {
   }
 
   return (
-    <section className="highlights section section-dark" id="highlights">
+    <section className={`highlights section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="highlights">
       <div className="contain">
         <div className="label r">Höjdpunkter</div>
         <h2 className="title r">

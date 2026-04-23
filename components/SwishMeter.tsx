@@ -1,6 +1,6 @@
-export default function SwishMeter({ fixtures, results }: { fixtures: any[]; results: any[] }) {
+export default function SwishMeter({ fixtures, results, num, numText, className }: { fixtures: any[]; results: any[]; num?: string; numText?: string; className?: string }) {
   return (
-    <section className="swish section" id="swish">
+    <section className={`swish section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="swish">
       <div className="contain">
         <div className="label r">Bloomberg Terminal</div>
         <h2 className="title r">Swish <em>Meter</em></h2>

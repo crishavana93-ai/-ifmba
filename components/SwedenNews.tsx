@@ -45,7 +45,7 @@ function fmtDate(iso?: string) {
   }
 }
 
-export default function SwedenNews({ items = [] }: { items?: Item[] }) {
+export default function SwedenNews({ items = [], num, numText, className }: { items?: Item[]; num?: string; numText?: string; className?: string }) {
   const [tab, setTab] = useState<TabKey>('all')
 
   const counts = useMemo(() => {
@@ -60,7 +60,7 @@ export default function SwedenNews({ items = [] }: { items?: Item[] }) {
   )
 
   return (
-    <section className="swenews section" id="sweden-news">
+    <section className={`swenews section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="sweden-news">
       <div className="contain">
         <div className="label r">Runt om Sverige</div>
         <h2 className="title r">

@@ -50,7 +50,7 @@ function fmtCountdown(ms: number) {
   return `${m}m`
 }
 
-export default function Spotlight({ settings, players = [] }: Props) {
+export default function Spotlight({ settings, players = [], num, numText, className }: Props & { num?: string; numText?: string; className?: string }) {
   const featured = settings?.spotlightPlayer
   const candidates = (players && players.length > 0 ? players : featured ? [featured] : []).slice(0, 5)
 
@@ -97,7 +97,7 @@ export default function Spotlight({ settings, players = [] }: Props) {
   if (candidates.length === 0) return null
 
   return (
-    <section className="spotlight section" id="spotlight">
+    <section className={`spotlight section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="spotlight">
       <div className="contain">
         <div className="label r">Månadens spelare</div>
         <h2 className="title r">

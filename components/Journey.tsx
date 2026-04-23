@@ -50,9 +50,9 @@ const MILESTONES: Milestone[] = [
   },
 ]
 
-export default function Journey() {
+export default function Journey({ num, numText, className }: { num?: string; numText?: string; className?: string } = {}) {
   return (
-    <section className="journey section section-dark" id="journey">
+    <section className={`journey section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="journey">
       <div className="contain">
         <div className="label r">Resan</div>
         <h2 className="title r">

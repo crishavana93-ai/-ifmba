@@ -22,9 +22,9 @@ function formatDate(iso?: string) {
   }
 }
 
-export default function News({ news = [] as NewsPost[] }: { news?: NewsPost[] }) {
+export default function News({ news = [] as NewsPost[], num, numText, className }: { news?: NewsPost[]; num?: string; numText?: string; className?: string }) {
   return (
-    <section className="news section" id="news">
+    <section className={`news section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="news">
       <div className="contain">
         <div className="news-head">
           <div>

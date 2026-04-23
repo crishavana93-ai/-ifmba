@@ -38,14 +38,14 @@ const CARDS: Card[] = [
   { slot: 'merch-fans', name: 'Fan Collection', sub: 'Supporter gear', price: '279 kr' },
 ]
 
-export default function Apparel({ media = [] }: { media?: MediaRow[] }) {
+export default function Apparel({ media = [], num, numText, className }: { media?: MediaRow[]; num?: string; numText?: string; className?: string }) {
   const byPlacement = new Map<string, MediaRow>()
   for (const m of media) {
     if (m.placement && !byPlacement.has(m.placement)) byPlacement.set(m.placement, m)
   }
 
   return (
-    <section className="apparel section section-dark" id="apparel">
+    <section className={`apparel section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="apparel">
       <div className="contain">
         <div className="label r">Merch</div>
         <h2 className="title r">
