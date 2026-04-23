@@ -1,4 +1,4 @@
-import { client, QUERIES } from '@/lib/sanity'
+import { safeFetch, QUERIES } from '@/lib/sanity'
 import Loader from '@/components/Loader'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
@@ -23,14 +23,14 @@ export const revalidate = 60 // ISR: revalidate every 60 seconds
 
 export default async function Home() {
   const [players, standings, fixtures, results, courts, sponsors, news, settings] = await Promise.all([
-    client.fetch(QUERIES.players),
-    client.fetch(QUERIES.standings),
-    client.fetch(QUERIES.fixtures),
-    client.fetch(QUERIES.results),
-    client.fetch(QUERIES.courts),
-    client.fetch(QUERIES.sponsors),
-    client.fetch(QUERIES.news),
-    client.fetch(QUERIES.settings),
+    safeFetch<any[]>(QUERIES.players, []),
+    safeFetch<any[]>(QUERIES.standings, []),
+    safeFetch<any[]>(QUERIES.fixtures, []),
+    safeFetch<any[]>(QUERIES.results, []),
+    safeFetch<any[]>(QUERIES.courts, []),
+    safeFetch<any[]>(QUERIES.sponsors, []),
+    safeFetch<any[]>(QUERIES.news, []),
+    safeFetch<any>(QUERIES.settings, null),
   ])
 
   return (
