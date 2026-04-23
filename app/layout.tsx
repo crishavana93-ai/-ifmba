@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter_Tight, JetBrains_Mono } from 'next/font/google'
-import './globals.css'
+import '../styles/mba.css'
 
 const interTight = Inter_Tight({
   subsets: ['latin'],
@@ -17,9 +17,9 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'MBA — Malmö Basket Amatörer',
-  description: 'Malmös streetball headquarters. Amateur basketball for everyone. 8 nations. 1 jersey.',
-  themeColor: '#0A0A0A',
+  title: 'MBA — Malmö Basket',
+  description: 'Malmös internationella basketfamilj. 8 nationer. 1 tröja. Div 3 Skåne.',
+  themeColor: '#FFFFFF',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

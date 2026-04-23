@@ -1,4 +1,3 @@
-'use client'
 export default function About({ settings }: { settings: any }) {
   const flags = [
     { emoji: '🇸🇪', name: 'Sverige' }, { emoji: '🇬🇷', name: 'Grekland' },

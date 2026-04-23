@@ -1,4 +1,3 @@
-'use client'
 export default function Spotlight({ settings }: { settings: any }) {
   const player = settings.spotlightPlayer
   if (!player) return null

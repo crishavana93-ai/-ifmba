@@ -1,4 +1,3 @@
-'use client'
 export default function Courts({ courts }: { courts: any[] }) {
   return (
     <section className="courts section" id="courts">

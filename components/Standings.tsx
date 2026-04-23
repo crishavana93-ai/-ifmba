@@ -1,4 +1,3 @@
-'use client'
 export default function Standings({ standings }: { standings: any[] }) {
   return (
     <section className="standings section" id="standings">

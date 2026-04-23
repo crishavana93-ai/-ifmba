@@ -15,7 +15,7 @@ export default function Footer({ settings }: { settings: any }) {
         <div className="foot-grid">
           <div>
             <div className="foot-brand-name">MBA</div>
-            <div className="foot-brand-sub">Malmö Basket Amatörer — Malmös mest internationella basketfamilj. 8 nationer, 1 tröja.</div>
+            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 8 nationer, 1 tröja. Div 3 Skåne, 2025/26.</div>
             <div className="foot-nl-wrap">
               <div className="foot-nl">
                 <input type="email" placeholder="din@email.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
@@ -31,6 +31,7 @@ export default function Footer({ settings }: { settings: any }) {
           <div>
             <div className="foot-col-h">Snabblänkar</div>
             <div className="foot-links">
+              <a onClick={() => document.getElementById('news')?.scrollIntoView({behavior:'smooth'})}>Nyheter</a>
               <a onClick={() => document.getElementById('standings')?.scrollIntoView({behavior:'smooth'})}>Tabell</a>
               <a onClick={() => document.getElementById('squad')?.scrollIntoView({behavior:'smooth'})}>Trupp</a>
               <a onClick={() => document.getElementById('courts')?.scrollIntoView({behavior:'smooth'})}>Courts</a>

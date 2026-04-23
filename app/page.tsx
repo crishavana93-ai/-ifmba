@@ -1,4 +1,4 @@
-import { client, QUERIES } from '@/lib/sanity'
+import { safeFetch, QUERIES } from '@/lib/sanity'
 import Loader from '@/components/Loader'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
@@ -6,6 +6,7 @@ import Countdown from '@/components/Countdown'
 import Marquee from '@/components/Marquee'
 import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
+import News from '@/components/News'
 import Standings from '@/components/Standings'
 import SwishMeter from '@/components/SwishMeter'
 import Squad from '@/components/Squad'
@@ -20,34 +21,17 @@ import BackToTop from '@/components/BackToTop'
 
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
-async function fetchSanityData() {
-  try {
-    const [players, standings, fixtures, results, courts, sponsors, settings] = await Promise.all([
-      client.fetch(QUERIES.players),
-      client.fetch(QUERIES.standings),
-      client.fetch(QUERIES.fixtures),
-      client.fetch(QUERIES.results),
-      client.fetch(QUERIES.courts),
-      client.fetch(QUERIES.sponsors),
-      client.fetch(QUERIES.settings),
-    ])
-    return { players, standings, fixtures, results, courts, sponsors, settings }
-  } catch (error) {
-    console.error('Sanity fetch error:', error)
-    return {
-      players: [],
-      standings: [],
-      fixtures: [],
-      results: [],
-      courts: [],
-      sponsors: [],
-      settings: null,
-    }
-  }
-}
-
 export default async function Home() {
-  const { players, standings, fixtures, results, courts, sponsors, settings } = await fetchSanityData()
+  const [players, standings, fixtures, results, courts, sponsors, news, settings] = await Promise.all([
+    safeFetch<any[]>(QUERIES.players, []),
+    safeFetch<any[]>(QUERIES.standings, []),
+    safeFetch<any[]>(QUERIES.fixtures, []),
+    safeFetch<any[]>(QUERIES.results, []),
+    safeFetch<any[]>(QUERIES.courts, []),
+    safeFetch<any[]>(QUERIES.sponsors, []),
+    safeFetch<any[]>(QUERIES.news, []),
+    safeFetch<any>(QUERIES.settings, null),
+  ])
 
   return (
     <>
@@ -66,6 +50,9 @@ export default async function Home() {
       <Marquee />
       <StatsBar players={players} standings={standings} />
       <About settings={settings} />
+      <ScrollReveal>
+        <News news={news} />
+      </ScrollReveal>
       {settings?.spotlightPlayer && <Spotlight settings={settings} />}
       <ScrollReveal>
         <Standings standings={standings} />

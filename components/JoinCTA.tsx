@@ -1,4 +1,3 @@
-'use client'
 export default function JoinCTA() {
   return (
     <section className="join section" id="join">

@@ -1,4 +1,3 @@
-'use client'
 export default function Squad({ players }: { players: any[] }) {
   return (
     <section className="squad section" id="squad">

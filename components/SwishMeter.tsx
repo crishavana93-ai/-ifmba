@@ -1,4 +1,3 @@
-'use client'
 export default function SwishMeter({ fixtures, results }: { fixtures: any[]; results: any[] }) {
   return (
     <section className="swish section" id="swish">
