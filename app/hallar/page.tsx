@@ -173,7 +173,7 @@ export default async function HallarPage() {
           <p className="hall-schedule-note">
             Schemat kan justeras vid matchhelger. Kolla aktuella matcher på{' '}
             <a
-              href="https://www.profixio.com/app/leagueid16182/category/1150620"
+              href="https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117"
               target="_blank"
               rel="noopener noreferrer"
             >

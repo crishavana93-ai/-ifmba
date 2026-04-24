@@ -223,7 +223,7 @@ export default function Spotlight({ players = [], num, numText, className }: Pro
           Spot<em>light</em>
         </h2>
         <p className="spotlight-intro r">
-          Rösta på <em>månadens</em> och <em>säsongens</em> spelare. En röst per
+          Rösta på <em>matchens</em> och <em>säsongens</em> spelare. En röst per
           kategori &mdash; du kan ändra eller ångra din röst när som helst.
           Resultaten uppdateras direkt.
         </p>
@@ -232,7 +232,7 @@ export default function Spotlight({ players = [], num, numText, className }: Pro
           <Ballot
             ballot="match"
             scope={monthKey}
-            title="Månadens spelare"
+            title="Matchens spelare"
             subtitle={`Omröstning · ${monthKey}`}
             candidates={candidates}
           />

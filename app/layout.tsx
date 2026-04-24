@@ -34,11 +34,19 @@ export const metadata: Metadata = {
     description: SITE_DESC,
     // image auto-populated from opengraph-image.tsx unless twitter-image.tsx present
   },
-  // Icons: Next.js auto-generates favicon + <link rel="icon"> from
-  // `src/app/icon.png` (the MBA crest). No need to declare `icon` here;
-  // only `apple` needs the explicit path to /public/apple-touch-icon.png.
+  // Icons: explicit declarations so browsers + social platforms find them
+  // reliably, alongside Next.js's auto-generation from src/app/icon.png
+  // and src/app/apple-icon.png. The classic /favicon.ico is the ultimate
+  // fallback that every browser looks for first.
   icons: {
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180' },
+    ],
+    shortcut: '/favicon.ico',
   },
   robots: { index: true, follow: true },
 }
@@ -102,7 +110,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               },
               email: 'mba.malmo.basket@gmail.com',
               // Profixio — Div 3 Skåne Herr 2025/26 (MBA's current league).
-              sameAs: ['https://www.profixio.com/app/leagueid16182/category/1150620'],
+              sameAs: ['https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117'],
             }),
           }}
         />
