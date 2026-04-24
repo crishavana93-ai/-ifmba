@@ -30,6 +30,10 @@ type SwedenNewsItem = {
   sourceName?: string
   url?: string
   publishedAt?: string
+  /** Auto-scraped og:image URL (from RSS cron) */
+  imageUrl?: string
+  /** Manually uploaded Sanity image asset URL (from GROQ) */
+  uploadedImageUrl?: string
   image?: any
 }
 
@@ -81,15 +85,23 @@ export default function News({
     external: false,
   }))
 
-  const curated: UnifiedItem[] = swedenNews.map((item, i) => ({
-    id: item._id || `ext-${i}`,
-    title: item.headline,
-    tag: item.sourceName || item.source || 'SBBF',
-    date: item.publishedAt,
-    imgUrl: item.image ? urlFor(item.image).width(800).height(500).fit('crop').url() : null,
-    href: item.url || '/nyheter',
-    external: !!item.url,
-  }))
+  const curated: UnifiedItem[] = swedenNews.map((item, i) => {
+    // Precedence: manually uploaded Sanity asset > og:image URL from RSS cron
+    const manual = item.uploadedImageUrl
+    const scraped = item.imageUrl
+    const imgUrl = manual
+      ? manual + '?w=800&h=500&fit=crop'
+      : scraped || null
+    return {
+      id: item._id || `ext-${i}`,
+      title: item.headline,
+      tag: item.sourceName || item.source || 'SBBF',
+      date: item.publishedAt,
+      imgUrl,
+      href: item.url || '/nyheter',
+      external: !!item.url,
+    }
+  })
 
   // MBA's own news first, then curated. Limit to 6 on homepage.
   const combined = [...own, ...curated].slice(0, 6)

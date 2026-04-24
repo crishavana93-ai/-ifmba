@@ -51,7 +51,9 @@ export const QUERIES = {
     _id, number, firstName, lastName, position, nationality, flag, quote, active,
     "photoUrl": photo.asset->url
   }`,
-  standings: `*[_type == "standing"] | order(position asc)`,
+  standings: `*[_type == "standing"] | order(position asc){
+    _id, team, shortName, wins, losses, points, position, isUs, series
+  }`,
   fixtures: `*[_type == "match" && played == false] | order(date asc)[0...5]`,
   results: `*[_type == "match" && played == true] | order(date desc)[0...5]{..., topScorer->{firstName, lastName, number}}`,
   courts: `*[_type == "court"]`,
@@ -87,8 +89,10 @@ export const QUERIES = {
   }`,
 
   // Sweden News — curated headlines from SBBF / leagues / Skåne / FIBA.
+  // Prefer a manually uploaded image over the auto-scraped og:image URL.
   swedenNews: `*[_type == "swedenNews" && active == true] | order(publishedAt desc)[0...24]{
-    _id, headline, summary, source, sourceName, url, publishedAt,
-    "imageUrl": image.asset->url
+    _id, headline, summary, source, sourceName, url, publishedAt, imageUrl,
+    "uploadedImageUrl": image.asset->url,
+    "image": image
   }`,
 }

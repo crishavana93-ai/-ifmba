@@ -68,9 +68,16 @@ export default defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Thumbnail (optional)',
+      title: 'Thumbnail — uploaded image (optional, overrides imageUrl)',
       type: 'image',
       options: {hotspot: true, accept: 'image/*'},
+    }),
+    defineField({
+      name: 'imageUrl',
+      title: 'Thumbnail URL (auto-filled from og:image by RSS cron)',
+      type: 'url',
+      description:
+        'Usually set automatically by the RSS ingestion job — scraped from the article\'s OpenGraph tags. Leave blank to fall back to the uploaded image (or no image).',
     }),
     defineField({
       name: 'active',

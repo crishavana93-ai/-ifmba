@@ -159,9 +159,10 @@ export default async function NyheterPage() {
           ) : (
             <div className="news-grid r v">
               {swedenNews.map((item: any) => {
-                const imgUrl = item.image
-                  ? urlFor(item.image).width(800).height(500).fit('crop').url()
-                  : null
+                const imgUrl =
+                  (item.uploadedImageUrl
+                    ? `${item.uploadedImageUrl}?w=800&h=500&fit=crop`
+                    : null) || item.imageUrl || null
                 return (
                   <a
                     key={item._id}
