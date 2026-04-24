@@ -178,6 +178,20 @@ export default defineConfig({
                   .title('Newsletter subscribers')
                   .defaultOrdering([{field: 'subscribedAt', direction: 'desc'}]),
               ),
+            S.listItem()
+              .title('🎯 Prediction rounds')
+              .child(
+                S.documentTypeList('predictionRound')
+                  .title('Prediction rounds — newest first')
+                  .defaultOrdering([{field: 'matchDate', direction: 'desc'}]),
+              ),
+            S.listItem()
+              .title('🎯 Predictions (fan entries)')
+              .child(
+                S.documentTypeList('prediction')
+                  .title('Predictions — newest first')
+                  .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
+              ),
             S.divider(),
             S.listItem()
               .title('Site settings')

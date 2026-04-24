@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import '../styles/mba.css'
 import InstallPrompt from '@/components/InstallPrompt'
 import CookieConsent from '@/components/CookieConsent'
+import { I18nProvider } from '@/lib/i18n'
 
 // NOTE: Fonts loaded via <link> at runtime instead of next/font/google,
 // because next/font requires network access to fonts.googleapis.com AT BUILD TIME —
@@ -86,9 +87,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Skip-to-content link for keyboard + screen-reader users.
             WCAG 2.2 AA requirement — hidden until focused. */}
         <a href="#main" className="skip-link">Hoppa till innehåll</a>
-        {children}
-        <CookieConsent />
-        <InstallPrompt />
+        <I18nProvider>
+          {children}
+          <CookieConsent />
+          <InstallPrompt />
+        </I18nProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

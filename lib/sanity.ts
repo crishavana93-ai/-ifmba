@@ -59,6 +59,18 @@ export const QUERIES = {
   courts: `*[_type == "court"]`,
   sponsors: `*[_type == "sponsor" && active == true] | order(tier asc)`,
   news: `*[_type == "newsPost"] | order(publishedAt desc)[0...6]{title, slug, coverImage, tag, publishedAt}`,
+
+  // Prediction — the single currently-open round (if any). Closed/final rounds
+  // power the leaderboard below.
+  predictionActive: `*[_type == "predictionRound" && status == "open"] | order(matchDate asc)[0]{
+    _id, matchup, matchDate, deadline, status
+  }`,
+  predictionLatestFinal: `*[_type == "predictionRound" && status == "final"] | order(matchDate desc)[0]{
+    _id, matchup, matchDate, finalMbaScore, finalOpponentScore, topScorerActual,
+    "entries": *[_type == "prediction" && references(^._id)] | order(coalesce(points, 0) desc)[0...10]{
+      _id, displayName, mbaScore, opponentScore, topScorerGuess, points
+    }
+  }`,
   settings: `*[_type == "siteSettings"][0]{
     ...,
     spotlightPlayer->{

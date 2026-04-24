@@ -23,6 +23,7 @@ import Apparel from '@/components/Apparel'
 // Homepage gets a compact teaser (see SponsorTeaser below) that routes to /partners.
 import SponsorTeaser from '@/components/SponsorTeaser'
 import Spotlight from '@/components/Spotlight'
+import Predict from '@/components/Predict'
 // Manifesto + JoinCTA retired 2026-04-24 — kept in /components for easy revival.
 import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -52,6 +53,14 @@ export default async function Home() {
     safeFetch<any>(QUERIES.settings, null),
     safeFetch<any[]>(QUERIES.mediaAll, []),
     safeFetch<any[]>(QUERIES.swedenNews, []),
+  ])
+
+  // Prediction data — fetched separately so the homepage still renders if
+  // no rounds exist yet. Active round powers the form, latest final powers
+  // the leaderboard.
+  const [predictionActive, predictionFinal] = await Promise.all([
+    safeFetch<any>(QUERIES.predictionActive, null),
+    safeFetch<any>(QUERIES.predictionLatestFinal, null),
   ])
 
   return (
@@ -102,9 +111,21 @@ export default async function Home() {
         </ScrollReveal>
       )}
 
-      {/* 05 · THE GRID (dark) */}
+      {/* 05 · TIPPA — predict-the-score form + leaderboard (alt).
+          Hidden if neither an active round nor a finalized round exists. */}
       <ScrollReveal>
-        <Standings standings={standings} num="05" numText="THE GRID" className="section-dark" />
+        <Predict
+          active={predictionActive}
+          latestFinal={predictionFinal}
+          num="05"
+          numText="TIPPA"
+          className="section-alt"
+        />
+      </ScrollReveal>
+
+      {/* 06 · THE GRID (dark) */}
+      <ScrollReveal>
+        <Standings standings={standings} num="06" numText="THE GRID" className="section-dark" />
       </ScrollReveal>
 
       {/* SwishMeter removed 2026-04-24 — data now lives in Standings (Profixio).

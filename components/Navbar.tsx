@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Crest from './Crest'
+import LangToggle from './LangToggle'
+import { useT } from '@/lib/i18n'
 
 /**
  * Navbar.
@@ -21,6 +23,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
   const onHome = pathname === '/'
+  const t = useT()
 
   useEffect(() => {
     const onScroll = () => setShrink(window.scrollY > 100)
@@ -63,7 +66,7 @@ export default function Navbar() {
         <Link
           href="/"
           className="nav-logo"
-          aria-label="MBA — till startsidan"
+          aria-label={t('nav.logoAria')}
           onClick={onLogoClick}
         >
           <div className="nav-logo-mark">
@@ -76,24 +79,23 @@ export default function Navbar() {
         </Link>
 
         <div className={`nav-links${menuOpen ? ' open' : ''}`} id="nav-links">
-          <Link href="/nyheter" onClick={() => setMenuOpen(false)}>Nyheter</Link>
-          <a {...hashLinkProps('standings')}>Tabell</a>
-          <a {...hashLinkProps('squad')}>Trupp</a>
-          <a {...hashLinkProps('media')}>Galleri</a>
-          <a {...hashLinkProps('apparel')}>Merch</a>
-          <Link href="/partners" onClick={() => setMenuOpen(false)}>Partners</Link>
+          <Link href="/nyheter" onClick={() => setMenuOpen(false)}>{t('nav.news')}</Link>
+          <a {...hashLinkProps('standings')}>{t('nav.table')}</a>
+          <a {...hashLinkProps('squad')}>{t('nav.squad')}</a>
+          <a {...hashLinkProps('media')}>{t('nav.gallery')}</a>
+          <a {...hashLinkProps('apparel')}>{t('nav.merch')}</a>
+          <Link href="/partners" onClick={() => setMenuOpen(false)}>{t('nav.partners')}</Link>
         </div>
 
         <div className="nav-actions">
-          {/* "Join" now routes to the /anslut page with three membership
-              tracks (U-10, Casual Games, Div 2 Herr). Previously was a
-              mailto — /anslut gives visitors proper self-service context. */}
+          <LangToggle />
+          {/* "Join" routes to /anslut (three membership tracks). */}
           <Link
             className="btn-cta"
             href="/anslut"
             onClick={() => setMenuOpen(false)}
           >
-            Join
+            {t('nav.join')}
           </Link>
           <button
             className="mobile-menu-btn"
