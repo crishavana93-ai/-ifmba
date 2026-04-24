@@ -61,6 +61,7 @@ export default async function Home() {
       <BackToTop />
       <Navbar />
 
+      <main id="main">
       {/* HERO — 3-line MALMÖ / BASKET / AMATÖRER */}
       <Hero settings={settings} />
 
@@ -142,6 +143,8 @@ export default async function Home() {
       <ScrollReveal>
         <SponsorTeaser sponsorCount={sponsors?.length || 0} num="10" numText="PARTNERS" />
       </ScrollReveal>
+
+      </main>
 
       <Footer settings={settings} courts={courts} />
     </>

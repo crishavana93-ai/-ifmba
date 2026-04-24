@@ -108,7 +108,8 @@ export default function Hero({ settings }: { settings: any }) {
       <div
         className="hero-scroll"
         onClick={() =>
-          document.getElementById('drop')?.scrollIntoView({ behavior: 'smooth' })
+          // Drop section was retired — scroll to the first real section (Marquee / About).
+          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
         }
       >
         SCROLL

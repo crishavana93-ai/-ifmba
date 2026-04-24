@@ -56,6 +56,11 @@ export async function POST(req: Request) {
     // Pretend success so bots don't retry.
     return NextResponse.json({ ok: true, id: 'ignored' }, { status: 200 })
   }
+  // Timing check — a real human spends >3 s filling this form. Anything
+  // faster is almost certainly an automated submission.
+  if (typeof body?.elapsedMs === 'number' && body.elapsedMs < 3000) {
+    return NextResponse.json({ ok: true, id: 'ignored' }, { status: 200 })
+  }
 
   const name = clean(body?.name, MAX.name)
   const company = clean(body?.company, MAX.company)

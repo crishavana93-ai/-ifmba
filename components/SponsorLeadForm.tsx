@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -30,6 +30,8 @@ export default function SponsorLeadForm() {
 
   // Honeypot — invisible field; bots fill it, humans don't.
   const [website, setWebsite] = useState('')
+  // Anti-bot timing — submissions faster than 3 s are rejected server-side.
+  const mountedAt = React.useMemo(() => Date.now(), [])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,6 +54,7 @@ export default function SponsorLeadForm() {
           message,
           consent,
           website_url: website,
+          elapsedMs: Date.now() - mountedAt,
         }),
       })
       const data = await res.json().catch(() => ({}))

@@ -34,10 +34,18 @@ export default function manifest(): MetadataRoute.Manifest {
       },
       {
         // Next.js auto-serves the src/app/icon.png at /icon.
+        // Split into two entries because Next's Manifest type rejects
+        // space-separated purposes (valid per W3C spec but not in Next).
         src: '/icon',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any maskable',
+        purpose: 'any',
+      },
+      {
+        src: '/icon',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
   }

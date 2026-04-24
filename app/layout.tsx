@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import '../styles/mba.css'
 import InstallPrompt from '@/components/InstallPrompt'
+import CookieConsent from '@/components/CookieConsent'
 
 // NOTE: Fonts loaded via <link> at runtime instead of next/font/google,
 // because next/font requires network access to fonts.googleapis.com AT BUILD TIME —
@@ -49,6 +50,13 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Plausible Analytics — cookieless, GDPR-friendly, €9/mo. Set
+  // NEXT_PUBLIC_PLAUSIBLE_DOMAIN on Vercel (e.g. "ifmba.se") to enable.
+  // Until that env var is set, no script loads and no tracking happens.
+  const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN
+  const plausibleSrc =
+    process.env.NEXT_PUBLIC_PLAUSIBLE_SRC || 'https://plausible.io/js/script.js'
+
   return (
     <html lang="sv">
       <head>
@@ -58,9 +66,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap"
         />
+        {plausibleDomain && (
+          <script
+            defer
+            data-domain={plausibleDomain}
+            src={plausibleSrc}
+          />
+        )}
       </head>
       <body>
+        {/* Skip-to-content link for keyboard + screen-reader users.
+            WCAG 2.2 AA requirement — hidden until focused. */}
+        <a href="#main" className="skip-link">Hoppa till innehåll</a>
         {children}
+        <CookieConsent />
         <InstallPrompt />
         <script
           type="application/ld+json"

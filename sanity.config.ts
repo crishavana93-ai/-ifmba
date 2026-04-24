@@ -171,6 +171,13 @@ export default defineConfig({
                   .title('Sponsor leads — newest first')
                   .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
               ),
+            S.listItem()
+              .title('✉️ Newsletter Subscribers')
+              .child(
+                S.documentTypeList('subscriber')
+                  .title('Newsletter subscribers')
+                  .defaultOrdering([{field: 'subscribedAt', direction: 'desc'}]),
+              ),
             S.divider(),
             S.listItem()
               .title('Site settings')

@@ -86,9 +86,10 @@ const TIERS: Tier[] = [
 ]
 
 export default async function PartnersPage() {
-  const [sponsors, settings] = await Promise.all([
+  const [sponsors, settings, courts] = await Promise.all([
     safeFetch<any[]>(QUERIES.sponsors, []),
     safeFetch<any>(QUERIES.settings, null),
+    safeFetch<any[]>(QUERIES.courts, []),
   ])
 
   const byTier = (tier: string) => sponsors.filter((s: any) => s.tier === tier)
@@ -282,7 +283,7 @@ export default async function PartnersPage() {
         </div>
       </section>
 
-      <Footer settings={settings} />
+      <Footer settings={settings} courts={courts} />
     </>
   )
 }

@@ -108,8 +108,9 @@ const TRACKS: Track[] = [
 ]
 
 export default async function AnslutPage() {
-  const [settings] = await Promise.all([
+  const [settings, courts] = await Promise.all([
     safeFetch<any>(QUERIES.settings, null),
+    safeFetch<any[]>(QUERIES.courts, []),
   ])
 
   const contactEmail = settings?.contactEmail || 'mba.malmo.basket@gmail.com'
@@ -226,7 +227,7 @@ export default async function AnslutPage() {
         </div>
       </section>
 
-      <Footer settings={settings} />
+      <Footer settings={settings} courts={courts} />
     </>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Crest from './Crest'
 
 /**
@@ -43,14 +43,49 @@ const IconMail = ({ size = 20 }: { size?: number }) => (
   </svg>
 )
 
-type IconFn = (p: { size?: number }) => JSX.Element
+// Use React.ReactElement instead of JSX.Element — the global JSX namespace
+// isn't exposed under Next.js 16's stricter TypeScript config.
+type IconFn = (p: { size?: number }) => React.ReactElement
 
 export default function Footer({ settings, courts = [] }: { settings: any; courts?: any[] }) {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  // Hidden honeypot + mount timestamp — both checked server-side.
+  const [website, setWebsite] = useState('')
+  const mountedAt = React.useMemo(() => Date.now(), [])
 
-  const handleSubmit = () => {
-    if (email && email.includes('@')) { setSubmitted(true); setEmail('') }
+  const handleSubmit = async () => {
+    if (submitting) return
+    setError('')
+    const trimmed = email.trim()
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Ange en giltig e-postadress.')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmed,
+          website_url: website,
+          elapsedMs: Date.now() - mountedAt,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error || `HTTP ${res.status}`)
+      }
+      setSubmitted(true)
+      setEmail('')
+    } catch (err: any) {
+      setError(err?.message || 'Något gick fel.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   // Build the socials list from settings. Only platforms with a URL render.
@@ -76,11 +111,27 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
             </div>
             <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 9 nationer, 1 tröja. Uppflyttade till Div 2 Skåne Herr 2026/27.</div>
             <div className="foot-nl-wrap">
+              {/* Hidden honeypot — real users never fill this. */}
+              <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
+                <label>Website <input type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} /></label>
+              </div>
               <div className="foot-nl">
-                <input type="email" placeholder="din@email.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
-                <button onClick={handleSubmit}>SKICKA</button>
+                <input
+                  type="email"
+                  placeholder="din@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                  disabled={submitting || submitted}
+                  autoComplete="email"
+                  inputMode="email"
+                />
+                <button onClick={handleSubmit} disabled={submitting || submitted}>
+                  {submitting ? '...' : submitted ? '✓' : 'SKICKA'}
+                </button>
               </div>
               {submitted && <div className="foot-nl-ok show">Tack! Du är nu med i MBA-familjen.</div>}
+              {error && <div className="foot-nl-err" role="alert">{error}</div>}
             </div>
             <div className="foot-socials" style={{ marginTop: '18px' }}>
               {socials
@@ -111,11 +162,15 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
           <div>
             <div className="foot-col-h">Snabblänkar</div>
             <div className="foot-links">
-              <a onClick={() => document.getElementById('news')?.scrollIntoView({behavior:'smooth'})}>Nyheter</a>
-              <a onClick={() => document.getElementById('standings')?.scrollIntoView({behavior:'smooth'})}>Tabell</a>
-              <a onClick={() => document.getElementById('squad')?.scrollIntoView({behavior:'smooth'})}>Trupp</a>
+              {/* Use `/#section` so the links work from sub-pages (partners,
+                  anslut, hallar, nyheter) — scrollIntoView only works when
+                  the target section actually exists in the current DOM. */}
+              <a href="/#news">Nyheter</a>
+              <a href="/#standings">Tabell</a>
+              <a href="/#squad">Trupp</a>
               <a href="/hallar">Hallar</a>
-              <a onClick={() => document.getElementById('sponsors')?.scrollIntoView({behavior:'smooth'})}>Partners</a>
+              <a href="/partners">Partners</a>
+              <a href="/anslut">Bli medlem</a>
             </div>
           </div>
           <div>
@@ -153,7 +208,11 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
         </div>
         <div className="foot-bottom">
           <span>© 2026 MBA · Malmö Basket</span>
-          <a href="https://www.profixio.com/app/leagueid16182/category/1150620" target="_blank" rel="noopener">Powered by Profixio</a>
+          <span className="foot-bottom-links">
+            <a href="/integritetspolicy">Integritetspolicy</a>
+            <span className="foot-bottom-sep">·</span>
+            <a href="https://www.profixio.com/app/leagueid16182/category/1150620" target="_blank" rel="noopener">Powered by Profixio</a>
+          </span>
         </div>
       </div>
     </footer>
