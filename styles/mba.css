@@ -917,13 +917,8 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   text-align: center;
   position: relative; overflow: hidden;
 }
-.join::before {
-  content: 'MBA MBA MBA MBA'; position: absolute;
-  top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-size: clamp(120px, 20vw, 260px); font-weight: 900;
-  color: rgba(255, 203, 5, 0.05); letter-spacing: -0.03em;
-  white-space: nowrap; pointer-events: none;
-}
+/* MBA MBA MBA tiled watermark removed 2026-04-24 — visual noise on light
+   section variant. If you want it back, restore the `.join::before` block. */
 .join h2 {
   font-size: clamp(48px, 9vw, 128px); font-weight: 900;
   line-height: 0.92; letter-spacing: -0.045em; text-transform: uppercase;
@@ -2175,10 +2170,15 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 .section-dark .sw-venue { color: rgba(245,246,250,.55); }
 .section-dark .sw-result { color: #fff; }
 .section-dark .sw-match .vs { color: rgba(245,246,250,.6); }
+/* Table-wrap default bg (var(--bg) = white) would show through as a white
+   block on dark sections, making the standings text invisible. Force it
+   transparent and re-theme the header strip. */
+.section-dark .table-wrap { background: transparent !important; border-color: rgba(255,255,255,.14) !important; }
 .section-dark table.league td { color: rgba(245,246,250,.96) !important; background: transparent !important; }
 .section-dark table.league td:first-child,
 .section-dark table.league .pts { color: #fff !important; }
-.section-dark table.league th { color: rgba(245,246,250,.78) !important; border-color: rgba(255,255,255,.18) !important; font-weight: 700; }
+.section-dark table.league th { color: rgba(245,246,250,.78) !important; background: rgba(255,255,255,.04) !important; border-color: rgba(255,255,255,.18) !important; font-weight: 700; }
+.section-dark table.league tr:hover td { background: rgba(255,255,255,.04) !important; }
 .section-dark table.league tr.us td {
   background: linear-gradient(90deg, rgba(255,203,5,.34), rgba(255,203,5,.12)) !important;
   color: #fff !important;

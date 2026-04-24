@@ -85,12 +85,15 @@ export default function Navbar() {
         </div>
 
         <div className="nav-actions">
-          <button
+          {/* CTA now goes straight to a contact email — JoinCTA section was
+              retired; footer still has newsletter signup + contact links. */}
+          <a
             className="btn-cta"
-            onClick={() => (onHome ? scrollToId('join') : (window.location.href = '/#join'))}
+            href="mailto:mba.malmo.basket@gmail.com?subject=Jag%20vill%20g%C3%A5%20med%20MBA"
+            onClick={() => setMenuOpen(false)}
           >
             Join
-          </button>
+          </a>
           <button
             className="mobile-menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}

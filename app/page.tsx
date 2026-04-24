@@ -19,8 +19,7 @@ import Courts from '@/components/Courts'
 import Apparel from '@/components/Apparel'
 import Sponsors from '@/components/Sponsors'
 import Spotlight from '@/components/Spotlight'
-import Manifesto from '@/components/Manifesto'
-import JoinCTA from '@/components/JoinCTA'
+// Manifesto + JoinCTA retired 2026-04-24 — kept in /components for easy revival.
 import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
 import ScrollProgress from '@/components/ScrollProgress'
@@ -132,13 +131,11 @@ export default async function Home() {
         <Sponsors sponsors={sponsors} num="11" numText="PARTNERS" className="section-alt" />
       </ScrollReveal>
 
-      {/* 12 · MANIFESTO (dark) — thesis / rallying crescendo before the CTA */}
-      <ScrollReveal>
-        <Manifesto num="12" numText="MANIFESTO" className="section-dark" />
-      </ScrollReveal>
-
-      {/* 13 · BE PART OF IT (alt) */}
-      <JoinCTA num="13" numText="BE PART OF IT" className="section-alt" />
+      {/* Manifesto + JoinCTA removed 2026-04-24 — self-referential copy and
+          the big "JOIN THE FAMILY" tile were closing-section noise. Sponsors
+          (section 11) is now the final content block before the footer. The
+          footer already contains Contact + newsletter signup, so the CTA
+          function is preserved. To restore, re-add both sections here. */}
 
       <Footer settings={settings} />
     </>
