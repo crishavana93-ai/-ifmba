@@ -140,21 +140,30 @@ button { font-family: inherit; cursor: pointer; }
 .loader-sub { margin-top: 12px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--muted); }
 
 /* ═══ NAV ═══ */
+/*
+ * Top state (not shrunk): sits over the hero image / section-dark blocks.
+ * We paint a subtle dark gradient scrim on the nav itself so YELLOW links
+ * and WHITE logo text always have contrast. A text-shadow is a second line
+ * of defense for bright hero shots.
+ *
+ * Shrunk state (after scrolling 100px): opaque white pill, dark text.
+ */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   padding: 18px 0;
   transition: all 0.35s var(--ease);
-  background: transparent;
+  background: linear-gradient(180deg, rgba(11,18,32,0.58) 0%, rgba(11,18,32,0.22) 70%, rgba(11,18,32,0) 100%);
 }
 .nav.shrink {
   padding: 10px 0;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(18px) saturate(1.1);
   -webkit-backdrop-filter: blur(18px) saturate(1.1);
   border-bottom: 1px solid var(--line);
 }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-.nav-logo { display: flex; align-items: center; gap: 12px; color: var(--ink); }
+
+.nav-logo { display: flex; align-items: center; gap: 12px; color: #fff; }
 .nav-logo-mark {
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--ink); color: var(--yellow);
@@ -165,22 +174,45 @@ button { font-family: inherit; cursor: pointer; }
 }
 .nav-logo-mark svg { width: 30px; height: 30px; }
 .nav-logo-mark:hover { transform: scale(1.08) rotate(-6deg); }
-.nav-logo-text { font-weight: 900; font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); }
-.nav-logo-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; }
+.nav-logo-text {
+  font-weight: 900; font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.45);
+}
+.nav-logo-sub {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500;
+  color: rgba(255,255,255,.82);
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+/* When the nav shrinks onto a white pill, switch back to ink text. */
+.nav.shrink .nav-logo { color: var(--ink); }
+.nav.shrink .nav-logo-text { color: var(--ink); text-shadow: none; }
+.nav.shrink .nav-logo-sub { color: var(--muted); text-shadow: none; }
 
 .nav-links { display: flex; gap: clamp(14px, 2.2vw, 28px); align-items: center; }
 .nav-links a {
-  font-size: 12.5px; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--ink-2);
-  transition: color 0.25s; position: relative; padding: 6px 0;
+  font-size: 12.5px; font-weight: 800; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  text-shadow: 0 1px 3px rgba(0,0,0,.55);
+  transition: color 0.25s, text-shadow 0.25s;
+  position: relative; padding: 6px 0;
 }
 .nav-links a::after {
   content: ''; position: absolute; bottom: -2px; left: 0;
   height: 2px; width: 0; background: var(--yellow);
   transition: width 0.3s var(--ease);
 }
-.nav-links a:hover, .nav-links a.on { color: var(--ink); }
+.nav-links a:hover, .nav-links a.on { color: #fff; }
 .nav-links a:hover::after, .nav-links a.on::after { width: 100%; }
+/* Shrunk nav on white: yellow is too low-contrast, swap to ink with yellow accent. */
+.nav.shrink .nav-links a {
+  color: var(--ink);
+  text-shadow: none;
+}
+.nav.shrink .nav-links a:hover,
+.nav.shrink .nav-links a.on { color: var(--yellow-deep); }
 
 .nav-actions { display: flex; gap: 10px; align-items: center; }
 
@@ -201,8 +233,15 @@ button { font-family: inherit; cursor: pointer; }
 
 .mobile-menu-btn {
   display: none; background: none; border: none;
-  color: var(--ink); font-size: 26px; cursor: pointer;
+  color: #fff; font-size: 26px; cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
+.nav.shrink .mobile-menu-btn { color: var(--ink); text-shadow: none; }
+
+/* When mobile menu is open and nav is at top, the dropdown is white — */
+/* flip link colors to ink so they read on the white backdrop. */
+.nav-links.open a { color: var(--ink); text-shadow: none; }
+.nav-links.open a:hover, .nav-links.open a.on { color: var(--yellow-deep); }
 
 @media (max-width: 900px) {
   .nav-links { display: none; }
@@ -2094,3 +2133,97 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   background: rgba(11,18,32,.55);
   backdrop-filter: blur(4px);
 }
+
+/* ============================================================
+   READABILITY PATCHES — force light text anywhere a component's
+   default color is a dark ink variable while it's living inside
+   a .section-dark (navy) block. Kept at the bottom so specificity
+   wins without touching the original component rules.
+   ============================================================ */
+
+/* 01 IDENTITY (About) */
+.section-dark .about-quote { color: #fff; }
+.section-dark .about-quote em { color: var(--yellow); }
+.section-dark .about-body { color: rgba(245,246,250,.82); }
+.section-dark .about-body strong { color: #fff; }
+.section-dark .flag {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.14);
+  color: #fff;
+}
+
+/* 03 TOP PLAYS empty-state on dark */
+.section-dark .hl-empty-copy { color: rgba(245,246,250,.82); }
+.section-dark .hl-empty-copy strong { color: #fff; }
+
+/* 09 THE DESK (News cards) */
+.section-dark .news-card { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.14); color: #f5f6fa; }
+.section-dark .news-card-title { color: #fff; }
+.section-dark .news-card-meta { color: rgba(245,246,250,.65); }
+.section-dark .news-card-meta .dot { background: rgba(245,246,250,.55); }
+.section-dark .news-card-placeholder { color: rgba(245,246,250,.5); }
+.section-dark .news-card-tag { background: var(--yellow); color: var(--ink); }
+
+/* 08 COURTS — if ever placed on dark */
+.section-dark .court-name { color: #fff; }
+.section-dark .court-addr { color: rgba(245,246,250,.72); }
+
+/* 13 PARTNERS (Sponsors) */
+.section-dark .sp-intro { color: rgba(245,246,250,.82); }
+.section-dark .sp-intro strong { color: #fff; }
+.section-dark .tier-name { color: #fff; }
+.section-dark .tier-price { color: #fff; }
+.section-dark .tier-price small { color: rgba(245,246,250,.65); }
+.section-dark .tier-benefits li { color: rgba(245,246,250,.82); }
+.section-dark .tier-cta { color: var(--yellow); }
+.section-dark .tier-cta:hover { color: #fff; }
+.section-dark .tier-availability { color: rgba(245,246,250,.6); }
+.section-dark .tier-availability.taken { color: rgba(245,246,250,.45); }
+.section-dark .tier-platinum { background: linear-gradient(180deg, rgba(74,181,222,0.12), transparent 60%); }
+.section-dark .tier-gold { background: linear-gradient(180deg, rgba(255,203,5,0.14), transparent 60%); }
+.section-dark .tier-platinum .tier-name { color: var(--sky); }
+.section-dark .tier-gold .tier-name { color: var(--yellow); }
+
+/* 12 VÅR RESA (Journey timeline) */
+.section-dark .jny-year { color: var(--yellow); }
+.section-dark .jny-card {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.12);
+  color: #f5f6fa;
+}
+.section-dark .jny-badge { color: rgba(245,246,250,.75); }
+.section-dark .jny-title { color: #fff; }
+.section-dark .jny-body { color: rgba(245,246,250,.82); }
+
+/* 04 SPOTLIGHT — Player of the Month — if placed on dark */
+.section-dark .sp-name,
+.section-dark .spotlight-name,
+.section-dark .spotlight-quote { color: #fff; }
+
+/* Stat band inside dark sections */
+.section-dark .stats-bar { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.1); }
+.section-dark .stat-num { color: #fff; }
+.section-dark .stat-lbl { color: rgba(245,246,250,.65); }
+
+/* 06 TERMINAL rows (SwishMeter) — if ever on dark */
+.section-dark .sw-date { color: rgba(245,246,250,.65); }
+.section-dark .sw-venue { color: rgba(245,246,250,.55); }
+.section-dark .sw-result { color: #fff; }
+.section-dark .sw-match .vs { color: rgba(245,246,250,.6); }
+.section-dark table.league td { color: rgba(245,246,250,.82); }
+.section-dark table.league td:first-child,
+.section-dark table.league .pts { color: #fff; }
+.section-dark table.league th { color: rgba(245,246,250,.5); }
+.section-dark table.league tr.us td { background: rgba(255,203,5,.09); color: #fff; }
+
+/* Apparel merch cards on dark (rare, but guard anyway) */
+.section-dark .merch-card,
+.section-dark .apparel-card { color: #f5f6fa; }
+.section-dark .merch-name,
+.section-dark .apparel-name { color: #fff; }
+
+/* Generic safety net: any muted body copy in a section-dark */
+.section-dark small,
+.section-dark .meta,
+.section-dark .muted,
+.section-dark .body-sm { color: rgba(245,246,250,.65) !important; }
