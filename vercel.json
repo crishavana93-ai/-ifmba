@@ -2,8 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
+      "//": "Vercel Hobby only allows daily crons. 05:00 UTC = 06:00 Stockholm in winter / 07:00 in summer — freshness for morning readers. Upgrade to Pro to run more frequently.",
       "path": "/api/ingest-news",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }
