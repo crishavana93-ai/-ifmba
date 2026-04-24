@@ -131,14 +131,14 @@ export default async function Home() {
         <SwedenNews items={swedenNews} num="10" numText="COURT REPORT" className="section-alt" />
       </ScrollReveal>
 
-      {/* 11 · APPAREL (dark) */}
+      {/* 11 · APPAREL (alt) */}
       <ScrollReveal>
-        <Apparel media={media} num="11" numText="APPAREL" className="section-dark" />
+        <Apparel media={media} num="11" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
-      {/* 12 · VÅR RESA (alt) */}
+      {/* 12 · VÅR RESA (dark) */}
       <ScrollReveal>
-        <Journey num="12" numText="VÅR RESA" className="section-alt" />
+        <Journey num="12" numText="VÅR RESA" className="section-dark" />
       </ScrollReveal>
 
       {/* 13 · PARTNERS (dark) */}

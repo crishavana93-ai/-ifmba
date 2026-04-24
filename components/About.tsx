@@ -8,7 +8,7 @@ export default function About({ settings, num, numText, className }: { settings:
   ]
 
   return (
-    <section className={`about section ${className || ''}`.trim()} data-num={num} data-num-text={numText}>
+    <section className={`about section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="about">
       <div className="contain about-inner">
         <div className="label r">Identitet</div>
         <h2 className="about-quote r">Inte bara ett lag.<br /><em>En familj. En rörelse.</em></h2>

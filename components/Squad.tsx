@@ -2,8 +2,8 @@ export default function Squad({ players, num, numText, className }: { players: a
   return (
     <section className={`squad section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="squad">
       <div className="contain">
-        <div className="label r">Säsong 2025/26</div>
-        <h2 className="title r">Trupp</h2>
+        <div className="label r">Säsong 2025/26 · 8 nationer</div>
+        <h2 className="title r" dangerouslySetInnerHTML={{ __html: '8 Nationer, <em>ett lag</em>' }} />
         <div className="ribbon-wrap" style={{ marginTop: 'clamp(24px,3vw,40px)' }}>
           <div className="ribbon-track" style={{ display: 'flex', gap: '12px', overflowX: 'auto', padding: '4px 2px 24px' }}>
             {players.map((p: any) => (
