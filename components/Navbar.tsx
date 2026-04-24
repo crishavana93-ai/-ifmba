@@ -30,11 +30,11 @@ export default function Navbar() {
           }}
         >
           <div className="nav-logo-mark">
-            <Crest size={30} />
+            <Crest size={40} />
           </div>
           <div>
             <div className="nav-logo-text">MBA</div>
-            <div className="nav-logo-sub">Malmö Basket</div>
+            <div className="nav-logo-sub">Malmö Basket Amatörer</div>
           </div>
         </a>
 

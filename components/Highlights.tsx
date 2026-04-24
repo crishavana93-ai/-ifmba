@@ -40,26 +40,35 @@ export default function Highlights({ media = [], num, numText, className }: { me
           Top plays <em>från planen</em>
         </h2>
 
-        {clips.length > 0 ? (
-          <div className="hl-reel">
-            {clips.map((clip, i) => (
-              <HighlightCard key={clip._id} clip={clip} delay={i * 80} />
-            ))}
-          </div>
-        ) : (
-          <div className="hl-empty r">
-            <div className="hl-empty-grid">
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="hl-empty-card">
-                  <div className="hl-empty-play">▶</div>
-                  <div className="hl-empty-tag">Clip #{n}</div>
-                </div>
-              ))}
+        {/* Always render 4 slots. Real clips first, then placeholder tiles so
+            the grid never looks empty — even when only 1 video is uploaded. */}
+        <div className="hl-reel">
+          {clips.map((clip, i) => (
+            <HighlightCard key={clip._id} clip={clip} delay={i * 80} />
+          ))}
+          {Array.from({ length: Math.max(0, 4 - clips.length) }).map((_, i) => (
+            <div
+              key={`empty-${i}`}
+              className="hl-card hl-card-empty r"
+              style={{ transitionDelay: `${(clips.length + i) * 80}ms` }}
+            >
+              <div className="hl-empty-play">▶</div>
+              <div className="hl-empty-tag">
+                {clips.length === 0 ? `Clip #${clips.length + i + 1}` : 'Snart'}
+              </div>
             </div>
-            <div className="hl-empty-copy">
-              <strong>Höjdpunkter laddas upp snart.</strong>
-              <span>Klubben publicerar nya klipp via <b>/studio</b> efter varje match.</span>
-            </div>
+          ))}
+        </div>
+        {clips.length < 4 && (
+          <div className="hl-empty-copy r">
+            <strong>
+              {clips.length === 0
+                ? 'Höjdpunkter laddas upp snart.'
+                : `${clips.length} klipp uppladdat — fler på väg.`}
+            </strong>
+            <span>
+              Klubben publicerar nya klipp via <b>/studio</b> efter varje match.
+            </span>
           </div>
         )}
       </div>

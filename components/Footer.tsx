@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Crest from './Crest'
 
 export default function Footer({ settings }: { settings: any }) {
   const [email, setEmail] = useState('')
@@ -14,8 +15,14 @@ export default function Footer({ settings }: { settings: any }) {
       <div className="contain">
         <div className="foot-grid">
           <div>
-            <div className="foot-brand-name">MBA</div>
-            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 9 nationer, 1 tröja. Div 3 Skåne, 2025/26.</div>
+            <div className="foot-brand-row">
+              <Crest size={56} />
+              <div>
+                <div className="foot-brand-name">MBA</div>
+                <div className="foot-brand-tag">Malmö Basket Amatörer</div>
+              </div>
+            </div>
+            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 9 nationer, 1 tröja. Uppflyttade till Div 2 Skåne Herr 2026/27.</div>
             <div className="foot-nl-wrap">
               <div className="foot-nl">
                 <input type="email" placeholder="din@email.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />

@@ -141,8 +141,13 @@ button { font-family: inherit; cursor: pointer; }
   transition: opacity 0.5s ease, visibility 0.5s;
 }
 .loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-crest {
+  margin-bottom: 24px;
+  animation: fadeUp 0.6s var(--spring) 0.05s both;
+  filter: drop-shadow(0 8px 24px rgba(255,203,5,.25));
+}
 .loader-word {
-  font-size: clamp(72px, 14vw, 160px);
+  font-size: clamp(56px, 10vw, 120px);
   font-weight: 900;
   letter-spacing: -0.04em;
   display: flex; gap: 2px;
@@ -205,14 +210,12 @@ button { font-family: inherit; cursor: pointer; }
 
 .nav-logo { display: flex; align-items: center; gap: 12px; color: #fff; }
 .nav-logo-mark {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--ink); color: var(--yellow);
+  width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 13px; letter-spacing: 0.02em;
   transition: transform 0.3s var(--spring);
-  box-shadow: 0 2px 0 0 var(--yellow);
 }
-.nav-logo-mark svg { width: 30px; height: 30px; }
+.nav-logo-mark img,
+.nav-logo-mark svg { width: 40px; height: 40px; object-fit: contain; }
 .nav-logo-mark:hover { transform: scale(1.08) rotate(-6deg); }
 .nav-logo-text {
   font-weight: 900; font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase;
@@ -2901,3 +2904,88 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 /* Ensure all honeycomb rules are DEAD — they're removed from markup but
  * belt-and-braces in case any cached CSS from a prior deploy leaks in. */
 .honey, .honey-row, .hex, .hex-tip { display: none !important; }
+
+/* ============================================================
+   Footer brand row — crest + wordmark
+   ============================================================ */
+.foot-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.foot-brand-row img,
+.foot-brand-row svg {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+.foot-brand-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,203,5,.7);
+  margin-top: 2px;
+}
+
+/* Highlights — upgrade empty-slot placeholders so the grid never
+   looks empty when you have fewer than 4 clips uploaded. */
+.highlights .hl-card-empty {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,.02),
+      rgba(255,255,255,.02) 12px,
+      rgba(255,255,255,.05) 12px,
+      rgba(255,255,255,.05) 24px
+    );
+  border: 1px dashed rgba(255,255,255,.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(255,255,255,.35);
+  cursor: default;
+}
+.highlights .hl-card-empty .hl-empty-play {
+  font-size: 42px;
+  color: rgba(255,203,5,.35);
+}
+.highlights .hl-card-empty .hl-empty-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+}
+.section-alt .highlights .hl-card-empty,
+.section-alt.highlights .hl-card-empty {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(0,0,0,.03),
+      rgba(0,0,0,.03) 12px,
+      rgba(0,0,0,.07) 12px,
+      rgba(0,0,0,.07) 24px
+    );
+  border-color: rgba(0,0,0,.1);
+}
+.section-alt .highlights .hl-empty-tag { color: rgba(0,0,0,.45); }
+
+.highlights .hl-empty-copy {
+  text-align: center;
+  margin-top: clamp(16px, 2vw, 24px);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  line-height: 1.8;
+}
+.highlights .hl-empty-copy strong {
+  display: block;
+  color: #fff;
+  font-weight: 700;
+}
