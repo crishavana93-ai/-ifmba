@@ -11,7 +11,7 @@ import News from '@/components/News'
 // SwedenNews component kept in repo but no longer rendered on landing.
 // (User consolidated: one news block on home, dedicated /nyheter page for full feed.)
 import Standings from '@/components/Standings'
-import SwishMeter from '@/components/SwishMeter'
+// SwishMeter retired 2026-04-24 — fixtures/results now live in Standings via Profixio.
 import Squad from '@/components/Squad'
 import MediaWall from '@/components/MediaWall'
 import Highlights from '@/components/Highlights'
@@ -29,11 +29,11 @@ import BackToTop from '@/components/BackToTop'
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
 export default async function Home() {
+  // `fixtures` and `results` are no longer rendered (SwishMeter retired).
+  // When Profixio scraping lands, reintroduce them here and wire into Standings.
   const [
     players,
     standings,
-    fixtures,
-    results,
     courts,
     sponsors,
     news,
@@ -43,8 +43,6 @@ export default async function Home() {
   ] = await Promise.all([
     safeFetch<any[]>(QUERIES.players, []),
     safeFetch<any[]>(QUERIES.standings, []),
-    safeFetch<any[]>(QUERIES.fixtures, []),
-    safeFetch<any[]>(QUERIES.results, []),
     safeFetch<any[]>(QUERIES.courts, []),
     safeFetch<any[]>(QUERIES.sponsors, []),
     safeFetch<any[]>(QUERIES.news, []),
@@ -81,14 +79,13 @@ export default async function Home() {
         <Highlights media={media} num="03" numText="TOP PLAYS" className="section-dark" />
       </ScrollReveal>
 
-      {/* 04 · PLAYER OF THE MONTH (alt) */}
-      {(settings?.spotlightPlayer || players.length > 0) && (
+      {/* 04 · FANS RÖSTAR — Match + Season player ballots (alt) */}
+      {players.length > 0 && (
         <ScrollReveal>
           <Spotlight
-            settings={settings}
             players={players}
             num="04"
-            numText="PLAYER OF THE MONTH"
+            numText="FANS RÖSTAR"
             className="section-alt"
           />
         </ScrollReveal>
@@ -99,61 +96,49 @@ export default async function Home() {
         <Standings standings={standings} num="05" numText="THE GRID" className="section-dark" />
       </ScrollReveal>
 
-      {/* 06 · TERMINAL (alt) */}
-      <ScrollReveal>
-        <SwishMeter
-          fixtures={fixtures}
-          results={results}
-          num="06"
-          numText="TERMINAL"
-          className="section-alt"
-        />
-      </ScrollReveal>
+      {/* SwishMeter removed 2026-04-24 — data now lives in Standings (Profixio).
+          Fan-vote / Spotlight moved into the next position. */}
 
-      {/* 07 · THE FAMILY (dark) */}
+      {/* 06 · THE FAMILY (dark) */}
       <ScrollReveal>
-        <Squad players={players} num="07" numText="THE FAMILY" className="section-dark" />
+        <Squad players={players} num="06" numText="THE FAMILY" className="section-dark" />
       </ScrollReveal>
 
       {/* StatsBar — band between sections */}
       <StatsBar players={players} standings={standings} />
 
-      {/* 08 · MALMÖ MAP (alt) */}
+      {/* 07 · MALMÖ MAP (alt) */}
       <ScrollReveal>
-        <Courts courts={courts} num="08" numText="MALMÖ MAP" className="section-alt" />
+        <Courts courts={courts} num="07" numText="MALMÖ MAP" className="section-alt" />
       </ScrollReveal>
 
-      {/* 09 · THE DESK — consolidated news (dark).
-          NOTE: old section 10 COURT REPORT was removed; SwedenNews still
-          exists in Studio so the editorial team can curate external Swedish
-          basketball news there. Future: ingest basket.se + svt.se RSS
-          feeds server-side into the swedenNews schema on a cron. */}
+      {/* 08 · THE DESK — consolidated news. */}
       <ScrollReveal>
-        <News news={news} swedenNews={swedenNews} num="09" numText="THE DESK" className="section-dark" />
+        <News news={news} swedenNews={swedenNews} num="08" numText="THE DESK" className="section-dark" />
       </ScrollReveal>
 
-      {/* 10 · APPAREL (alt) */}
+      {/* 09 · APPAREL (alt) */}
       <ScrollReveal>
-        <Apparel media={media} num="10" numText="APPAREL" className="section-alt" />
+        <Apparel media={media} num="09" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
-      {/* 11 · VÅR RESA (dark) */}
+      {/* 10 · VÅR RESA (dark) */}
       <ScrollReveal>
-        <Journey num="11" numText="VÅR RESA" className="section-dark" />
+        <Journey num="10" numText="VÅR RESA" className="section-dark" />
       </ScrollReveal>
 
-      {/* 12 · PARTNERS (alt) */}
+      {/* 11 · PARTNERS (alt) */}
       <ScrollReveal>
-        <Sponsors sponsors={sponsors} num="12" numText="PARTNERS" className="section-alt" />
+        <Sponsors sponsors={sponsors} num="11" numText="PARTNERS" className="section-alt" />
       </ScrollReveal>
 
-      {/* 13 · MANIFESTO (dark) — thesis / rallying crescendo before the CTA */}
+      {/* 12 · MANIFESTO (dark) — thesis / rallying crescendo before the CTA */}
       <ScrollReveal>
-        <Manifesto num="13" numText="MANIFESTO" className="section-dark" />
+        <Manifesto num="12" numText="MANIFESTO" className="section-dark" />
       </ScrollReveal>
 
-      {/* 14 · BE PART OF IT (alt) */}
-      <JoinCTA num="14" numText="BE PART OF IT" className="section-alt" />
+      {/* 13 · BE PART OF IT (alt) */}
+      <JoinCTA num="13" numText="BE PART OF IT" className="section-alt" />
 
       <Footer settings={settings} />
     </>

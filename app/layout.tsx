@@ -32,8 +32,10 @@ export const metadata: Metadata = {
     description: SITE_DESC,
     // image auto-populated from opengraph-image.tsx unless twitter-image.tsx present
   },
+  // Icons: Next.js auto-generates favicon + <link rel="icon"> from
+  // `src/app/icon.png` (the MBA crest). No need to declare `icon` here;
+  // only `apple` needs the explicit path to /public/apple-touch-icon.png.
   icons: {
-    icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   robots: { index: true, follow: true },
