@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import '../styles/mba.css'
+import InstallPrompt from '@/components/InstallPrompt'
 
 // NOTE: Fonts loaded via <link> at runtime instead of next/font/google,
 // because next/font requires network access to fonts.googleapis.com AT BUILD TIME —
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+        <InstallPrompt />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -80,7 +82,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
               },
               email: 'mba.malmo.basket@gmail.com',
-              sameAs: ['https://www.profixio.com/app/leagueid16181'],
+              // Profixio — Div 3 Skåne Herr 2025/26 (MBA's current league).
+              sameAs: ['https://www.profixio.com/app/leagueid16182/category/1150620'],
             }),
           }}
         />

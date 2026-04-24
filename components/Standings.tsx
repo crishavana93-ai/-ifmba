@@ -47,7 +47,10 @@ export default function Standings({
   const div2Sorted = [...div2Live].sort((a, b) => a.position - b.position)
 
   const profixioDiv3 = 'https://www.profixio.com/app/leagueid16182/category/1150620'
-  const profixioDiv2 = 'https://www.profixio.com/app/leagueid16181'
+  // TODO: swap to the Div 2 Skåne Herr 2026/27 league URL once MBA is
+  // officially promoted (find it on Profixio after the draw). Defaulting to
+  // the current Div 3 Skåne page so the button doesn't point at a Stockholm league.
+  const profixioDiv2 = 'https://www.profixio.com/app/leagueid16182/category/1150620'
 
   return (
     <section

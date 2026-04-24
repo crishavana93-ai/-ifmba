@@ -148,7 +148,7 @@ export default function Drop({ settings, media }: { settings: any; media: any[] 
               </button>
               <a
                 className="drop-cta drop-cta-ghost"
-                href="https://www.profixio.com/app/leagueid16181"
+                href="https://www.profixio.com/app/leagueid16182/category/1150620"
                 target="_blank"
                 rel="noopener"
               >
