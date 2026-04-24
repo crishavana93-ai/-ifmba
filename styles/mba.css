@@ -1107,15 +1107,22 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   gap: clamp(16px, 2vw, 28px);
   margin-top: clamp(32px, 4vw, 56px);
 }
+/* Apparel cards — defaults assume section-alt (light) layout since page.tsx
+ * places the section on section-alt. Overrides for section-dark are below. */
 .apparel .ap-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0B1220;
+  border: 1px solid rgba(11,18,32,0.12);
   overflow: hidden;
   display: flex; flex-direction: column;
-  transition: transform 0.4s var(--ease), border-color 0.3s ease;
+  transition: transform 0.4s var(--ease), border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 18px rgba(11,18,32,0.08);
 }
-.apparel .ap-card:hover { transform: translateY(-4px); border-color: var(--yellow); }
+.apparel .ap-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--yellow);
+  box-shadow: 6px 6px 0 0 rgba(255,203,5,.5);
+}
 .apparel .ap-photo {
   aspect-ratio: 4 / 5;
   background: linear-gradient(135deg, #15213a, #0a1120);
@@ -1130,13 +1137,15 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
-  color: rgba(255,255,255,0.3); text-transform: uppercase;
+  color: rgba(255,255,255,0.35); text-transform: uppercase;
 }
 .apparel .ap-meta {
   padding: clamp(14px, 1.6vw, 20px) clamp(16px, 2vw, 24px);
   display: flex; flex-direction: column; gap: 6px;
   flex: 1;
+  background: #0B1220;
 }
+/* Card text is always light because the meta panel is always dark navy. */
 .apparel .ap-name {
   font-size: clamp(16px, 1.4vw, 20px); font-weight: 800;
   letter-spacing: -0.01em; color: #FFFFFF;
@@ -1224,18 +1233,32 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 /* ═══════════════════════════════════════════════════════
    HIGHLIGHTS · top plays video reel
    ═══════════════════════════════════════════════════════ */
+/* auto-fill (not auto-fit) so a single clip doesn't stretch to fill
+ * the whole row. Cap individual card width so the reel stays balanced. */
 .highlights .hl-reel {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 300px));
+  justify-content: center;
   gap: clamp(14px, 2vw, 24px);
   margin-top: clamp(32px, 4vw, 56px);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .highlights .hl-card {
   position: relative;
   aspect-ratio: 9 / 16;
+  max-width: 300px;
+  width: 100%;
   background: #000;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+}
+.highlights .hl-card:hover { transform: translateY(-4px); transition: transform .3s var(--ease); }
+@media (max-width: 700px) {
+  .highlights .hl-reel { grid-template-columns: minmax(220px, 320px); }
+  .highlights .hl-card { aspect-ratio: 4 / 5; }
 }
 .highlights .hl-card video,
 .highlights .hl-card img {
@@ -2179,10 +2202,35 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 .section-dark .tier-cta:hover { color: #fff; }
 .section-dark .tier-availability { color: rgba(245,246,250,.6); }
 .section-dark .tier-availability.taken { color: rgba(245,246,250,.45); }
-.section-dark .tier-platinum { background: linear-gradient(180deg, rgba(74,181,222,0.12), transparent 60%); }
-.section-dark .tier-gold { background: linear-gradient(180deg, rgba(255,203,5,0.14), transparent 60%); }
+/* Every tier gets a translucent-dark card in section-dark so text inside
+ * it stays readable. Each tier still gets its own subtle accent color. */
+.section-dark .tier {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 60%);
+  border-color: rgba(255,255,255,0.14);
+}
+.section-dark .tier-platinum {
+  background: linear-gradient(180deg, rgba(74,181,222,0.16), rgba(255,255,255,0.03) 60%);
+  border-color: rgba(74,181,222,0.4);
+}
+.section-dark .tier-gold {
+  background: linear-gradient(180deg, rgba(255,203,5,0.16), rgba(255,255,255,0.03) 60%);
+  border-color: rgba(255,203,5,0.4);
+}
+.section-dark .tier-silver {
+  background: linear-gradient(180deg, rgba(180,188,201,0.15), rgba(255,255,255,0.03) 60%);
+  border-color: rgba(180,188,201,0.35);
+}
+.section-dark .tier-bronze {
+  background: linear-gradient(180deg, rgba(185,138,78,0.14), rgba(255,255,255,0.03) 60%);
+  border-color: rgba(185,138,78,0.35);
+}
 .section-dark .tier-platinum .tier-name { color: var(--sky); }
 .section-dark .tier-gold .tier-name { color: var(--yellow); }
+.section-dark .tier-silver .tier-name { color: #D6DCE5; }
+.section-dark .tier-bronze .tier-name { color: #D9B589; }
+.section-dark .tier:hover {
+  box-shadow: 8px 8px 0 0 rgba(255,203,5,.4);
+}
 
 /* 12 VÅR RESA (Journey timeline) */
 .section-dark .jny-year { color: var(--yellow); }
@@ -2227,3 +2275,95 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 .section-dark .meta,
 .section-dark .muted,
 .section-dark .body-sm { color: rgba(245,246,250,.65) !important; }
+
+/* ============================================================
+   MOBILE RESPONSIVENESS — comprehensive tablet + phone rules.
+   Kept at the bottom so these always win over component defaults.
+   ============================================================ */
+
+/* Tablet (<= 900px) */
+@media (max-width: 900px) {
+  /* Global: tighten section vertical padding so the page doesn't scroll forever */
+  .section { padding: clamp(52px, 9vw, 88px) 0; }
+  /* Give content breathing room inside narrower viewports */
+  .contain { padding-left: clamp(18px, 4vw, 28px); padding-right: clamp(18px, 4vw, 28px); }
+  /* Titles shouldn't break the layout at tablet width */
+  .title { font-size: clamp(34px, 7vw, 64px); line-height: .95; }
+  .hero-h1 { font-size: clamp(48px, 12vw, 120px); line-height: .88; }
+  /* Stats band — flow to 2x2 instead of 1x4 */
+  .stats-bar { grid-template-columns: repeat(2, 1fr) !important; }
+  .stat { padding: 18px 14px; }
+  /* Journey — collapse any rail to a single column */
+  .jny-rail { display: flex; flex-direction: column; gap: 18px; }
+  .jny-item { flex-direction: column; }
+  /* Marquee — shorter */
+  .marquee { padding: 14px 0; }
+}
+
+/* Phone (<= 640px) */
+@media (max-width: 640px) {
+  .section { padding: clamp(44px, 10vw, 72px) 0; }
+  .contain { padding-left: 16px; padding-right: 16px; }
+  /* Titles shrink again so "8 Nationer, ett lag" stays on 1–2 lines */
+  .title { font-size: clamp(28px, 10vw, 44px); }
+  .hero-h1 { font-size: clamp(42px, 18vw, 88px); line-height: .85; }
+  .hero-sub { font-size: clamp(14px, 4vw, 17px); }
+  .hero-actions { flex-direction: column; width: 100%; gap: 10px; }
+  .hero-btn { width: 100%; }
+  /* Standings honeycomb — shrink hex cells */
+  .hex { width: clamp(64px, 22vw, 90px); }
+  .hex-abbr { font-size: clamp(11px, 3.4vw, 14px); }
+  .hex-pts { font-size: 9px; }
+  .hex-rank { font-size: 8px; }
+  /* Highlights already handled in its own block */
+  /* Apparel — larger cards, one column OK on very narrow */
+  .apparel .ap-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .apparel .ap-name { font-size: 15px; }
+  .apparel .ap-sub { font-size: 10px; }
+  /* Stats band — stack 1x4 on phones to avoid squeezing */
+  .stats-bar { grid-template-columns: repeat(2, 1fr) !important; gap: 0; }
+  .stat { padding: 14px 10px; border-top: 1px solid var(--line); }
+  .stat-num { font-size: clamp(32px, 10vw, 48px); }
+  .stat-lbl { font-size: 10px; }
+  /* Nav shrinks sooner on mobile */
+  .nav { padding: 12px 0; }
+  .nav-logo-mark { width: 36px; height: 36px; }
+  .nav-logo-mark svg { width: 24px; height: 24px; }
+  .nav-logo-text { font-size: 15px; }
+  .nav-logo-sub { font-size: 9px; }
+  .btn-cta { padding: 10px 18px; font-size: 11px; }
+  /* Label elements */
+  .label { font-size: 10px; }
+  /* Journey cards — more compact */
+  .jny-card { padding: 16px 18px; }
+  .jny-year { font-size: 36px; }
+  .jny-title { font-size: 16px; }
+  .jny-body { font-size: 13px; }
+  /* Sponsors tiers already stack; make price smaller */
+  .tier { padding: 22px 18px 18px; }
+  .tier-price { font-size: clamp(22px, 7vw, 30px); }
+  .tier-benefits li { font-size: 12px; }
+  /* Drop/tip-off — stack video above info on phone */
+  .drop-split { grid-template-columns: 1fr !important; }
+  /* Media wall tabs — allow wrapping */
+  .mediawall .mw-tabs { flex-wrap: wrap; }
+  .mediawall .mw-tab { padding: 8px 12px; font-size: 11px; }
+  /* News cards — single column to avoid cramping */
+  .news-grid { grid-template-columns: 1fr !important; gap: 14px; }
+  /* Profixio credit doesn't overflow */
+  .profixio-credit { font-size: 10px; }
+}
+
+/* Very narrow phones (<= 400px) — last-resort safeguards */
+@media (max-width: 400px) {
+  .apparel .ap-grid { grid-template-columns: 1fr; }
+  .hex { width: 56px; }
+  .hex-abbr { font-size: 10px; }
+  .hero-h1 { font-size: clamp(38px, 16vw, 70px); }
+  .title { font-size: clamp(24px, 9vw, 36px); }
+  .contain { padding-left: 12px; padding-right: 12px; }
+}
+
+/* Prevent horizontal overflow everywhere — common mobile pain point */
+html, body { overflow-x: hidden; max-width: 100%; }
+section, .section { max-width: 100%; overflow-x: clip; }

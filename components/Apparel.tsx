@@ -17,6 +17,7 @@
 type MediaRow = {
   _id: string
   kind: 'photo' | 'video'
+  category?: string
   placement?: string
   title?: string
   captionSv?: string
@@ -38,14 +39,44 @@ const CARDS: Card[] = [
   { slot: 'merch-fans', name: 'Fan Collection', sub: 'Supporter gear', price: '279 kr' },
 ]
 
-export default function Apparel({ media = [], num, numText, className }: { media?: MediaRow[]; num?: string; numText?: string; className?: string }) {
+export default function Apparel({
+  media = [],
+  num,
+  numText,
+  className,
+}: {
+  media?: MediaRow[]
+  num?: string
+  numText?: string
+  className?: string
+}) {
+  // 1) Prefer assets that have an explicit placement like 'merch-blue-gold'.
   const byPlacement = new Map<string, MediaRow>()
   for (const m of media) {
     if (m.placement && !byPlacement.has(m.placement)) byPlacement.set(m.placement, m)
   }
+  // 2) Any merch-category photos without a placement become fallback fillers,
+  //    so uploading 4 photos without fiddling with the placement dropdown
+  //    still populates the 4 cards in order.
+  const fallbackPool: MediaRow[] = media.filter(
+    (m) =>
+      m.kind === 'photo' &&
+      m.imageUrl &&
+      m.category === 'merch' &&
+      (!m.placement || !byPlacement.has(m.placement) || byPlacement.get(m.placement) !== m),
+  )
+  const fallbackUnused = fallbackPool.filter(
+    (m) => !Array.from(byPlacement.values()).some((v) => v._id === m._id),
+  )
+  let fallbackIdx = 0
 
   return (
-    <section className={`apparel section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="apparel">
+    <section
+      className={`apparel section ${className || ''}`.trim()}
+      data-num={num}
+      data-num-text={numText}
+      id="apparel"
+    >
       <div className="contain">
         <div className="label r">Merch</div>
         <h2 className="title r">
@@ -54,7 +85,10 @@ export default function Apparel({ media = [], num, numText, className }: { media
 
         <div className="ap-grid">
           {CARDS.map((card, i) => {
-            const asset = byPlacement.get(card.slot)
+            let asset = byPlacement.get(card.slot)
+            if (!asset && fallbackIdx < fallbackUnused.length) {
+              asset = fallbackUnused[fallbackIdx++]
+            }
             const img = asset?.imageUrl
             return (
               <article
@@ -64,7 +98,10 @@ export default function Apparel({ media = [], num, numText, className }: { media
               >
                 <div className="ap-photo">
                   {img ? (
-                    <img src={img} alt={asset?.captionEn || asset?.title || card.name} />
+                    <img
+                      src={img}
+                      alt={asset?.captionEn || asset?.title || card.name}
+                    />
                   ) : (
                     <div className="ap-photo-empty">Photo pending</div>
                   )}
