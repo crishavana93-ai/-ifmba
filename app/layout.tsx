@@ -1,20 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import '../styles/mba.css'
 
-const interTight = Inter_Tight({
-  subsets: ['latin'],
-  weight: ['400','500','600','700','800','900'],
-  variable: '--font-inter-tight',
-  display: 'swap',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400','600','800'],
-  variable: '--font-mono',
-  display: 'swap',
-})
+// NOTE: Fonts loaded via <link> at runtime instead of next/font/google,
+// because next/font requires network access to fonts.googleapis.com AT BUILD TIME —
+// builds on offline / firewalled networks fail otherwise. The CSS font-family stacks
+// in mba.css include full system fallbacks, so the site still renders cleanly
+// even if Google Fonts is blocked at runtime.
 
 const SITE_URL = 'https://www.ifmba.se'
 const SITE_TITLE = 'MBA — Malmö Basket'
@@ -56,7 +47,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sv" className={`${interTight.variable} ${jetbrainsMono.variable}`}>
+    <html lang="sv">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap"
+        />
+      </head>
       <body>
         {children}
         <script

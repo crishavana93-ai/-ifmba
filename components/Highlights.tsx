@@ -32,10 +32,6 @@ export default function Highlights({ media = [], num, numText, className }: { me
     )
     .slice(0, 4)
 
-  if (clips.length === 0) {
-    return null // nothing to show — skip the whole section
-  }
-
   return (
     <section className={`highlights section ${className || ''}`.trim()} data-num={num} data-num-text={numText} id="highlights">
       <div className="contain">
@@ -44,11 +40,28 @@ export default function Highlights({ media = [], num, numText, className }: { me
           Top plays <em>från planen</em>
         </h2>
 
-        <div className="hl-reel">
-          {clips.map((clip, i) => (
-            <HighlightCard key={clip._id} clip={clip} delay={i * 80} />
-          ))}
-        </div>
+        {clips.length > 0 ? (
+          <div className="hl-reel">
+            {clips.map((clip, i) => (
+              <HighlightCard key={clip._id} clip={clip} delay={i * 80} />
+            ))}
+          </div>
+        ) : (
+          <div className="hl-empty r">
+            <div className="hl-empty-grid">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="hl-empty-card">
+                  <div className="hl-empty-play">▶</div>
+                  <div className="hl-empty-tag">Clip #{n}</div>
+                </div>
+              ))}
+            </div>
+            <div className="hl-empty-copy">
+              <strong>Höjdpunkter laddas upp snart.</strong>
+              <span>Klubben publicerar nya klipp via <b>/studio</b> efter varje match.</span>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )

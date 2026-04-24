@@ -79,14 +79,14 @@ export default function Hero({ settings }: { settings: any }) {
         </div>
 
         <h1 className="hero-h1">
-          <span className="outline">MALMÖ</span><br />
-          <span className="accent">BASKET</span><br />
-          AMATÖRER
+          <span className="outline">THE</span><br />
+          <span className="accent">MBA</span><br />
+          FAMILY
         </h1>
 
         <p className="hero-sub">
           {settings?.heroTaglineSv ||
-            'Inte bara ett lag — en familj, en rörelse, en stad. 9 nationer. 1 tröja. Malmös streetball headquarters.'}
+            'Inte bara ett lag — en familj, en rörelse, en stad. 8 nationer. 1 tröja. Malmös streetball headquarters.'}
         </p>
 
         <div className="hero-actions">

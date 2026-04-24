@@ -1738,3 +1738,111 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   color: #fff;
 }
 .drop-cta-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
+
+/* ============================================================
+   Highlights — empty state (shown when no clips exist yet)
+   ============================================================ */
+.hl-empty {
+  margin-top: clamp(24px, 3vw, 40px);
+  display: grid;
+  gap: clamp(20px, 2.5vw, 32px);
+}
+.hl-empty-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px, 1.2vw, 16px);
+}
+@media (max-width: 900px) {
+  .hl-empty-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.hl-empty-card {
+  aspect-ratio: 9 / 16;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, #1a2234 0%, #0B1220 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(.22,.8,.32,1), border-color 0.3s;
+}
+.hl-empty-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+}
+.hl-empty-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--yellow);
+}
+.hl-empty-play {
+  font-size: clamp(28px, 3.2vw, 40px);
+  color: rgba(255,255,255,0.35);
+  position: relative; z-index: 1;
+  transition: color 0.3s;
+}
+.hl-empty-card:hover .hl-empty-play { color: var(--yellow); }
+.hl-empty-tag {
+  position: absolute;
+  left: 10px; bottom: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  z-index: 1;
+}
+.hl-empty-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 22px;
+  border-left: 3px solid var(--yellow);
+  background: rgba(255,255,255,0.03);
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.78);
+}
+.hl-empty-copy strong {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.section-alt .hl-empty-copy {
+  color: var(--ink);
+  background: rgba(0,0,0,0.03);
+}
+.section-alt .hl-empty-copy strong { color: var(--ink); }
+.section-alt .hl-empty-card {
+  background: linear-gradient(135deg, #f2f1ec 0%, #e5e4df 100%);
+  border-color: rgba(0,0,0,0.08);
+}
+.section-alt .hl-empty-play { color: rgba(0,0,0,0.3); }
+.section-alt .hl-empty-tag { color: rgba(0,0,0,0.5); }
+
+/* ============================================================
+   SwishMeter — placeholder note (when showing demo fixtures/results)
+   ============================================================ */
+.sw-placeholder-note {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--yellow-deep, #b38a00);
+  background: rgba(255,196,0,0.1);
+  border: 1px solid rgba(255,196,0,0.3);
+  border-radius: 999px;
+}
+.section-dark .sw-placeholder-note {
+  color: var(--yellow);
+  background: rgba(255,196,0,0.08);
+  border-color: rgba(255,196,0,0.22);
+}
