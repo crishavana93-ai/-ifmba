@@ -1,5 +1,5 @@
 export default function Marquee() {
-  const items = ['MBA BASKETBALL','MALMÖ, SVERIGE','#1 I TABELLEN','5–0 RECORD','9 NATIONS · 1 TEAM','JOIN THE FAMILY','PROFIXIO LIVE']
+  const items = ['MBA BASKETBALL','MALMÖ, SVERIGE','UPPFLYTTADE TILL DIV 2','DIV 2 SKÅNE HERR · 2025/26','9 NATIONS · 1 TEAM','JOIN THE FAMILY','PROFIXIO LIVE']
   const doubled = [...items, ...items]
 
   return (

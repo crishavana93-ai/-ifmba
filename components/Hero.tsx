@@ -15,7 +15,7 @@ export default function Hero({ settings }: { settings: any }) {
     : '/mba_family_hero.jpeg'
 
   const season = settings?.season || '2025/26'
-  const division = settings?.division || 'Div 3 Skåne'
+  const division = settings?.division || 'Div 2 Skåne · Uppflyttade'
   const nextMatchDate: string | undefined = settings?.nextMatchDate
   const nextOpp: string | undefined = settings?.nextMatchOpponent || 'IK Eos Lund HJ'
 

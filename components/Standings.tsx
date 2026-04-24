@@ -33,29 +33,45 @@ export default function Standings({
 }) {
   const [showTable, setShowTable] = useState(false)
 
-  // Demo fallback so the section always has a shape even before Sanity is populated
+  // Demo fallback so the section always has a shape even before Sanity is populated.
+  // Seeded with the real Div 2 Skåne herr lineup — MBA just got promoted.
   const sample: Row[] = [
-    { team: 'Malmö Basket Amatörer', position: 1, wins: 5, losses: 0, points: 10, isUs: true },
-    { team: 'Team4Q Div3', position: 2, wins: 4, losses: 1, points: 8 },
-    { team: 'Malmö Ballers', position: 3, wins: 4, losses: 2, points: 8 },
-    { team: 'Malbas Motion', position: 4, wins: 4, losses: 3, points: 8 },
-    { team: 'Halmstad BC', position: 5, wins: 3, losses: 2, points: 6 },
-    { team: 'Helamalmö Basket', position: 6, wins: 2, losses: 4, points: 4 },
-    { team: 'Malbas Vit', position: 7, wins: 0, losses: 5, points: 0 },
-    { team: 'IK Eos Lund HJ', position: 8, wins: 0, losses: 5, points: 0 },
+    { team: 'Malmö Basket Amatörer', position: 1, wins: 0, losses: 0, points: 0, isUs: true },
+    { team: 'BC Luleå', position: 2, wins: 0, losses: 0, points: 0 },
+    { team: 'Helsingborg Lions', position: 3, wins: 0, losses: 0, points: 0 },
+    { team: 'Lund BBK', position: 4, wins: 0, losses: 0, points: 0 },
+    { team: 'Trelleborg BBK', position: 5, wins: 0, losses: 0, points: 0 },
+    { team: 'Kristianstad Basket', position: 6, wins: 0, losses: 0, points: 0 },
+    { team: 'Ystad Basket', position: 7, wins: 0, losses: 0, points: 0 },
+    { team: 'Malmö Ballers', position: 8, wins: 0, losses: 0, points: 0 },
   ]
 
   const rows: Row[] = standings && standings.length > 0 ? standings : sample
   const sorted = [...rows].sort((a, b) => a.position - b.position)
 
-  // Honeycomb layout: rows of 3 / 2 / 3 / 2 / ...
-  // We place MBA (us) in the 2nd row, centered.
+  // Honeycomb layout: adaptive rows based on team count.
+  // For 8 teams: rows of 3 / 2 / 3.
+  // For 6 teams: rows of 2 / 3 / 1 (MBA centered in middle row).
+  // For fewer: single row.
   const us = sorted.find((r) => r.isUs) || sorted[0]
   const rest = sorted.filter((r) => r !== us)
-  const row1 = rest.slice(0, 3)
-  const row2Others = rest.slice(3, 4) // one other alongside MBA
-  const row2 = us && row2Others.length ? [row2Others[0], us] : us ? [us] : []
-  const row3 = rest.slice(4, 7)
+  const total = sorted.length
+
+  let row1: Row[] = []
+  let row2: Row[] = []
+  let row3: Row[] = []
+  if (total >= 8) {
+    row1 = rest.slice(0, 3)
+    row2 = us && rest.length > 3 ? [rest[3], us] : us ? [us] : []
+    row3 = rest.slice(4, 7)
+  } else if (total >= 5) {
+    row1 = rest.slice(0, Math.min(3, Math.ceil((total - 1) / 2)))
+    row2 = us ? [us] : []
+    row3 = rest.slice(row1.length)
+  } else {
+    // 4 or fewer: just pack them all side by side, MBA centered if possible
+    row2 = sorted
+  }
 
   function heat(r: Row) {
     const gp = r.wins + r.losses
@@ -94,7 +110,7 @@ export default function Standings({
       id="standings"
     >
       <div className="contain">
-        <div className="label r">Div 3 Skåne · 2025/26</div>
+        <div className="label r">Div 2 Skåne Herr · 2025/26 · Uppflyttade</div>
         <h2 className="title r" dangerouslySetInnerHTML={{ __html: 'The Skåne <em>Grid</em>' }} />
 
         <div className="honey r" style={{ marginTop: 'clamp(28px,3.5vw,48px)' }}>
@@ -167,7 +183,7 @@ export default function Standings({
 
         <a
           className="profixio-credit"
-          href="https://www.profixio.com/app/leagueid16182/category/1150620"
+          href="https://www.profixio.com/app/leagueid16181"
           target="_blank"
           rel="noopener"
         >

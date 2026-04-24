@@ -1125,11 +1125,15 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 }
 .apparel .ap-photo {
   aspect-ratio: 4 / 5;
-  background: linear-gradient(135deg, #15213a, #0a1120);
+  /* White fade background so dark tees / light jerseys both sit nicely. */
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #f2f1ec 70%, #e4e3de 100%);
   position: relative; overflow: hidden;
+  padding: 18px;
 }
 .apparel .ap-photo img {
-  width: 100%; height: 100%; object-fit: cover;
+  width: 100%; height: 100%;
+  /* contain = show the whole jersey / gear, don't crop heads or sleeves off. */
+  object-fit: contain;
   transition: transform 0.7s var(--ease);
 }
 .apparel .ap-card:hover .ap-photo img { transform: scale(1.05); }
@@ -2258,11 +2262,27 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 .section-dark .sw-venue { color: rgba(245,246,250,.55); }
 .section-dark .sw-result { color: #fff; }
 .section-dark .sw-match .vs { color: rgba(245,246,250,.6); }
-.section-dark table.league td { color: rgba(245,246,250,.82); }
+.section-dark table.league td { color: rgba(245,246,250,.82) !important; background: transparent !important; }
 .section-dark table.league td:first-child,
-.section-dark table.league .pts { color: #fff; }
-.section-dark table.league th { color: rgba(245,246,250,.5); }
-.section-dark table.league tr.us td { background: rgba(255,203,5,.09); color: #fff; }
+.section-dark table.league .pts { color: #fff !important; }
+.section-dark table.league th { color: rgba(245,246,250,.5) !important; border-color: rgba(255,255,255,.12) !important; }
+.section-dark table.league tr.us td {
+  background: linear-gradient(90deg, rgba(255,203,5,.18), rgba(255,203,5,.05)) !important;
+  color: #fff !important;
+  font-weight: 800;
+}
+.section-dark table.league tr { border-color: rgba(255,255,255,.08); }
+.section-dark table.league .pos {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  border-color: rgba(255,255,255,.2);
+}
+.section-dark table.league .pos.first {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(255,203,5,.22);
+}
 
 /* Apparel merch cards on dark (rare, but guard anyway) */
 .section-dark .merch-card,

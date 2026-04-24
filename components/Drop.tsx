@@ -20,13 +20,16 @@ export default function Drop({ settings, media }: { settings: any; media: any[] 
   const opponent: string = settings?.nextMatchOpponent || 'IK Eos Lund HJ'
   const venue: string = settings?.nextMatchVenue || 'Latinskolans sporthall'
 
-  // Find match-day video from Sanity
+  // Find match-day video from Sanity. If none uploaded, we skip the <video>
+  // element entirely and just show the family-hero poster as a static background
+  // so the section doesn't look blank.
   const video = media?.find(
     (m: any) =>
       m.kind === 'video' &&
       (m.placement === 'tipoff-reel' || m.category === 'matchday-reel'),
   )
-  const videoSrc: string = video?.videoUrl || '/assets/video/match-day-promo.mp4'
+  const hasVideo = !!video?.videoUrl
+  const videoSrc: string | null = video?.videoUrl || null
   const posterSrc: string = video?.posterUrl || '/mba_family_hero.jpeg'
 
   const [cd, setCd] = useState({ d: '00', h: '00', m: '00', s: '00', live: false })
@@ -70,36 +73,42 @@ export default function Drop({ settings, media }: { settings: any; media: any[] 
         <div className="drop-split">
           <div className="drop-video-card">
             <div className="drop-video-frame">
-              <video
-                ref={videoRef}
-                className="drop-video"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster={posterSrc}
-              >
-                <source src={videoSrc} type="video/mp4" />
-              </video>
+              {hasVideo ? (
+                <video
+                  ref={videoRef}
+                  className="drop-video"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster={posterSrc}
+                >
+                  <source src={videoSrc!} type="video/mp4" />
+                </video>
+              ) : (
+                <img className="drop-video" src={posterSrc} alt="MBA Family" />
+              )}
               <span className="drop-video-tag">
                 <span className="dv-dot" />
-                MATCH-DAY REEL
+                {hasVideo ? 'MATCH-DAY REEL' : 'MATCH-DAY REEL · laddar upp snart'}
               </span>
-              <button
-                className={`drop-video-sound${muted ? ' muted' : ''}`}
-                type="button"
-                aria-label="Ljud av/på"
-                onClick={toggleSound}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M3 10v4h4l5 4V6l-5 4H3z" fill="currentColor" />
-                  <path className="dvs-wave" d="M16 9a5 5 0 010 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
+              {hasVideo && (
+                <button
+                  className={`drop-video-sound${muted ? ' muted' : ''}`}
+                  type="button"
+                  aria-label="Ljud av/på"
+                  onClick={toggleSound}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 10v4h4l5 4V6l-5 4H3z" fill="currentColor" />
+                    <path className="dvs-wave" d="M16 9a5 5 0 010 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </button>
+              )}
             </div>
             <div className="drop-video-foot">
-              <span>Loop · muted · 1080p</span>
+              <span>{hasVideo ? 'Loop · muted · 1080p' : 'Poster · familjen'}</span>
               <span className="drop-video-foot-sep">·</span>
               <span>Byt via <b>/studio</b></span>
             </div>
@@ -139,7 +148,7 @@ export default function Drop({ settings, media }: { settings: any; media: any[] 
               </button>
               <a
                 className="drop-cta drop-cta-ghost"
-                href="https://www.profixio.com/app/leagueid16182/category/1150620"
+                href="https://www.profixio.com/app/leagueid16181"
                 target="_blank"
                 rel="noopener"
               >

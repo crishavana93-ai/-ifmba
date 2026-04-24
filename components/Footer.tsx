@@ -42,13 +42,13 @@ export default function Footer({ settings }: { settings: any }) {
             <div className="foot-col-h">Kontakt</div>
             <div className="foot-links">
               <a href={`mailto:${settings?.contactEmail || 'mba.malmo.basket@gmail.com'}`}>{settings?.contactEmail || 'mba.malmo.basket@gmail.com'}</a>
-              <a href="https://www.profixio.com/app/leagueid16182/category/1150620" target="_blank" rel="noopener">Profixio</a>
+              <a href="https://www.profixio.com/app/leagueid16181" target="_blank" rel="noopener">Profixio</a>
             </div>
           </div>
         </div>
         <div className="foot-bottom">
           <span>© 2026 MBA · Malmö Basket</span>
-          <a href="https://www.profixio.com/app/leagueid16182/category/1150620" target="_blank" rel="noopener">Powered by Profixio</a>
+          <a href="https://www.profixio.com/app/leagueid16181" target="_blank" rel="noopener">Powered by Profixio</a>
         </div>
       </div>
     </footer>

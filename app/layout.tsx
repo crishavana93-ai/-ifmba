@@ -78,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
               },
               email: 'mba.malmo.basket@gmail.com',
-              sameAs: ['https://www.profixio.com/app/leagueid16182/category/1150620'],
+              sameAs: ['https://www.profixio.com/app/leagueid16181'],
             }),
           }}
         />
