@@ -9,7 +9,7 @@ const TIERS: Tier[] = [
   {
     key: 'Platinum',
     nameSv: 'Platinum',
-    price: '25 000 kr',
+    price: '75 000 kr',
     benefits: [
       'Logo på matchtröjans framsida',
       'Huvudplacering på ifmba.se',
@@ -22,7 +22,7 @@ const TIERS: Tier[] = [
   {
     key: 'Gold',
     nameSv: 'Guld',
-    price: '15 000 kr',
+    price: '50 000 kr',
     benefits: [
       'Logo på matchtröjans baksida',
       'Featured-placering på webben',
@@ -34,7 +34,7 @@ const TIERS: Tier[] = [
   {
     key: 'Silver',
     nameSv: 'Silver',
-    price: '8 000 kr',
+    price: '25 000 kr',
     benefits: [
       'Logo på uppvärmningströjor',
       'Listad på sponsorsidan',
@@ -45,7 +45,7 @@ const TIERS: Tier[] = [
   {
     key: 'Bronze',
     nameSv: 'Brons',
-    price: '3 000 kr',
+    price: '10 000 kr',
     benefits: [
       'Logo i sponsorsektionen',
       'Nämnd i nyhetsbrevet',
@@ -78,7 +78,7 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
                 <div className="tier-name">{tier.nameSv}</div>
                 <div className="tier-price">
                   {tier.price}
-                  <small>/ säsong</small>
+                  <small>/ 2 år</small>
                 </div>
 
                 <ul className="tier-benefits">

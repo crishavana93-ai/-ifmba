@@ -33,7 +33,7 @@ const TIERS: Tier[] = [
   {
     key: 'Platinum',
     nameSv: 'Platinum',
-    price: '25 000 kr',
+    price: '75 000 kr',
     pitch: 'Titelpartner. Ni blir del av berättelsen.',
     benefits: [
       'Logo på matchtröjans framsida (största placeringen)',
@@ -48,7 +48,7 @@ const TIERS: Tier[] = [
   {
     key: 'Gold',
     nameSv: 'Guld',
-    price: '15 000 kr',
+    price: '50 000 kr',
     pitch: 'Featured partner. Tydlig exponering i hela säsongen.',
     benefits: [
       'Logo på matchtröjans baksida',
@@ -62,7 +62,7 @@ const TIERS: Tier[] = [
   {
     key: 'Silver',
     nameSv: 'Silver',
-    price: '8 000 kr',
+    price: '25 000 kr',
     pitch: 'Supporting partner. Bra första steg in i samarbetet.',
     benefits: [
       'Logo på uppvärmningströjor',
@@ -74,7 +74,7 @@ const TIERS: Tier[] = [
   {
     key: 'Bronze',
     nameSv: 'Brons',
-    price: '3 000 kr',
+    price: '10 000 kr',
     pitch: 'Community partner. För lokala företag som tror på laget.',
     benefits: [
       'Logo i sponsorsektionen',
@@ -179,7 +179,7 @@ export default async function PartnersPage() {
                   <div className="tier-name">{tier.nameSv}</div>
                   <div className="tier-price">
                     {tier.price}
-                    <small>/ säsong</small>
+                    <small>/ 2 år</small>
                   </div>
                   <p className="tier-pitch">{tier.pitch}</p>
                   <ul className="tier-benefits">

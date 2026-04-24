@@ -30,7 +30,7 @@ export default function Navbar() {
           }}
         >
           <div className="nav-logo-mark">
-            <Crest size={40} />
+            <Crest size={40} priority />
           </div>
           <div>
             <div className="nav-logo-text">MBA</div>
