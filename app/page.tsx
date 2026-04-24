@@ -8,7 +8,8 @@ import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
 import Journey from '@/components/Journey'
 import News from '@/components/News'
-import SwedenNews from '@/components/SwedenNews'
+// SwedenNews component kept in repo but no longer rendered on landing.
+// (User consolidated: one news block on home, dedicated /nyheter page for full feed.)
 import Standings from '@/components/Standings'
 import SwishMeter from '@/components/SwishMeter'
 import Squad from '@/components/Squad'
@@ -121,33 +122,32 @@ export default async function Home() {
         <Courts courts={courts} num="08" numText="MALMÖ MAP" className="section-alt" />
       </ScrollReveal>
 
-      {/* 09 · THE DESK (dark) */}
+      {/* 09 · THE DESK — consolidated news (dark).
+          NOTE: old section 10 COURT REPORT was removed; SwedenNews still
+          exists in Studio so the editorial team can curate external Swedish
+          basketball news there. Future: ingest basket.se + svt.se RSS
+          feeds server-side into the swedenNews schema on a cron. */}
       <ScrollReveal>
-        <News news={news} num="09" numText="THE DESK" className="section-dark" />
+        <News news={news} swedenNews={swedenNews} num="09" numText="THE DESK" className="section-dark" />
       </ScrollReveal>
 
-      {/* 10 · COURT REPORT (alt) */}
+      {/* 10 · APPAREL (alt) */}
       <ScrollReveal>
-        <SwedenNews items={swedenNews} num="10" numText="COURT REPORT" className="section-alt" />
+        <Apparel media={media} num="10" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
-      {/* 11 · APPAREL (alt) */}
+      {/* 11 · VÅR RESA (dark) */}
       <ScrollReveal>
-        <Apparel media={media} num="11" numText="APPAREL" className="section-alt" />
+        <Journey num="11" numText="VÅR RESA" className="section-dark" />
       </ScrollReveal>
 
-      {/* 12 · VÅR RESA (dark) */}
+      {/* 12 · PARTNERS (alt) */}
       <ScrollReveal>
-        <Journey num="12" numText="VÅR RESA" className="section-dark" />
+        <Sponsors sponsors={sponsors} num="12" numText="PARTNERS" className="section-alt" />
       </ScrollReveal>
 
-      {/* 13 · PARTNERS (dark) */}
-      <ScrollReveal>
-        <Sponsors sponsors={sponsors} num="13" numText="PARTNERS" className="section-dark" />
-      </ScrollReveal>
-
-      {/* 14 · BE PART OF IT (alt) */}
-      <JoinCTA num="14" numText="BE PART OF IT" className="section-alt" />
+      {/* 13 · BE PART OF IT (dark) */}
+      <JoinCTA num="13" numText="BE PART OF IT" className="section-dark" />
 
       <Footer settings={settings} />
     </>

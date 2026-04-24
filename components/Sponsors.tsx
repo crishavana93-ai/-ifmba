@@ -124,15 +124,20 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
             Redo att bli <em>synlig</em> med MBA?
           </h3>
           <p>
-            Vi skräddarsyr paket efter era mål. Kontakta oss — vi återkommer inom 48 timmar
-            med en prospect deck och ett öppet samtal.
+            Vi skräddarsyr paket efter era mål. Se fullständiga paket, nuvarande
+            partners och prospect-materialet på vår partnersida.
           </p>
-          <a
-            className="btn-cta"
-            href="mailto:mba.malmo.basket@gmail.com?subject=MBA%20Partnership%20Inquiry"
-          >
-            Kontakta oss
-          </a>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a className="btn-cta" href="/partners">
+              Se alla paket →
+            </a>
+            <a
+              className="btn-cta btn-cta-ghost"
+              href="mailto:mba.malmo.basket@gmail.com?subject=MBA%20Partnership%20Inquiry"
+            >
+              Kontakta oss
+            </a>
+          </div>
         </div>
       </div>
     </section>
