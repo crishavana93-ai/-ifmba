@@ -85,15 +85,16 @@ export default function Navbar() {
         </div>
 
         <div className="nav-actions">
-          {/* CTA now goes straight to a contact email — JoinCTA section was
-              retired; footer still has newsletter signup + contact links. */}
-          <a
+          {/* "Join" now routes to the /anslut page with three membership
+              tracks (U-10, Casual Games, Div 2 Herr). Previously was a
+              mailto — /anslut gives visitors proper self-service context. */}
+          <Link
             className="btn-cta"
-            href="mailto:mba.malmo.basket@gmail.com?subject=Jag%20vill%20g%C3%A5%20med%20MBA"
+            href="/anslut"
             onClick={() => setMenuOpen(false)}
           >
             Join
-          </a>
+          </Link>
           <button
             className="mobile-menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}

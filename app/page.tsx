@@ -17,7 +17,9 @@ import MediaWall from '@/components/MediaWall'
 import Highlights from '@/components/Highlights'
 import Courts from '@/components/Courts'
 import Apparel from '@/components/Apparel'
-import Sponsors from '@/components/Sponsors'
+// Sponsors moved off the landing page 2026-04-24 — now lives only at /partners.
+// Homepage gets a compact teaser (see SponsorTeaser below) that routes to /partners.
+import SponsorTeaser from '@/components/SponsorTeaser'
 import Spotlight from '@/components/Spotlight'
 // Manifesto + JoinCTA retired 2026-04-24 — kept in /components for easy revival.
 import Footer from '@/components/Footer'
@@ -65,8 +67,13 @@ export default async function Home() {
 
       <Marquee />
 
-      {/* 01 · IDENTITY (dark) */}
-      <About settings={settings} num="01" numText="IDENTITY" className="section-dark" />
+      {/* 01 · IDENTITY (dark) — wrapped in ScrollReveal so the `.r` children
+          (label, title, body, flags) actually fade in. Without this wrapper
+          they stay at opacity:0 forever and the section renders as a big
+          empty black box right after the marquee. */}
+      <ScrollReveal>
+        <About settings={settings} num="01" numText="IDENTITY" className="section-dark" />
+      </ScrollReveal>
 
       {/* 02 · SEASON IN PHOTOS (alt) */}
       <ScrollReveal>
@@ -126,16 +133,12 @@ export default async function Home() {
         <Journey num="10" numText="VÅR RESA" className="section-dark" />
       </ScrollReveal>
 
-      {/* 11 · PARTNERS (alt) */}
+      {/* 11 · BLI PARTNER — compact teaser that routes traffic to the
+          dedicated /partners page. Full tier breakdown + lead form live
+          there so the landing page stays focused and fast. */}
       <ScrollReveal>
-        <Sponsors sponsors={sponsors} num="11" numText="PARTNERS" className="section-alt" />
+        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="11" numText="PARTNERS" />
       </ScrollReveal>
-
-      {/* Manifesto + JoinCTA removed 2026-04-24 — self-referential copy and
-          the big "JOIN THE FAMILY" tile were closing-section noise. Sponsors
-          (section 11) is now the final content block before the footer. The
-          footer already contains Contact + newsletter signup, so the CTA
-          function is preserved. To restore, re-add both sections here. */}
 
       <Footer settings={settings} />
     </>

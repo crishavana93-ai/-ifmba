@@ -11,6 +11,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollProgress from '@/components/ScrollProgress'
 import BackToTop from '@/components/BackToTop'
+import SponsorLeadForm from '@/components/SponsorLeadForm'
 
 export const revalidate = 60
 
@@ -257,23 +258,23 @@ export default async function PartnersPage() {
         </section>
       )}
 
-      {/* Final CTA */}
-      <section className="section section-dark">
-        <div className="contain" style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto' }}>
+      {/* Lead form — replaces the plain mailto CTA. Writes to Sanity's
+          `sponsorLead` doc type; optional Resend notification fires to Cris
+          if RESEND_API_KEY is configured. */}
+      <section className="section section-dark" id="lead">
+        <div className="contain" style={{ maxWidth: '860px', margin: '0 auto' }}>
+          <div className="label r v">Bli partner</div>
           <h2 className="title r v" style={{ marginBottom: '18px' }}>
             Redo att bli <em>synlig</em>?
           </h2>
-          <p className="page-lede r v" style={{ marginBottom: '28px' }}>
-            Vi skräddarsyr paket efter era mål. Kontakta oss — vi återkommer inom 48
-            timmar med en prospect deck och ett öppet samtal.
+          <p className="page-lede r v" style={{ marginBottom: '36px' }}>
+            Skriv några rader så hör vi av oss inom 48 timmar med ett prospect
+            deck och en tid för ett öppet samtal. Skräddarsydda paket går också bra.
           </p>
-          <a
-            className="btn-cta"
-            href="mailto:mba.malmo.basket@gmail.com?subject=MBA%20Partnership%20Inquiry"
-          >
-            Kontakta oss
-          </a>
-          <div style={{ marginTop: '18px' }}>
+
+          <SponsorLeadForm />
+
+          <div style={{ marginTop: '28px', textAlign: 'center' }}>
             <Link href="/" className="partners-back-link">
               ← Tillbaka till startsidan
             </Link>

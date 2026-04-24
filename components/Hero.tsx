@@ -90,12 +90,8 @@ export default function Hero({ settings }: { settings: any }) {
         </p>
 
         <div className="hero-actions">
-          {/* JoinCTA section was retired — send "Gå med nu" straight to
-              contact email instead. */}
-          <a
-            className="hero-btn hero-btn-primary"
-            href="mailto:mba.malmo.basket@gmail.com?subject=Jag%20vill%20g%C3%A5%20med%20MBA"
-          >
+          {/* "Gå med nu" routes to /anslut for the three membership tracks. */}
+          <a className="hero-btn hero-btn-primary" href="/anslut">
             Gå med nu
           </a>
           <button

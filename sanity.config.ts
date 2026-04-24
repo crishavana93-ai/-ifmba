@@ -164,6 +164,13 @@ export default defineConfig({
             S.listItem()
               .title('Sponsors')
               .child(S.documentTypeList('sponsor').title('Sponsors')),
+            S.listItem()
+              .title('💼 Sponsor Leads (inbox)')
+              .child(
+                S.documentTypeList('sponsorLead')
+                  .title('Sponsor leads — newest first')
+                  .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
+              ),
             S.divider(),
             S.listItem()
               .title('Site settings')
