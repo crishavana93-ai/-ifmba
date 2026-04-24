@@ -536,16 +536,20 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 /* ═══ SQUAD ═══ */
 .squad { background: var(--paper); }
 .ribbon-wrap { position: relative; }
+/* Squad grid — locked at 3 columns across ALL viewports per product brief.
+   Cards shrink responsively within the 3-col grid rather than collapsing to
+   fewer columns, so mobile users still see three players per row. */
 .ribbon-track {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-  gap: clamp(14px, 1.8vw, 24px) !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(8px, 1.4vw, 18px) !important;
   overflow: visible !important;
   padding: 0 !important;
 }
-@media (max-width: 980px) { .ribbon-track { grid-template-columns: repeat(3, 1fr) !important; } }
-@media (max-width: 720px) { .ribbon-track { grid-template-columns: repeat(2, 1fr) !important; } }
-@media (max-width: 440px) { .ribbon-track { grid-template-columns: 1fr !important; } }
+@media (max-width: 520px) {
+  /* Tighter gap on phones so three columns never feel squeezed. */
+  .ribbon-track { gap: 6px !important; }
+}
 
 .card {
   flex: initial !important;
@@ -584,14 +588,19 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   background: radial-gradient(circle at 80% 15%, var(--yellow-glow), transparent 55%);
   pointer-events: none;
 }
+/* Card contents use `clamp` so typography scales with card width inside
+   the 3-column grid. At 380px viewport, each card is ~115px wide — these
+   values land readable at that size and still look good on desktop. */
 .card-flag {
-  font-size: 22px; display: inline-block;
-  padding: 4px 10px; background: rgba(255,255,255,0.08);
+  font-size: clamp(14px, 2.4vw, 22px);
+  display: inline-block;
+  padding: clamp(2px, 0.5vw, 4px) clamp(6px, 1vw, 10px);
+  background: rgba(255,255,255,0.08);
   border-radius: 100px; width: fit-content;
   position: relative; z-index: 1;
 }
 .card-num {
-  font-size: clamp(68px, 9vw, 108px);
+  font-size: clamp(44px, 11vw, 108px);
   font-weight: 900; line-height: 0.82;
   color: var(--yellow);
   letter-spacing: -0.05em;
@@ -600,16 +609,27 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
 }
 .card-name-last {
-  font-size: clamp(16px, 1.8vw, 22px);
+  font-size: clamp(12px, 2vw, 22px);
   font-weight: 900; text-transform: uppercase;
   letter-spacing: -0.01em; line-height: 1;
   position: relative; z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .card-name-init {
-  font-family: var(--mono); font-size: 11px;
+  font-family: var(--mono);
+  font-size: clamp(8px, 1.4vw, 11px);
   color: rgba(255,255,255,0.6); margin-top: 4px;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  letter-spacing: 0.14em; text-transform: uppercase;
   position: relative; z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Shrink inner padding on very small cards so content fits. */
+@media (max-width: 520px) {
+  .card-front, .card-back { padding: 10px !important; }
 }
 .card-back {
   background: var(--yellow);
@@ -1288,6 +1308,116 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
    ═══════════════════════════════════════════════════════ */
 /* auto-fill (not auto-fit) so a single clip doesn't stretch to fill
  * the whole row. Cap individual card width so the reel stays balanced. */
+/* ═══ HIGHLIGHTS CAROUSEL (swipeable, symmetrical) ═══ */
+.highlights .hl-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 16px; flex-wrap: wrap;
+  margin-bottom: clamp(20px, 2.5vw, 32px);
+}
+.highlights .hl-nav { display: flex; gap: 8px; }
+.highlights .hl-nav-btn {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.9);
+  font-size: 18px; font-weight: 600;
+  cursor: pointer; border-radius: 999px;
+  transition: all 0.25s;
+}
+.highlights .hl-nav-btn:hover:not(:disabled) {
+  background: var(--yellow); border-color: var(--yellow); color: var(--ink);
+  transform: translateY(-1px);
+}
+.highlights .hl-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.section-alt .highlights .hl-nav-btn { color: var(--ink); border-color: var(--line-strong); }
+.section-alt .highlights .hl-nav-btn:hover:not(:disabled) { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+
+.highlights .hl-carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px clamp(16px, 4vw, 64px) 20px;
+  margin: 0 calc(-1 * clamp(16px, 4vw, 64px));
+  scrollbar-width: none;
+}
+.highlights .hl-carousel::-webkit-scrollbar { display: none; }
+
+.highlights .hl-slide,
+.highlights .hl-slide-empty {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(220px, 28vw, 320px);
+  aspect-ratio: 9 / 16;
+  background: #000;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  scroll-snap-align: center;
+  padding: 0;
+}
+.highlights .hl-slide {
+  cursor: pointer;
+  transition: transform 0.3s var(--ease);
+}
+.highlights .hl-slide:hover { transform: translateY(-4px); }
+.highlights .hl-slide:hover .hl-slide-overlay { opacity: 1; }
+.highlights .hl-slide video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.highlights .hl-slide-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, rgba(11,18,32,0.25), rgba(11,18,32,0.65));
+  opacity: 0.75;
+  transition: opacity 0.3s var(--ease);
+  pointer-events: none;
+}
+.highlights .hl-slide-play {
+  width: clamp(54px, 6vw, 72px); height: clamp(54px, 6vw, 72px);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,203,5,0.95);
+  color: var(--ink);
+  font-size: clamp(22px, 2.4vw, 28px);
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  transform: translateX(2px);
+}
+.highlights .hl-slide-caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 12px 14px;
+  color: #fff;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent);
+  text-align: left;
+  pointer-events: none;
+}
+.highlights .hl-slide-empty {
+  background: #0f1624;
+  border: 1px dashed rgba(255,255,255,0.16);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+  color: rgba(255,255,255,0.5);
+  cursor: default;
+}
+.section-alt .highlights .hl-slide-empty {
+  background: #f5f6fa;
+  border-color: rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.4);
+}
+@media (max-width: 700px) {
+  .highlights .hl-slide,
+  .highlights .hl-slide-empty {
+    width: 78vw;
+    aspect-ratio: 9 / 14;
+  }
+  .highlights .hl-head { align-items: flex-start; }
+}
+
+/* Legacy grid rule kept as dead wrapper so older caches don't break;
+   the carousel class set above overrides it. */
 .highlights .hl-reel {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 300px));
@@ -1338,6 +1468,219 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent);
   text-align: left;
   pointer-events: none;
+}
+
+/* ═══ FOOTER COURTS SUMMARY (links to /hallar) ═══ */
+.foot-courts {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.foot-courts-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.foot-courts-list li {
+  font-size: 13px;
+  color: rgba(255,255,255,0.72);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.foot-court-name { color: #fff; font-weight: 600; }
+.foot-court-badge {
+  background: var(--yellow); color: var(--ink);
+  font-family: var(--mono); font-size: 9px; font-weight: 800;
+  padding: 2px 6px; letter-spacing: 0.16em;
+}
+.foot-court-addr { color: rgba(255,255,255,0.55); }
+.foot-courts-fallback {
+  font-size: 13px;
+  color: rgba(255,255,255,0.72);
+  margin: 0;
+}
+.foot-courts-link {
+  margin-top: 4px;
+  font-family: var(--mono); font-size: 11px; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--yellow);
+  text-decoration: none;
+  width: fit-content;
+  transition: color 0.2s;
+}
+.foot-courts-link:hover { color: #fff; }
+
+/* ═══ HALLAR PAGE (where we play) ═══ */
+.hall-home {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 3vw, 48px);
+  align-items: start;
+}
+@media (max-width: 820px) { .hall-home { grid-template-columns: 1fr; } }
+.hall-home-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--ink);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.hall-home-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hall-home-photo-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px;
+  font-size: 64px;
+  color: var(--yellow);
+}
+.hall-home-photo-placeholder span {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.hall-home-badge {
+  position: absolute; top: 14px; left: 14px;
+  background: var(--yellow); color: var(--ink);
+  font-family: var(--mono); font-size: 11px; font-weight: 800;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  padding: 6px 10px;
+}
+.hall-home-body { display: flex; flex-direction: column; gap: 14px; }
+.hall-home-name {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  margin: 4px 0 0;
+}
+.hall-home-type {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted);
+}
+.hall-home-addr {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.hall-home-addr span {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted);
+}
+.hall-home-addr strong { font-size: 16px; color: var(--ink); font-weight: 600; }
+.hall-home-desc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--body-text);
+  margin: 0;
+}
+.hall-home-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+
+.hall-schedule {
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.03);
+}
+.hall-schedule-row {
+  display: grid;
+  grid-template-columns: 100px 160px 1fr;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  align-items: baseline;
+}
+.hall-schedule-row:last-child { border-bottom: none; }
+@media (max-width: 640px) {
+  .hall-schedule-row { grid-template-columns: 80px 1fr; gap: 8px; }
+  .hall-schedule-row .hall-schedule-slot { grid-column: 2; }
+  .hall-schedule-row .hall-schedule-team { grid-column: 2; font-size: 13px; }
+}
+.hall-schedule-day {
+  font-family: var(--mono); font-size: 11px; font-weight: 800;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--yellow);
+}
+.hall-schedule-slot {
+  font-family: var(--mono); font-size: 13px; font-weight: 700;
+  color: #fff;
+}
+.hall-schedule-team {
+  font-size: 14px;
+  color: rgba(255,255,255,0.82);
+}
+.hall-schedule-note {
+  margin-top: 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.6;
+}
+.hall-schedule-note a { color: var(--yellow); text-decoration: underline; }
+
+.hall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  margin-top: clamp(24px, 3vw, 40px);
+}
+.hall-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), border-color 0.3s;
+}
+.hall-card:hover { transform: translateY(-4px); border-color: var(--ink); }
+.hall-card-img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.hall-card-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; }
+.hall-card-type {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted);
+}
+.hall-card-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.hall-card-addr { font-size: 13px; color: var(--muted); }
+.hall-card-desc { font-size: 14px; line-height: 1.55; color: var(--body-text); margin: 0; }
+.hall-card-link {
+  margin-top: auto;
+  padding-top: 8px;
+  font-family: var(--mono); font-size: 11px; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--sky-deep);
+  text-decoration: none;
+}
+.hall-card-link:hover { color: var(--ink); }
+
+.hall-how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(20px, 2.5vw, 32px);
+  margin-top: clamp(20px, 2.5vw, 32px);
+}
+.hall-how-grid h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 16px;
+  color: #fff;
+  margin: 0 0 8px;
+}
+.hall-how-grid p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.78);
 }
 
 /* ═══ ANSLUT / Join-club page — three-track cards ═══ */

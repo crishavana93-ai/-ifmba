@@ -2,7 +2,7 @@ import { safeFetch, QUERIES } from '@/lib/sanity'
 import Loader from '@/components/Loader'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
-import Drop from '@/components/Drop'
+// Drop (next tip-off split) retired 2026-04-24 — rendered empty without nextMatchDate.
 import Marquee from '@/components/Marquee'
 import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
@@ -15,7 +15,9 @@ import Standings from '@/components/Standings'
 import Squad from '@/components/Squad'
 import MediaWall from '@/components/MediaWall'
 import Highlights from '@/components/Highlights'
-import Courts from '@/components/Courts'
+// Courts moved off the landing page 2026-04-24 → lives at /hallar (dedicated
+// page) + a condensed summary in the Footer. Component file kept in
+// /components for the new page to reuse.
 import Apparel from '@/components/Apparel'
 // Sponsors moved off the landing page 2026-04-24 — now lives only at /partners.
 // Homepage gets a compact teaser (see SponsorTeaser below) that routes to /partners.
@@ -62,8 +64,10 @@ export default async function Home() {
       {/* HERO — 3-line MALMÖ / BASKET / AMATÖRER */}
       <Hero settings={settings} />
 
-      {/* DROP — Next tip-off split (video + countdown) */}
-      <Drop settings={settings} media={media} />
+      {/* Drop section (Next tip-off split) retired 2026-04-24 — rendered
+          as a big empty navy block whenever `nextMatchDate` wasn't set in
+          Sanity. Component kept in /components in case we revive a
+          match-day countdown on a future match page. */}
 
       <Marquee />
 
@@ -113,34 +117,33 @@ export default async function Home() {
       {/* StatsBar — band between sections */}
       <StatsBar players={players} standings={standings} />
 
-      {/* 07 · MALMÖ MAP (alt) */}
+      {/* Courts / MALMÖ MAP retired from homepage 2026-04-24 → dedicated
+          /hallar page + footer summary. Courts component is still imported
+          by /hallar. */}
+
+      {/* 07 · THE DESK — consolidated news. */}
       <ScrollReveal>
-        <Courts courts={courts} num="07" numText="MALMÖ MAP" className="section-alt" />
+        <News news={news} swedenNews={swedenNews} num="07" numText="THE DESK" className="section-dark" />
       </ScrollReveal>
 
-      {/* 08 · THE DESK — consolidated news. */}
+      {/* 08 · APPAREL (alt) */}
       <ScrollReveal>
-        <News news={news} swedenNews={swedenNews} num="08" numText="THE DESK" className="section-dark" />
+        <Apparel media={media} num="08" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
-      {/* 09 · APPAREL (alt) */}
+      {/* 09 · VÅR RESA (dark) */}
       <ScrollReveal>
-        <Apparel media={media} num="09" numText="APPAREL" className="section-alt" />
+        <Journey num="09" numText="VÅR RESA" className="section-dark" />
       </ScrollReveal>
 
-      {/* 10 · VÅR RESA (dark) */}
-      <ScrollReveal>
-        <Journey num="10" numText="VÅR RESA" className="section-dark" />
-      </ScrollReveal>
-
-      {/* 11 · BLI PARTNER — compact teaser that routes traffic to the
+      {/* 10 · BLI PARTNER — compact teaser that routes traffic to the
           dedicated /partners page. Full tier breakdown + lead form live
           there so the landing page stays focused and fast. */}
       <ScrollReveal>
-        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="11" numText="PARTNERS" />
+        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="10" numText="PARTNERS" />
       </ScrollReveal>
 
-      <Footer settings={settings} />
+      <Footer settings={settings} courts={courts} />
     </>
   )
 }

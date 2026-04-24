@@ -1,16 +1,21 @@
 /**
- * Highlights — short-form video reel of top plays.
+ * Highlights — swipeable horizontal carousel of top plays.
  *
- * Data: `mediaAsset` with kind === 'video' AND category === 'gameday' (or 'matchday-reel').
- * We show the first 4 so it never pushes the page unbearably long.
+ * Data: `mediaAsset` with kind === 'video' AND category === 'gameday'
+ * (or 'matchday-reel'). We show up to 8 so you can build a real reel
+ * without rewriting the component.
  *
- * UX: cards preview muted (autoplay on mobile via IntersectionObserver, or
- * on hover on desktop). Clicking / tapping a card opens a VideoModal
- * lightbox with sound + full controls.
+ * Interaction:
+ *   - Mobile: native touch scroll with CSS scroll-snap → tap card → video
+ *     modal plays the clip full-screen with sound.
+ *   - Desktop: same scroll-snap track, plus Prev/Next arrows and
+ *     mousewheel/drag-to-scroll. Cards all share one size so the rail
+ *     looks symmetrical regardless of clip count.
+ *   - Placeholder tiles fill the tail so the rail never looks empty.
  */
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import VideoModal from './VideoModal'
 
 type MediaRow = {
@@ -42,9 +47,45 @@ export default function Highlights({
         (m.category === 'gameday' || m.category === 'matchday-reel') &&
         m.videoUrl,
     )
-    .slice(0, 4)
+    .slice(0, 8)
+
+  // Fill to at least 3 tiles so the carousel never feels sparse.
+  const placeholderCount = Math.max(0, 3 - clips.length)
 
   const [playing, setPlaying] = useState<MediaRow | null>(null)
+  const trackRef = useRef<HTMLDivElement | null>(null)
+  const [canPrev, setCanPrev] = useState(false)
+  const [canNext, setCanNext] = useState(false)
+
+  // Update arrow-enabled state based on scroll position.
+  const updateArrows = useCallback(() => {
+    const el = trackRef.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    setCanPrev(el.scrollLeft > 4)
+    setCanNext(el.scrollLeft < max - 4)
+  }, [])
+
+  useEffect(() => {
+    updateArrows()
+    const el = trackRef.current
+    if (!el) return
+    el.addEventListener('scroll', updateArrows, { passive: true })
+    window.addEventListener('resize', updateArrows)
+    return () => {
+      el.removeEventListener('scroll', updateArrows)
+      window.removeEventListener('resize', updateArrows)
+    }
+  }, [updateArrows])
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = trackRef.current
+    if (!el) return
+    // Scroll by roughly one card width (first child) + the gap.
+    const card = el.querySelector<HTMLElement>('.hl-slide')
+    const step = card ? card.offsetWidth + 16 : el.clientWidth * 0.8
+    el.scrollBy({ left: step * dir, behavior: 'smooth' })
+  }
 
   return (
     <section
@@ -54,36 +95,60 @@ export default function Highlights({
       id="highlights"
     >
       <div className="contain">
-        <div className="label r">Höjdpunkter</div>
-        <h2 className="title r">
-          Top plays <em>från planen</em>
-        </h2>
+        <div className="hl-head">
+          <div>
+            <div className="label r">Höjdpunkter</div>
+            <h2 className="title r">
+              Top plays <em>från planen</em>
+            </h2>
+          </div>
+          <div className="hl-nav r" role="group" aria-label="Carousel controls">
+            <button
+              type="button"
+              className="hl-nav-btn"
+              onClick={() => scrollBy(-1)}
+              disabled={!canPrev}
+              aria-label="Föregående klipp"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="hl-nav-btn"
+              onClick={() => scrollBy(1)}
+              disabled={!canNext}
+              aria-label="Nästa klipp"
+            >
+              →
+            </button>
+          </div>
+        </div>
 
-        {/* Always render 4 slots. Real clips first, then placeholder tiles so
-            the grid never looks empty — even when only 1 video is uploaded. */}
-        <div className="hl-reel">
-          {clips.map((clip, i) => (
-            <HighlightCard
+        <div
+          className="hl-carousel r"
+          ref={trackRef}
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="MBA top plays"
+        >
+          {clips.map((clip) => (
+            <HighlightSlide
               key={clip._id}
               clip={clip}
-              delay={i * 80}
               onOpen={() => setPlaying(clip)}
             />
           ))}
-          {Array.from({ length: Math.max(0, 4 - clips.length) }).map((_, i) => (
-            <div
-              key={`empty-${i}`}
-              className="hl-card hl-card-empty r"
-              style={{ transitionDelay: `${(clips.length + i) * 80}ms` }}
-            >
+          {Array.from({ length: placeholderCount }).map((_, i) => (
+            <div key={`empty-${i}`} className="hl-slide hl-slide-empty" aria-hidden="true">
               <div className="hl-empty-play">▶</div>
               <div className="hl-empty-tag">
-                {clips.length === 0 ? `Clip #${clips.length + i + 1}` : 'Snart'}
+                {clips.length === 0 ? `Clip #${i + 1}` : 'Snart'}
               </div>
             </div>
           ))}
         </div>
-        {clips.length < 4 && (
+
+        {clips.length < 3 && (
           <div className="hl-empty-copy r">
             <strong>
               {clips.length === 0
@@ -109,21 +174,13 @@ export default function Highlights({
   )
 }
 
-function HighlightCard({
-  clip,
-  delay,
-  onOpen,
-}: {
-  clip: MediaRow
-  delay: number
-  onOpen: () => void
-}) {
+function HighlightSlide({ clip, onOpen }: { clip: MediaRow; onOpen: () => void }) {
   const ref = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    // Auto-play when ≥50% visible (mobile-friendly preview).
+    // Preview-play when ≥40% visible in the carousel viewport.
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -131,7 +188,7 @@ function HighlightCard({
           else el.pause()
         }
       },
-      { threshold: 0.5 },
+      { threshold: 0.4 },
     )
     io.observe(el)
     return () => io.disconnect()
@@ -142,8 +199,7 @@ function HighlightCard({
   return (
     <button
       type="button"
-      className="hl-card r"
-      style={{ transitionDelay: `${delay}ms` }}
+      className="hl-slide"
       onClick={onOpen}
       onMouseEnter={() => ref.current?.play().catch(() => {})}
       aria-label={`Spela upp: ${caption}`}
@@ -157,10 +213,10 @@ function HighlightCard({
         playsInline
         preload="metadata"
       />
-      <div className="hl-play-overlay" aria-hidden="true">
-        <span className="hl-play-btn">▶</span>
+      <div className="hl-slide-overlay" aria-hidden="true">
+        <span className="hl-slide-play">▶</span>
       </div>
-      <div className="hl-caption">{caption}</div>
+      <div className="hl-slide-caption">{caption}</div>
     </button>
   )
 }

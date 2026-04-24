@@ -45,7 +45,7 @@ const IconMail = ({ size = 20 }: { size?: number }) => (
 
 type IconFn = (p: { size?: number }) => JSX.Element
 
-export default function Footer({ settings }: { settings: any }) {
+export default function Footer({ settings, courts = [] }: { settings: any; courts?: any[] }) {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
@@ -114,7 +114,7 @@ export default function Footer({ settings }: { settings: any }) {
               <a onClick={() => document.getElementById('news')?.scrollIntoView({behavior:'smooth'})}>Nyheter</a>
               <a onClick={() => document.getElementById('standings')?.scrollIntoView({behavior:'smooth'})}>Tabell</a>
               <a onClick={() => document.getElementById('squad')?.scrollIntoView({behavior:'smooth'})}>Trupp</a>
-              <a onClick={() => document.getElementById('courts')?.scrollIntoView({behavior:'smooth'})}>Courts</a>
+              <a href="/hallar">Hallar</a>
               <a onClick={() => document.getElementById('sponsors')?.scrollIntoView({behavior:'smooth'})}>Partners</a>
             </div>
           </div>
@@ -125,6 +125,31 @@ export default function Footer({ settings }: { settings: any }) {
               <a href="https://www.profixio.com/app/leagueid16182/category/1150620" target="_blank" rel="noopener">Profixio</a>
             </div>
           </div>
+        </div>
+
+        {/* Courts summary — compact line listing our home arena + any extras
+            from Sanity. Links to the dedicated /hallar page for the full
+            schedule, map, and transit info. */}
+        <div className="foot-courts">
+          <div className="foot-col-h">Hallar &amp; planer</div>
+          {courts && courts.length > 0 ? (
+            <ul className="foot-courts-list">
+              {courts.slice(0, 3).map((c: any) => (
+                <li key={c._id}>
+                  <span className="foot-court-name">{c.name}</span>
+                  {c.isHome && <span className="foot-court-badge">Hemma</span>}
+                  {c.address && <span className="foot-court-addr">· {c.address}</span>}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="foot-courts-fallback">
+              Latinskolans sporthall · Lorensborgsgatan 1, Malmö
+            </p>
+          )}
+          <a className="foot-courts-link" href="/hallar">
+            Se alla hallar, scheman &amp; karta →
+          </a>
         </div>
         <div className="foot-bottom">
           <span>© 2026 MBA · Malmö Basket</span>
