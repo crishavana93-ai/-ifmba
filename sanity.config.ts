@@ -22,15 +22,126 @@ export default defineConfig({
   basePath: '/studio',
   plugins: [
     structureTool({
-      // Custom sidebar ordering — media at the top (most common edit),
-      // settings at the bottom (rarely touched).
+      // Custom sidebar. Media is broken out into one subfolder per category
+      // so the club can drag-drop photos into clearly named buckets instead
+      // of setting the category dropdown on every upload.
       structure: (S) =>
         S.list()
           .title('Content')
           .items([
+            // ── Media — split into subfolders by category ─────────────────
             S.listItem()
               .title('Media · Photos & Videos')
-              .child(S.documentTypeList('mediaAsset').title('Media · Photos & Videos')),
+              .child(
+                S.list()
+                  .title('Media · choose a folder')
+                  .items([
+                    S.listItem()
+                      .title('📸 Team photos (Media Wall)')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Team photos')
+                          .filter('_type == "mediaAsset" && category == "team"')
+                          .initialValueTemplates([
+                            S.initialValueTemplateItem('mediaAsset-team'),
+                          ]),
+                      ),
+                    S.listItem()
+                      .title('🙌 Fans photos (Media Wall)')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Fans photos')
+                          .filter('_type == "mediaAsset" && category == "fans"')
+                          .initialValueTemplates([
+                            S.initialValueTemplateItem('mediaAsset-fans'),
+                          ]),
+                      ),
+                    S.listItem()
+                      .title('🏀 Game Day photos (Media Wall)')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Game Day photos')
+                          .filter('_type == "mediaAsset" && category == "gameday"')
+                          .initialValueTemplates([
+                            S.initialValueTemplateItem('mediaAsset-gameday'),
+                          ]),
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('🎬 Match-day reel (Tip-off video)')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Match-day reel')
+                          .filter(
+                            '_type == "mediaAsset" && category == "matchday-reel"',
+                          )
+                          .initialValueTemplates([
+                            S.initialValueTemplateItem('mediaAsset-matchday'),
+                          ]),
+                      ),
+                    S.listItem()
+                      .title('🔥 Top Plays (Highlights video clips)')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Top Plays')
+                          .filter(
+                            '_type == "mediaAsset" && kind == "video" && (category == "gameday" || category == "team")',
+                          ),
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('👕 Merch / Apparel')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Merch photos')
+                          .filter('_type == "mediaAsset" && category == "merch"')
+                          .initialValueTemplates([
+                            S.initialValueTemplateItem('mediaAsset-merch'),
+                          ]),
+                      ),
+                    S.listItem()
+                      .title('🌟 Hero / Family photo')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Hero photos')
+                          .filter('_type == "mediaAsset" && category == "hero"')
+                          .initialValueTemplates([
+                            S.initialValueTemplateItem('mediaAsset-hero'),
+                          ]),
+                      ),
+                    S.listItem()
+                      .title('🏟️ Court photos')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Court photos')
+                          .filter('_type == "mediaAsset" && category == "court"'),
+                      ),
+                    S.listItem()
+                      .title('🤝 Sponsor assets')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('Sponsor assets')
+                          .filter(
+                            '_type == "mediaAsset" && category == "sponsor"',
+                          ),
+                      ),
+                    S.listItem()
+                      .title('📰 News post covers')
+                      .child(
+                        S.documentTypeList('mediaAsset')
+                          .title('News covers')
+                          .filter('_type == "mediaAsset" && category == "news"'),
+                      ),
+                    S.divider(),
+                    S.listItem()
+                      .title('📂 All media (flat list)')
+                      .child(
+                        S.documentTypeList('mediaAsset').title(
+                          'All Media Assets',
+                        ),
+                      ),
+                  ]),
+              ),
             S.divider(),
             S.listItem()
               .title('News posts (MBA · own)')
@@ -66,5 +177,56 @@ export default defineConfig({
     }),
     visionTool(),
   ],
-  schema: {types: schemaTypes},
+  schema: {
+    types: schemaTypes,
+    templates: (prev) => [
+      ...prev,
+      {
+        id: 'mediaAsset-team',
+        title: 'Team photo',
+        schemaType: 'mediaAsset',
+        value: {kind: 'photo', category: 'team', active: true},
+      },
+      {
+        id: 'mediaAsset-fans',
+        title: 'Fans photo',
+        schemaType: 'mediaAsset',
+        value: {kind: 'photo', category: 'fans', active: true},
+      },
+      {
+        id: 'mediaAsset-gameday',
+        title: 'Game Day photo',
+        schemaType: 'mediaAsset',
+        value: {kind: 'photo', category: 'gameday', active: true},
+      },
+      {
+        id: 'mediaAsset-matchday',
+        title: 'Match-day reel video',
+        schemaType: 'mediaAsset',
+        value: {
+          kind: 'video',
+          category: 'matchday-reel',
+          placement: 'tipoff-reel',
+          active: true,
+        },
+      },
+      {
+        id: 'mediaAsset-merch',
+        title: 'Merch photo',
+        schemaType: 'mediaAsset',
+        value: {kind: 'photo', category: 'merch', active: true},
+      },
+      {
+        id: 'mediaAsset-hero',
+        title: 'Hero photo',
+        schemaType: 'mediaAsset',
+        value: {
+          kind: 'photo',
+          category: 'hero',
+          placement: 'hero-family',
+          active: true,
+        },
+      },
+    ],
+  },
 })

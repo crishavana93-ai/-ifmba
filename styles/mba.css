@@ -2071,3 +2071,26 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   .honey-row.r2{ margin-top:-22px; margin-bottom:-22px; }
   .hex-tip{ min-width:150px; }
 }
+
+/* ============================================================
+   Squad cards with photo — scrim + number prominence
+   ============================================================ */
+.card.has-photo .card-front {
+  /* Inline background-image handles the photo. These set the look. */
+  position: relative;
+  overflow: hidden;
+}
+.card.has-photo .card-num {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.7);
+  opacity: .95;
+}
+.card.has-photo .card-name-last,
+.card.has-photo .card-name-init {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+}
+.card.has-photo .card-flag {
+  background: rgba(11,18,32,.55);
+  backdrop-filter: blur(4px);
+}
