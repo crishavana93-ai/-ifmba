@@ -19,6 +19,7 @@ import Courts from '@/components/Courts'
 import Apparel from '@/components/Apparel'
 import Sponsors from '@/components/Sponsors'
 import Spotlight from '@/components/Spotlight'
+import Manifesto from '@/components/Manifesto'
 import JoinCTA from '@/components/JoinCTA'
 import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -146,8 +147,13 @@ export default async function Home() {
         <Sponsors sponsors={sponsors} num="12" numText="PARTNERS" className="section-alt" />
       </ScrollReveal>
 
-      {/* 13 · BE PART OF IT (dark) */}
-      <JoinCTA num="13" numText="BE PART OF IT" className="section-dark" />
+      {/* 13 · MANIFESTO (dark) — thesis / rallying crescendo before the CTA */}
+      <ScrollReveal>
+        <Manifesto num="13" numText="MANIFESTO" className="section-dark" />
+      </ScrollReveal>
+
+      {/* 14 · BE PART OF IT (alt) */}
+      <JoinCTA num="14" numText="BE PART OF IT" className="section-alt" />
 
       <Footer settings={settings} />
     </>

@@ -997,9 +997,10 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08);
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
   font-family: var(--mono); font-size: 11px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.72);
   letter-spacing: 0.14em; text-transform: uppercase;
 }
+.foot-bottom a { color: rgba(255,255,255,0.82); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: rgba(255,255,255,0.25); }
 .foot-bottom a:hover { color: var(--yellow); }
 
 /* ═══ SPOTLIGHT (Player of the Month) ═══ */
@@ -1966,149 +1967,8 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   border-color: rgba(255,196,0,0.22);
 }
 
-/* ============================================================
-   STANDINGS — Honeycomb hex grid (ported from index.html)
-   ============================================================ */
-.honey{
-  position:relative;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:0;
-  user-select:none;
-}
-.honey-row{
-  display:flex;
-  justify-content:center;
-  gap:8px;
-}
-.honey-row.r2{
-  margin-top:-26px;
-  margin-bottom:-26px;
-}
-.hex{
-  position:relative;
-  width:clamp(84px,13vw,118px);
-  aspect-ratio:1;
-  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
-  background:color-mix(in oklch, #FFC400 calc(var(--heat,0) * 1%), #0B1220);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition:transform .3s cubic-bezier(.16,1,.3,1), filter .3s ease;
-  font-family:var(--mono, 'JetBrains Mono', ui-monospace, monospace);
-}
-.hex::before{
-  content:'';
-  position:absolute;
-  inset:2px;
-  clip-path:inherit;
-  background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%);
-  pointer-events:none;
-}
-.hex:hover{
-  transform:translateY(-4px) scale(1.04);
-  filter:brightness(1.15);
-  z-index:3;
-}
-.hex-rank{
-  font-size:9px;
-  font-weight:700;
-  letter-spacing:.2em;
-  color:rgba(255,255,255,.55);
-  margin-bottom:2px;
-}
-.hex-abbr{
-  font-family:'Inter Tight', system-ui, sans-serif;
-  font-size:clamp(13px,1.8vw,16px);
-  font-weight:900;
-  color:#fff;
-  letter-spacing:-.01em;
-  text-transform:uppercase;
-  line-height:1;
-  text-align:center;
-  max-width:78%;
-  word-break:break-word;
-}
-.hex-pts{
-  font-size:11px;
-  font-weight:800;
-  color:rgba(255,255,255,.72);
-  margin-top:4px;
-  letter-spacing:.05em;
-  font-variant-numeric:tabular-nums;
-}
-.hex.mba{
-  --heat:100;
-  box-shadow:0 0 0 2px rgba(255,196,0,.40), 0 0 40px rgba(255,196,0,.45);
-  animation:hex-pulse 2.6s ease-in-out infinite;
-}
-.hex.mba .hex-rank{ color:#fff; font-weight:800; }
-.hex.mba .hex-pts{ color:#fff; }
-.hex.mba::after{
-  content:'#1';
-  position:absolute;
-  top:16%; right:18%;
-  font-size:9px;
-  font-weight:900;
-  color:#fff;
-  opacity:.75;
-  letter-spacing:.1em;
-}
-@keyframes hex-pulse{
-  0%,100%{ box-shadow:0 0 0 2px rgba(255,196,0,.40), 0 0 40px rgba(255,196,0,.45); }
-  50%{ box-shadow:0 0 0 2px rgba(255,196,0,.60), 0 0 72px rgba(255,196,0,.65); }
-}
-.hex-tip{
-  position:absolute;
-  bottom:calc(100% + 12px);
-  left:50%;
-  transform:translateX(-50%) translateY(4px);
-  background:#0B1220;
-  border:1px solid var(--yellow, #FFC400);
-  padding:10px 14px;
-  min-width:180px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .2s ease, transform .2s ease;
-  z-index:10;
-  font-family:var(--mono, 'JetBrains Mono', ui-monospace, monospace);
-}
-.hex-tip::before{
-  content:'';
-  position:absolute;
-  bottom:-6px;
-  left:50%;
-  transform:translateX(-50%) rotate(45deg);
-  width:10px; height:10px;
-  background:#0B1220;
-  border-right:1px solid var(--yellow, #FFC400);
-  border-bottom:1px solid var(--yellow, #FFC400);
-}
-.hex-tip .tt-name{
-  font-family:'Inter Tight', system-ui, sans-serif;
-  font-size:13px;
-  font-weight:800;
-  color:#fff;
-  letter-spacing:-.01em;
-  text-transform:uppercase;
-  margin-bottom:6px;
-  white-space:nowrap;
-}
-.hex-tip .tt-row{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  font-size:10px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,.6);
-  margin-bottom:2px;
-}
-.hex-tip .tt-row b{ color:var(--yellow, #FFC400); font-weight:800; }
-.hex:hover .hex-tip{ opacity:1; transform:translateX(-50%) translateY(0); }
+/* Honeycomb hex grid removed 2026-04-24 — legacy prototype styles, no
+   longer referenced by any component. Standings now uses tabular layouts. */
 
 .grid-legend{
   display:flex;
@@ -2176,13 +2036,13 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   margin-top:16px;
   font-size:12px;
   font-weight:700;
-  color:rgba(255,255,255,.55);
+  color:rgba(255,255,255,.82);
   letter-spacing:.12em;
   text-transform:uppercase;
   text-decoration:none;
   transition:color .3s;
 }
-.section-alt .profixio-credit{ color:rgba(0,0,0,.55); }
+.section-alt .profixio-credit{ color:rgba(11,18,32,.78); }
 .profixio-credit:hover{ color:var(--yellow, #FFC400); }
 
 @media (max-width:560px){
@@ -2999,3 +2859,31 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   color: #fff;
   font-weight: 700;
 }
+
+/* ═══ MANIFESTO ═══
+   Editorial thesis statement, placed right before the Join CTA.
+   Large pull-quote styling. Italic emphasis via <em>. */
+.manifesto .title { max-width: 1000px; }
+.manifesto .title em {
+  color: var(--sky-deep);
+  font-style: italic;
+}
+.manifesto-body {
+  max-width: 880px;
+  margin-top: clamp(24px, 3vw, 40px);
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.65;
+  color: var(--body-text);
+}
+.manifesto-body p { margin: 0 0 18px; }
+.manifesto-body p:last-child { margin-bottom: 0; }
+.manifesto-body em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--ink);
+  background: linear-gradient(180deg, transparent 60%, rgba(255,203,5,0.35) 60%);
+  padding: 0 2px;
+}
+.section-dark .manifesto-body { color: rgba(245,246,250,0.88); }
+.section-dark .manifesto-body em { color: #fff; background: linear-gradient(180deg, transparent 60%, rgba(255,203,5,0.45) 60%); }
+.section-dark .manifesto .title em { color: var(--yellow); }
