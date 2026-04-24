@@ -140,12 +140,12 @@ export default function Drop({ settings, media }: { settings: any; media: any[] 
               </div>
             )}
             <div className="drop-cta-row">
-              <button
+              <a
                 className="drop-cta drop-cta-primary"
-                onClick={() => document.getElementById('join')?.scrollIntoView({ behavior: 'smooth' })}
+                href="mailto:mba.malmo.basket@gmail.com?subject=Kom%20p%C3%A5%20match%20%E2%80%94%20MBA"
               >
                 Kom på match
-              </button>
+              </a>
               <a
                 className="drop-cta drop-cta-ghost"
                 href="https://www.profixio.com/app/leagueid16182/category/1150620"

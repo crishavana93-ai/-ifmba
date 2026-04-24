@@ -90,14 +90,14 @@ export default function Hero({ settings }: { settings: any }) {
         </p>
 
         <div className="hero-actions">
-          <button
+          {/* JoinCTA section was retired — send "Gå med nu" straight to
+              contact email instead. */}
+          <a
             className="hero-btn hero-btn-primary"
-            onClick={() =>
-              document.getElementById('join')?.scrollIntoView({ behavior: 'smooth' })
-            }
+            href="mailto:mba.malmo.basket@gmail.com?subject=Jag%20vill%20g%C3%A5%20med%20MBA"
           >
             Gå med nu
-          </button>
+          </a>
           <button
             className="hero-btn hero-btn-outline"
             onClick={() =>
