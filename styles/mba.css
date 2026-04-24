@@ -464,7 +464,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 .about-quote em {
   font-style: normal; color: var(--sky-deep);
-  background: linear-gradient(180deg, transparent 62%, var(--yellow) 62%);
+  /* Yellow highlighter lowered to sit at the bottom quarter of the text
+     (was 62% which sliced through the middle and made the letters
+     unreadable on dark sections where the em color also flips to yellow). */
+  background: linear-gradient(180deg, transparent 78%, var(--yellow) 78%);
   padding: 0 6px;
 }
 .about-body {
@@ -2965,7 +2968,12 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 
 /* 01 IDENTITY (About) */
 .section-dark .about-quote { color: #fff; }
-.section-dark .about-quote em { color: var(--yellow); }
+/* Keep em text white on dark sections — if it flips to yellow, the letters
+   disappear inside the yellow highlighter strip behind them. */
+.section-dark .about-quote em {
+  color: #fff;
+  background: linear-gradient(180deg, transparent 80%, var(--yellow) 80%);
+}
 .section-dark .about-body { color: rgba(245,246,250,.82); }
 .section-dark .about-body strong { color: #fff; }
 .section-dark .flag {
