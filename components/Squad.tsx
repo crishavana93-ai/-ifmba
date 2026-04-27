@@ -48,9 +48,12 @@ export default function Squad({
                       style={
                         hasPhoto
                           ? {
-                              backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.10) 50%, rgba(11,18,32,0.78) 100%), url(${p.photoUrl})`,
+                              // Very light gradient — only the bottom 25 % of
+                              // the card darkens, just enough to keep the
+                              // name legible. Rest of the photo shows clean.
+                              backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0) 70%, rgba(11,18,32,0.55) 100%), url(${p.photoUrl})`,
                               backgroundSize: 'cover',
-                              backgroundPosition: 'center 25%',
+                              backgroundPosition: 'center center',
                               backgroundRepeat: 'no-repeat',
                             }
                           : undefined
