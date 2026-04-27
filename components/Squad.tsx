@@ -40,11 +40,11 @@ export default function Squad({
                 <div
                   key={p._id}
                   className={`card${hasPhoto ? ' has-photo' : ''}`}
-                  style={{ flex: '0 0 clamp(220px,26vw,260px)', aspectRatio: '4/5' }}
+                  style={{ flex: '0 0 clamp(220px,26vw,260px)' }}
                 >
                   <div className="card-inner">
                     <div className="card-front">
-                      {hasPhoto && (
+                      {hasPhoto ? (
                         <img
                           src={p.photoUrl}
                           alt={`${p.firstName} ${p.lastName}`}
@@ -52,6 +52,10 @@ export default function Squad({
                           loading="lazy"
                           decoding="async"
                         />
+                      ) : (
+                        // No photo → fixed-aspect placeholder so empty cards
+                        // still match the row height of photo cards.
+                        <div className="card-photo card-photo--empty" aria-hidden="true" />
                       )}
                       <span className="card-flag">{p.flag || '🏀'}</span>
                       <div className="card-num">{p.number}</div>
