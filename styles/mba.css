@@ -578,7 +578,7 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 
 .card {
   flex: initial !important;
-  aspect-ratio: 3/4 !important;
+  aspect-ratio: 4/5 !important;
   position: relative;
   background: var(--ink);
   overflow: hidden;
