@@ -43,25 +43,20 @@ export default function Squad({
                   style={{ flex: '0 0 clamp(200px,24vw,240px)', aspectRatio: '3/4' }}
                 >
                   <div className="card-inner">
-                    <div
-                      className="card-front"
-                      style={
-                        hasPhoto
-                          ? {
-                              // Very light gradient — only the bottom 25 % of
-                              // the card darkens, just enough to keep the
-                              // name legible. Rest of the photo shows clean.
-                              backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0) 70%, rgba(11,18,32,0.55) 100%), url(${p.photoUrl})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center center',
-                              backgroundRepeat: 'no-repeat',
-                            }
-                          : undefined
-                      }
-                    >
+                    <div className="card-front">
+                      {hasPhoto && (
+                        <img
+                          src={p.photoUrl}
+                          alt={`${p.firstName} ${p.lastName}`}
+                          className="card-photo"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      )}
+                      {hasPhoto && <div className="card-photo-scrim" aria-hidden="true" />}
                       <span className="card-flag">{p.flag || '🏀'}</span>
                       <div className="card-num">{p.number}</div>
-                      <div>
+                      <div className="card-name-block">
                         <div className="card-name-last">{p.lastName}</div>
                         <div className="card-name-init">
                           {p.firstName?.[0]}. {p.lastName}
