@@ -3255,45 +3255,29 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 /* ============================================================
    Squad cards with photo — scrim + number prominence
    ============================================================ */
+/* Photo is a real <img> filling the entire card-front. No overlay/scrim —
+   the photo shows clean, edge to edge. */
 .card.has-photo .card-front {
-  /* Photo is now a real <img> child (.card-photo) instead of a
-     background-image. object-fit: cover guarantees it always fills the card
-     — no more empty navy strip at the bottom. */
   position: relative;
   overflow: hidden;
   background: var(--ink);
+  padding: 14px !important;
 }
-.card-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Anchor the photo to the upper-third — player faces sit there in our
-     team shoots, so they stay framed regardless of crop. */
-  object-position: center 20%;
+.card.has-photo .card-photo {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 30% !important;
   z-index: 0;
   display: block;
 }
-.card-photo-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(11,18,32,0) 0%,
-    rgba(11,18,32,0) 55%,
-    rgba(11,18,32,0.55) 85%,
-    rgba(11,18,32,0.85) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-.card-name-block {
-  position: relative;
-  z-index: 2;
-}
+.card-name-block,
 .card.has-photo .card-flag,
-.card.has-photo .card-num {
+.card.has-photo .card-num,
+.card.has-photo .card-name-last,
+.card.has-photo .card-name-init {
   position: relative;
   z-index: 2;
 }

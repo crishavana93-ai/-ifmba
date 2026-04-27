@@ -40,7 +40,7 @@ export default function Squad({
                 <div
                   key={p._id}
                   className={`card${hasPhoto ? ' has-photo' : ''}`}
-                  style={{ flex: '0 0 clamp(200px,24vw,240px)', aspectRatio: '3/4' }}
+                  style={{ flex: '0 0 clamp(220px,26vw,260px)', aspectRatio: '4/5' }}
                 >
                   <div className="card-inner">
                     <div className="card-front">
@@ -53,7 +53,6 @@ export default function Squad({
                           decoding="async"
                         />
                       )}
-                      {hasPhoto && <div className="card-photo-scrim" aria-hidden="true" />}
                       <span className="card-flag">{p.flag || '🏀'}</span>
                       <div className="card-num">{p.number}</div>
                       <div className="card-name-block">
