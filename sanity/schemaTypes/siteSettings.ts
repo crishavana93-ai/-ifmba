@@ -16,10 +16,10 @@ export default defineType({
     // ── Social media URLs. Paste full https://... links here.
     // Each one is optional — Footer only renders an icon for platforms
     // that have a non-empty URL, so leaving a field blank hides that icon.
-    defineField({name: 'instagramUrl', title: 'Instagram URL',  type: 'url', description: 'e.g. https://instagram.com/ifkmalmobasket'}),
-    defineField({name: 'facebookUrl',  title: 'Facebook URL',   type: 'url', description: 'e.g. https://facebook.com/ifkmalmobasket'}),
-    defineField({name: 'tiktokUrl',    title: 'TikTok URL',     type: 'url', description: 'e.g. https://tiktok.com/@ifkmalmobasket'}),
-    defineField({name: 'youtubeUrl',   title: 'YouTube URL',    type: 'url', description: 'e.g. https://youtube.com/@ifkmalmobasket'}),
+    defineField({name: 'instagramUrl', title: 'Instagram URL',  type: 'url', description: 'e.g. https://instagram.com/mba_malmo'}),
+    defineField({name: 'facebookUrl',  title: 'Facebook URL',   type: 'url', description: 'e.g. https://facebook.com/mba_malmo'}),
+    defineField({name: 'tiktokUrl',    title: 'TikTok URL',     type: 'url', description: 'e.g. https://tiktok.com/@mba_malmo'}),
+    defineField({name: 'youtubeUrl',   title: 'YouTube URL',    type: 'url', description: 'e.g. https://youtube.com/@mba_malmo'}),
     defineField({name: 'nextMatchDate', title: 'Next Match Date', type: 'datetime'}),
     defineField({name: 'nextMatchOpponent', title: 'Next Match Opponent', type: 'string'}),
     defineField({name: 'nextMatchVenue', title: 'Next Match Venue', type: 'string'}),

@@ -45,14 +45,14 @@ export default async function PrivacyPage() {
           </h1>
           <p className="page-lede" style={{ marginBottom: 36 }}>
             Senast uppdaterad: 24 april 2026. Denna policy beskriver hur
-            IFK Malmö Basket (&quot;MBA&quot;, &quot;vi&quot;, &quot;oss&quot;) hanterar personuppgifter i
+            Malmö Basket Amatörer (&quot;MBA&quot;, &quot;vi&quot;, &quot;oss&quot;) hanterar personuppgifter i
             samband med drift av ifmba.se och klubbverksamheten.
           </p>
 
           <section className="legal-section">
             <h2>1. Personuppgiftsansvarig</h2>
             <p>
-              IFK Malmö Basket är personuppgiftsansvarig för behandlingen av
+              Malmö Basket Amatörer är personuppgiftsansvarig för behandlingen av
               dina personuppgifter. Kontakt:{' '}
               <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
             </p>

@@ -5,6 +5,9 @@ export default function About({ settings, num, numText, className }: { settings:
     { emoji: '🇲🇽', name: 'Mexiko' }, { emoji: '🇵🇭', name: 'Filippinerna' },
     { emoji: '🇬🇭', name: 'Ghana' }, { emoji: '🇹🇳', name: 'Tunisien' },
     { emoji: '🇨🇺', name: 'Kuba' },
+    { emoji: '🇮🇹', name: 'Italien' }, { emoji: '🇭🇷', name: 'Kroatien' },
+    { emoji: '🇮🇪', name: 'Irland' }, { emoji: '🇦🇷', name: 'Argentina' },
+    { emoji: '🇦🇺', name: 'Australien' }, { emoji: '🇩🇪', name: 'Tyskland' },
   ]
 
   return (

@@ -27,18 +27,20 @@ export default function Squad({
             className="ribbon-track"
             style={{
               display: 'flex',
-              gap: '12px',
+              gap: '18px',
               overflowX: 'auto',
-              padding: '4px 2px 24px',
+              padding: '4px 2px 28px',
             }}
           >
-            {players.map((p: any) => {
+            {players
+              .filter((p: any) => p && p.active !== false)
+              .map((p: any) => {
               const hasPhoto = !!p.photoUrl
               return (
                 <div
                   key={p._id}
                   className={`card${hasPhoto ? ' has-photo' : ''}`}
-                  style={{ flex: '0 0 clamp(180px,22vw,220px)', aspectRatio: '3/4' }}
+                  style={{ flex: '0 0 clamp(240px,28vw,300px)', aspectRatio: '3/4' }}
                 >
                   <div className="card-inner">
                     <div

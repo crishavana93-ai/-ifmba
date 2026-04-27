@@ -182,30 +182,6 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
           </div>
         </div>
 
-        {/* Courts summary — compact line listing our home arena + any extras
-            from Sanity. Links to the dedicated /hallar page for the full
-            schedule, map, and transit info. */}
-        <div className="foot-courts">
-          <div className="foot-col-h">Hallar &amp; planer</div>
-          {courts && courts.length > 0 ? (
-            <ul className="foot-courts-list">
-              {courts.slice(0, 3).map((c: any) => (
-                <li key={c._id}>
-                  <span className="foot-court-name">{c.name}</span>
-                  {c.isHome && <span className="foot-court-badge">Hemma</span>}
-                  {c.address && <span className="foot-court-addr">· {c.address}</span>}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="foot-courts-fallback">
-              Latinskolans sporthall · Lorensborgsgatan 1, Malmö
-            </p>
-          )}
-          <a className="foot-courts-link" href="/hallar">
-            Se alla hallar, scheman &amp; karta →
-          </a>
-        </div>
         <div className="foot-bottom">
           <span>© 2026 MBA · Malmö Basket</span>
           <span className="foot-bottom-links">

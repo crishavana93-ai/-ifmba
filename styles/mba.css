@@ -3260,20 +3260,46 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   position: relative;
   overflow: hidden;
 }
+/* Stronger scrim so player names and numbers stay legible over any photo. */
+.card.has-photo .card-front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(11,18,32,0.10) 0%,
+    rgba(11,18,32,0.35) 45%,
+    rgba(11,18,32,0.92) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
 .card.has-photo .card-num {
   color: #fff;
-  text-shadow: 0 2px 18px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.7);
-  opacity: .95;
+  text-shadow: 0 2px 22px rgba(0,0,0,.85), 0 1px 3px rgba(0,0,0,.95);
+  opacity: 1;
 }
 .card.has-photo .card-name-last,
 .card.has-photo .card-name-init {
   color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  text-shadow: 0 2px 6px rgba(0,0,0,.95), 0 1px 2px rgba(0,0,0,.95);
+}
+.card.has-photo .card-name-last {
+  font-size: clamp(16px, 2.4vw, 26px);
+  letter-spacing: -0.005em;
+}
+.card.has-photo .card-name-init {
+  color: rgba(255,255,255,0.85);
+  font-size: clamp(10px, 1.6vw, 13px);
 }
 .card.has-photo .card-flag {
-  background: rgba(11,18,32,.55);
+  background: rgba(11,18,32,.7);
   backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.15);
 }
+/* Slightly larger card on desktop so faces and numbers read at a glance. */
+.card { border: 1px solid rgba(255,255,255,0.08); }
+.card:hover { box-shadow: 10px 10px 0 0 var(--yellow); }
 
 /* ============================================================
    READABILITY PATCHES — force light text anywhere a component's
