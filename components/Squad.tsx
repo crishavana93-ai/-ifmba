@@ -40,7 +40,7 @@ export default function Squad({
                 <div
                   key={p._id}
                   className={`card${hasPhoto ? ' has-photo' : ''}`}
-                  style={{ flex: '0 0 clamp(240px,28vw,300px)', aspectRatio: '3/4' }}
+                  style={{ flex: '0 0 clamp(200px,24vw,240px)', aspectRatio: '3/4' }}
                 >
                   <div className="card-inner">
                     <div
@@ -48,9 +48,10 @@ export default function Squad({
                       style={
                         hasPhoto
                           ? {
-                              backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.15) 45%, rgba(11,18,32,0.85) 100%), url(${p.photoUrl})`,
+                              backgroundImage: `linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.10) 50%, rgba(11,18,32,0.78) 100%), url(${p.photoUrl})`,
                               backgroundSize: 'cover',
-                              backgroundPosition: 'center top',
+                              backgroundPosition: 'center 25%',
+                              backgroundRepeat: 'no-repeat',
                             }
                           : undefined
                       }
