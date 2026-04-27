@@ -204,7 +204,10 @@ function Ballot({
 }
 
 export default function Spotlight({ players = [], num, numText, className }: Props) {
-  const candidates = (players || []).slice(0, 6)
+  // Only show players currently marked active in Studio. The Sanity query
+  // already filters by `active == true`, but a render-time guard makes the
+  // poll resilient to stale/cached payloads.
+  const candidates = (players || []).filter((p: any) => p && p.active !== false).slice(0, 6)
   const monthKey = currentMonthKey()
   const seasonKey = currentSeasonKey()
 
