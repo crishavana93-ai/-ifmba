@@ -24,6 +24,7 @@ import Apparel from '@/components/Apparel'
 import SponsorTeaser from '@/components/SponsorTeaser'
 import Spotlight from '@/components/Spotlight'
 import Predict from '@/components/Predict'
+import Swish from '@/components/Swish'
 // Manifesto + JoinCTA retired 2026-04-24 — kept in /components for easy revival.
 import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -163,6 +164,13 @@ export default async function Home() {
           there so the landing page stays focused and fast. */}
       <ScrollReveal>
         <SponsorTeaser sponsorCount={sponsors?.length || 0} num="10" numText="PARTNERS" />
+      </ScrollReveal>
+
+      {/* 11 · STÖD KLUBBEN — Swish donations.
+          Renders null entirely if `swishNumber` isn't set in Sanity, so
+          the page degrades gracefully until Cris pastes the real number. */}
+      <ScrollReveal>
+        <Swish settings={settings} num="11" numText="STÖD" className="section-dark" />
       </ScrollReveal>
 
       </main>

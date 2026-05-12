@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { urlFor } from '@/lib/sanity'
+import { useT } from '@/lib/i18n'
 
 function pad(n: number) { return n < 10 ? '0' + n : String(n) }
 function fmtSweDate(d: Date) {
@@ -10,6 +11,7 @@ function fmtSweDate(d: Date) {
 }
 
 export default function Hero({ settings }: { settings: any }) {
+  const t = useT()
   const heroUrl = settings?.heroImage
     ? urlFor(settings.heroImage).width(1920).quality(85).url()
     : '/mba_family_hero.jpeg'
@@ -79,9 +81,9 @@ export default function Hero({ settings }: { settings: any }) {
         </div>
 
         <h1 className="hero-h1">
-          <span className="outline">THE</span><br />
+          <span className="outline">{t('hero.welcome')}</span><br />
           <span className="accent">MBA</span><br />
-          FAMILY
+          {t('hero.family')}
         </h1>
 
         <p className="hero-sub">

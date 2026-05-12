@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import Crest from './Crest'
+// Crest dropped from the navbar 2026-05-12 — Cris wanted a clean wordmark only.
 import LangToggle from './LangToggle'
 import { useT } from '@/lib/i18n'
 
@@ -65,17 +65,14 @@ export default function Navbar() {
       <div className="contain nav-inner">
         <Link
           href="/"
-          className="nav-logo"
+          className="nav-logo nav-logo--clean"
           aria-label={t('nav.logoAria')}
           onClick={onLogoClick}
         >
-          <div className="nav-logo-mark">
-            <Crest size={40} priority />
-          </div>
-          <div>
-            <div className="nav-logo-text">MBA</div>
-            <div className="nav-logo-sub">Malmö Basket Amatörer</div>
-          </div>
+          {/* Wordmark only — the circular crest + "Malmö Basket Amatörer"
+              subtitle were retired so the header reads as a single confident
+              brand token, like NYK, PSG, or LAFC. */}
+          <span className="nav-logo-text">MBA</span>
         </Link>
 
         <div className={`nav-links${menuOpen ? ' open' : ''}`} id="nav-links">

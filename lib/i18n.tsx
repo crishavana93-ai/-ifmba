@@ -47,6 +47,8 @@ const dict: Record<string, { sv: string; en: string }> = {
 
   // Hero
   'hero.badge':       { sv: 'Säsong', en: 'Season' },
+  'hero.welcome':     { sv: 'VÄLKOMMEN', en: 'WELCOME' },
+  'hero.family':      { sv: 'FAMILJEN',  en: 'FAMILY'  },
   'hero.joinNow':     { sv: 'Gå med nu',  en: 'Join now' },
   'hero.seeTable':    { sv: 'Se tabellen', en: 'See standings' },
   'hero.scroll':      { sv: 'SCROLL',      en: 'SCROLL' },

@@ -26,5 +26,57 @@ export default defineType({
     defineField({name: 'spotlightPlayer', title: 'Player of the Month', type: 'reference', to: [{type: 'player'}]}),
     defineField({name: 'spotlightQuoteSv', title: 'Spotlight Quote (Swedish)', type: 'text'}),
     defineField({name: 'spotlightQuoteEn', title: 'Spotlight Quote (English)', type: 'text'}),
+
+    // ── Swish donations ─────────────────────────────────────────────
+    // Swish is Sweden's de-facto donation rail. We display the number + a
+    // QR code on the public site. Visitors swipe the QR in their bank app
+    // or type the number manually. We track the season goal here so the
+    // progress bar renders without a database call.
+    defineField({
+      name: 'swishNumber',
+      title: 'Swish Number',
+      type: 'string',
+      description: '10-digit Swish number (e.g. 1234567890). Leave empty to hide the donation block.',
+    }),
+    defineField({
+      name: 'swishPayee',
+      title: 'Swish Payee Name',
+      type: 'string',
+      initialValue: 'IFK Malmö Basket',
+      description: 'Shown to donor in their banking app after they scan.',
+    }),
+    defineField({
+      name: 'swishMessage',
+      title: 'Default Swish Message',
+      type: 'string',
+      initialValue: 'MBA Säsong 2026/27',
+      description: 'Pre-filled message so donations are reconcilable.',
+    }),
+    defineField({
+      name: 'swishGoalSek',
+      title: 'Season Goal (SEK)',
+      type: 'number',
+      initialValue: 50000,
+      description: 'Target amount for the season (drives the progress bar).',
+    }),
+    defineField({
+      name: 'swishRaisedSek',
+      title: 'Raised So Far (SEK)',
+      type: 'number',
+      initialValue: 0,
+      description: 'Update manually after each transfer reconciliation.',
+    }),
+    defineField({
+      name: 'swishGoalLabelSv',
+      title: 'Donation Goal Label (Swedish)',
+      type: 'string',
+      initialValue: 'Hjälp oss till Div 1',
+    }),
+    defineField({
+      name: 'swishGoalLabelEn',
+      title: 'Donation Goal Label (English)',
+      type: 'string',
+      initialValue: 'Help us reach Div 1',
+    }),
   ],
 })

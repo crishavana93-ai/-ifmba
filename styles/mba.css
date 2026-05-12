@@ -253,6 +253,19 @@ button { font-family: inherit; cursor: pointer; }
 .nav.shrink .nav-logo-text { color: var(--ink); text-shadow: none; }
 .nav.shrink .nav-logo-sub { color: var(--muted); text-shadow: none; }
 
+/* Clean wordmark variant — no crest, no subtitle. Just "MBA". */
+.nav-logo--clean {
+  gap: 0;
+}
+.nav-logo--clean .nav-logo-text {
+  font-size: clamp(22px, 2.2vw, 28px);
+  letter-spacing: 0.06em;
+  /* Yellow accent bar under "MBA" so the wordmark still feels designed. */
+  padding-bottom: 2px;
+  border-bottom: 3px solid var(--yellow);
+  line-height: 1;
+}
+
 .nav-links { display: flex; gap: clamp(14px, 2.2vw, 28px); align-items: center; }
 .nav-links a {
   font-size: 12.5px; font-weight: 800; letter-spacing: 0.12em;
@@ -1259,6 +1272,32 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 .apparel .ap-price {
   font-size: 14px; font-weight: 700; color: var(--yellow);
   margin-top: auto; padding-top: 8px;
+}
+/* Small ribbon-tag in the top-left of the photo (NEW · LIMITED · COACH PICK). */
+.apparel .ap-tag {
+  position: absolute; top: 12px; left: 12px;
+  z-index: 2;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em;
+  font-weight: 800; text-transform: uppercase;
+  padding: 4px 8px;
+  background: var(--yellow); color: var(--ink);
+  border-radius: 100px;
+}
+/* Shop CTA pinned at the bottom of every card. */
+.apparel .ap-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 10px; width: fit-content;
+  padding: 7px 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 100px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  font-weight: 700; text-transform: uppercase;
+  color: #fff; background: transparent;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.apparel .ap-cta:hover {
+  background: var(--yellow); color: var(--ink); border-color: var(--yellow);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -2778,7 +2817,16 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
   text-shadow: 0 6px 24px rgba(0,0,0,0.35);
 }
-.hero-h1 .outline { -webkit-text-stroke: 2px #fff; color: transparent; }
+.hero-h1 .outline {
+  -webkit-text-stroke: 2px #fff;
+  color: transparent;
+  /* "VÄLKOMMEN" / "WELCOME" are longer than "THE" was — scale down so the
+     line sits as a banner above MBA without overflowing on mobile. */
+  font-size: 0.45em;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  margin-bottom: clamp(4px, 0.6vw, 10px);
+}
 .hero-h1 .accent { color: var(--yellow); }
 
 .hero-sub {
@@ -3290,12 +3338,24 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255,255,255,0.12);
 }
+/* Player number on photo cards — keep it visible but never let it bleed
+   over the player's face. Sits in a small "jersey-chip" at top-right with
+   a translucent navy backing so it reads on bright skin/background. */
 .card.has-photo .card-num {
   position: absolute !important;
   top: 10px;
-  right: 16px;
+  right: 12px;
   z-index: 2;
-  text-shadow: 0 2px 14px rgba(0,0,0,.7), 0 1px 3px rgba(0,0,0,.85);
+  /* Was clamp(44px,11vw,108px) — that landed on heads. Halved it. */
+  font-size: clamp(22px, 3.4vw, 38px) !important;
+  line-height: 1 !important;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(11,18,32,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.18);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 .card.has-photo .card-name-block {
   position: absolute !important;
@@ -3314,7 +3374,6 @@ table.league .pts { font-weight: 800; color: var(--ink); font-family: var(--mono
 }
 .card.has-photo .card-num {
   color: #fff;
-  text-shadow: 0 2px 14px rgba(0,0,0,.7), 0 1px 3px rgba(0,0,0,.85);
   opacity: 1;
 }
 .card.has-photo .card-name-last,
@@ -4303,3 +4362,140 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .section-dark .manifesto-body { color: rgba(245,246,250,0.88); }
 .section-dark .manifesto-body em { color: #fff; background: linear-gradient(180deg, transparent 60%, rgba(255,203,5,0.45) 60%); }
 .section-dark .manifesto .title em { color: var(--yellow); }
+
+/* ═══════════════════════════════════════════════════════
+   SWISH · donation block (renamed `.swishd` to avoid clash
+   with the legacy `.swish` Bloomberg-terminal class used
+   by SwishMeter).
+   ═══════════════════════════════════════════════════════ */
+.swishd .swishd-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  margin-top: clamp(28px, 3vw, 48px);
+}
+@media (max-width: 720px) {
+  .swishd .swishd-grid { grid-template-columns: 1fr; }
+}
+.swishd-qr {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.swishd-qr-frame {
+  position: relative;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid rgba(11,18,32,0.12);
+  box-shadow: 8px 8px 0 0 var(--yellow);
+  width: fit-content;
+}
+.swishd-qr-frame img {
+  display: block; width: 240px; height: 240px;
+}
+.swishd-qr-brand {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: #EE3A8C; /* Swish brand magenta */
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 4px solid #fff;
+  text-transform: lowercase;
+  font-family: var(--font);
+}
+.swishd-open {
+  font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.18em;
+  font-weight: 800; text-transform: uppercase;
+  color: var(--ink); text-decoration: none;
+  padding: 9px 16px;
+  background: var(--yellow);
+  border-radius: 100px;
+  transition: transform 0.2s ease;
+}
+.swishd-open:hover { transform: translateY(-2px); }
+
+.swishd-body { display: flex; flex-direction: column; gap: 22px; }
+.swishd-text {
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.55;
+  max-width: 540px;
+}
+.swishd-number-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+}
+.section-alt .swishd-number-row {
+  border-color: rgba(11,18,32,0.10);
+  background: rgba(11,18,32,0.03);
+}
+.swishd-key {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; opacity: 0.65; margin-bottom: 4px;
+}
+.swishd-number {
+  font-family: var(--mono);
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.swishd-payee {
+  font-size: 12px; opacity: 0.7; margin-top: 6px;
+}
+.swishd-copy {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  font-weight: 700; text-transform: uppercase;
+  padding: 9px 14px;
+  border: 1px solid currentColor;
+  background: transparent;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: inherit;
+}
+.swishd-copy:hover, .swishd-copy.is-copied {
+  background: var(--yellow); color: var(--ink); border-color: var(--yellow);
+}
+.swishd-meter { display: flex; flex-direction: column; gap: 8px; }
+.swishd-meter-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  flex-wrap: wrap;
+}
+.swishd-meter-label {
+  font-weight: 800; font-size: clamp(14px, 1.1vw, 17px);
+}
+.swishd-meter-val {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+.swishd-meter-val strong { font-weight: 800; opacity: 1; color: var(--yellow); }
+.swishd-meter-track {
+  position: relative;
+  height: 10px; width: 100%;
+  background: rgba(255,255,255,0.10);
+  border-radius: 100px; overflow: hidden;
+}
+.section-alt .swishd-meter-track { background: rgba(11,18,32,0.10); }
+.swishd-meter-fill {
+  position: absolute; inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--yellow), #ffd84d);
+  border-radius: 100px;
+  transition: width 0.8s var(--ease);
+}
+.swishd-meter-pct {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  font-weight: 800; opacity: 0.85;
+}
+.swishd-thanks {
+  font-style: italic;
+  opacity: 0.8;
+  font-size: 14px;
+}

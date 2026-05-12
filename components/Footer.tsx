@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-import Crest from './Crest'
+// Crest deliberately removed from the footer 2026-05-12 — Cris wanted a
+// cleaner mark-only treatment so the logo doesn't echo the header.
 
 /**
  * Footer — newsletter, quick links, contact, and socials.
@@ -103,7 +104,6 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
         <div className="foot-grid">
           <div>
             <div className="foot-brand-row">
-              <Crest size={56} />
               <div>
                 <div className="foot-brand-name">MBA</div>
                 <div className="foot-brand-tag">Malmö Basket Amatörer</div>
@@ -171,6 +171,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
               <a href="/hallar">Hallar</a>
               <a href="/partners">Partners</a>
               <a href="/anslut">Bli medlem</a>
+              <a href="/donera">Donera (Swish)</a>
             </div>
           </div>
           <div>
