@@ -11,6 +11,7 @@ import { safeFetch, QUERIES } from '@/lib/sanity'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollProgress from '@/components/ScrollProgress'
+import ScrollReveal from '@/components/ScrollReveal'
 import BackToTop from '@/components/BackToTop'
 import Swish from '@/components/Swish'
 
@@ -36,16 +37,19 @@ export default async function DoneraPage() {
       <Navbar />
       <main id="main" style={{ paddingTop: 'clamp(48px, 8vw, 96px)' }}>
         {!settings?.swishNumber ? (
+          // Static placeholder — NO `.r` reveal class here. The reveal system
+          // keeps `.r` elements at opacity:0 until a `<ScrollReveal>` ancestor
+          // observes them; without that wrapper the page renders blank.
           <section className="section section-dark">
             <div className="contain" style={{ textAlign: 'center' }}>
-              <div className="label r">Stöd klubben</div>
-              <h1 className="title r" style={{ maxWidth: 720, margin: '0 auto' }}>
+              <div className="label">Stöd klubben</div>
+              <h1 className="title" style={{ maxWidth: 720, margin: '0 auto' }}>
                 Donera <em>kommer snart</em>
               </h1>
-              <p style={{ marginTop: 16, opacity: 0.8 }}>
+              <p style={{ marginTop: 16, opacity: 0.85, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
                 Vi sätter upp Swish-numret den här veckan. Återkom snart, eller
                 maila oss på{' '}
-                <a href={`mailto:${settings?.contactEmail || 'mba.malmo.basket@gmail.com'}`}>
+                <a href={`mailto:${settings?.contactEmail || 'mba.malmo.basket@gmail.com'}`} style={{ color: 'var(--yellow)' }}>
                   {settings?.contactEmail || 'mba.malmo.basket@gmail.com'}
                 </a>
                 .
@@ -53,7 +57,11 @@ export default async function DoneraPage() {
             </div>
           </section>
         ) : (
-          <Swish settings={settings} num="01" numText="STÖD" className="section-dark" />
+          // Swish.tsx uses `.r` classes internally for label/title, so wrap it
+          // in ScrollReveal so those elements actually become visible.
+          <ScrollReveal>
+            <Swish settings={settings} num="01" numText="STÖD" className="section-dark" />
+          </ScrollReveal>
         )}
       </main>
       <Footer settings={settings} courts={courts} />

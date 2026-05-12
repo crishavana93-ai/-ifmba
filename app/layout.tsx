@@ -39,15 +39,20 @@ export const metadata: Metadata = {
   // reliably, alongside Next.js's auto-generation from src/app/icon.png
   // and src/app/apple-icon.png. The classic /favicon.ico is the ultimate
   // fallback that every browser looks for first.
+  // ?v=2 cache-bust: the original favicon.ico that shipped with the Vercel
+  // template was a corrupted Targa file, so browsers + Vercel's edge cache
+  // held onto Vercel's default triangle. Bump this version every time the
+  // icon source changes — it's the only reliable way to force every Chrome
+  // / Safari / Firefox install to refetch.
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon', type: 'image/png' },
+      { url: '/favicon.ico?v=2', sizes: 'any' },
+      { url: '/icon?v=2', type: 'image/png' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/apple-touch-icon.png?v=2', sizes: '180x180' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon.ico?v=2',
   },
   robots: { index: true, follow: true },
 }

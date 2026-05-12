@@ -37,6 +37,20 @@ function fmtSek(n: number) {
   return new Intl.NumberFormat('sv-SE').format(n) + ' kr'
 }
 
+/** Render "0723173140" as "072-317 31 40" — Swedish phone-style. Falls back
+ *  to the raw input if it's not a 10-digit personal Swish number. */
+function fmtSwishNumber(raw: string) {
+  const d = raw.replace(/\D/g, '')
+  if (d.length === 10 && d.startsWith('0')) {
+    return `${d.slice(0, 3)}-${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8, 10)}`
+  }
+  if (d.length === 10) {
+    // Business / 123-Swish format (typical: 1234567890 → 123 456 78 90)
+    return `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8, 10)}`
+  }
+  return raw
+}
+
 export default function Swish({
   settings,
   num,
@@ -140,7 +154,7 @@ export default function Swish({
             <div className="swishd-number-row">
               <div>
                 <div className="swishd-key">{copy.number}</div>
-                <div className="swishd-number">{number}</div>
+                <div className="swishd-number">{fmtSwishNumber(number)}</div>
                 <div className="swishd-payee">{payee}</div>
               </div>
               <CopyButton value={number} labels={{ copy: copy.copy, copied: copy.copied }} />

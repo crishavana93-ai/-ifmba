@@ -36,7 +36,8 @@ export default defineType({
       name: 'swishNumber',
       title: 'Swish Number',
       type: 'string',
-      description: '10-digit Swish number (e.g. 1234567890). Leave empty to hide the donation block.',
+      initialValue: '0723173140',
+      description: '10-digit Swish number. Personal Swish: leading 0 + mobile (e.g. 0723173140). Business Swish: 123-prefix (e.g. 1234567890). Spaces are auto-stripped. Leave empty to hide the donation block.',
     }),
     defineField({
       name: 'swishPayee',
