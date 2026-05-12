@@ -36,8 +36,8 @@ export default defineType({
       name: 'swishNumber',
       title: 'Swish Number',
       type: 'string',
-      initialValue: '0723173140',
-      description: '10-digit Swish number. Personal Swish: leading 0 + mobile (e.g. 0723173140). Business Swish: 123-prefix (e.g. 1234567890). Spaces are auto-stripped. Leave empty to hide the donation block.',
+      initialValue: '',
+      description: '10-digit Swish number (club account). Leave empty to show a "coming soon" placeholder on /donera and hide the homepage Swish block entirely.',
     }),
     defineField({
       name: 'swishPayee',
@@ -78,6 +78,68 @@ export default defineType({
       title: 'Donation Goal Label (English)',
       type: 'string',
       initialValue: 'Help us reach Div 1',
+    }),
+
+    // ── Gear donations (in-kind for international communities) ────
+    // People donating used basketballs, shoes, jerseys, etc. The club
+    // forwards gear to international basketball communities in need.
+    // Primary contact = email (creates a paper trail, looks more
+    // professional than WhatsApp). WhatsApp number is optional —
+    // leave empty to hide that button.
+    defineField({
+      name: 'gearContactEmail',
+      title: 'Gear Donations Contact Email',
+      type: 'string',
+      initialValue: 'mba.malmo.basket@gmail.com',
+      description: 'Email donors message to arrange handoff. Defaults to the club Gmail; once a dedicated alias like gear@ifmba.se is set up, paste that instead.',
+    }),
+    defineField({
+      name: 'gearWhatsappNumber',
+      title: 'Gear Donations WhatsApp Number (Optional)',
+      type: 'string',
+      initialValue: '',
+      description: 'Optional secondary contact. E.164 format, no plus, no spaces (e.g. 46723173140). Leave empty to hide the WhatsApp button.',
+    }),
+    defineField({
+      name: 'gearMessageSv',
+      title: 'Gear Donation Email/WhatsApp Subject (Swedish)',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Donera utrustning till MBA',
+      description: 'Pre-filled email subject / WhatsApp message (Swedish).',
+    }),
+    defineField({
+      name: 'gearMessageEn',
+      title: 'Gear Donation Email/WhatsApp Subject (English)',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Donate basketball gear to MBA',
+    }),
+    // Stats panel — four counters Cris updates by hand in Studio.
+    defineField({
+      name: 'gearStatShoesCount',
+      title: 'Gear Stats — Pairs of Shoes Collected',
+      type: 'number',
+      initialValue: 0,
+    }),
+    defineField({
+      name: 'gearStatBallsCount',
+      title: 'Gear Stats — Basketballs Collected',
+      type: 'number',
+      initialValue: 0,
+    }),
+    defineField({
+      name: 'gearStatClothesCount',
+      title: 'Gear Stats — Clothing Items Collected',
+      type: 'number',
+      initialValue: 0,
+    }),
+    defineField({
+      name: 'gearStatKitsCount',
+      title: 'Gear Stats — Kits Distributed to Players',
+      type: 'number',
+      initialValue: 0,
+      description: 'Total complete kits (shoes + ball + jersey) handed out to players in need.',
     }),
   ],
 })

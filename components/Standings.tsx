@@ -85,7 +85,11 @@ export default function Standings({
 
         {tab === 'div3' && (
           <>
-            <div className="table-wrap open r" style={{ width: '100%', marginTop: '16px' }}>
+            {/* No `.r` class here — these nodes are conditionally rendered, so
+                they mount AFTER the parent ScrollReveal has already swept &
+                disconnected its observer. Leaving `.r` makes them stay at
+                opacity:0 forever (the "vanishing tab content" bug). */}
+            <div className="table-wrap open" style={{ width: '100%', marginTop: '16px' }}>
               <table className="league">
                 <thead>
                   <tr>
@@ -113,7 +117,7 @@ export default function Standings({
               </table>
             </div>
             <a
-              className="profixio-credit r"
+              className="profixio-credit"
               href={profixioDiv3}
               target="_blank"
               rel="noopener"
@@ -124,7 +128,8 @@ export default function Standings({
         )}
 
         {tab === 'div2' && (
-          <div className="st-coming r">
+          // No `.r` — same conditional-render reveal bug as Div 3 panel above.
+          <div className="st-coming">
             <div className="st-coming-inner">
               <div className="st-coming-label">Säsong 2026/27</div>
               <h3 className="st-coming-head">

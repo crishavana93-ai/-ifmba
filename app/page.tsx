@@ -25,6 +25,7 @@ import SponsorTeaser from '@/components/SponsorTeaser'
 import Spotlight from '@/components/Spotlight'
 import Predict from '@/components/Predict'
 import Swish from '@/components/Swish'
+import GearDonations from '@/components/GearDonations'
 // Manifesto + JoinCTA retired 2026-04-24 — kept in /components for easy revival.
 import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -171,6 +172,20 @@ export default async function Home() {
           the page degrades gracefully until Cris pastes the real number. */}
       <ScrollReveal>
         <Swish settings={settings} num="11" numText="STÖD" className="section-dark" />
+      </ScrollReveal>
+
+      {/* 12 · GE UTRUSTNING — in-kind donations for international communities.
+          Email-primary, WhatsApp optional. Photo gallery pulls from Sanity
+          mediaAsset (category='community'). Hides itself if neither
+          gearContactEmail nor gearWhatsappNumber is set. */}
+      <ScrollReveal>
+        <GearDonations
+          settings={settings}
+          media={media}
+          num="12"
+          numText="UTRUSTNING"
+          className="section-alt"
+        />
       </ScrollReveal>
 
       </main>

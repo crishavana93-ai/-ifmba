@@ -10,17 +10,13 @@ export default function Loader() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Cris asked (2026-05-12) for the splash to be just the crest — no MBA
+  // wordmark, no "Malmö Basket Amatörer" subtitle. Cleaner, more cinematic.
   return (
     <div className={`loader${gone ? ' gone' : ''}`} id="loader">
       <div className="loader-crest">
-        <Crest size={120} />
+        <Crest size={160} />
       </div>
-      <div className="loader-word">
-        <span style={{ animationDelay: '0.05s' }}>M</span>
-        <span style={{ animationDelay: '0.10s' }}>B</span>
-        <span style={{ animationDelay: '0.15s' }}>A</span>
-      </div>
-      <div className="loader-sub">Malmö Basket Amatörer</div>
     </div>
   )
 }

@@ -14,6 +14,7 @@ import ScrollProgress from '@/components/ScrollProgress'
 import ScrollReveal from '@/components/ScrollReveal'
 import BackToTop from '@/components/BackToTop'
 import Swish from '@/components/Swish'
+import GearDonations from '@/components/GearDonations'
 
 export const revalidate = 60
 
@@ -25,9 +26,10 @@ export const metadata: Metadata = {
 }
 
 export default async function DoneraPage() {
-  const [settings, courts] = await Promise.all([
+  const [settings, courts, media] = await Promise.all([
     safeFetch<any>(QUERIES.settings, null),
     safeFetch<any[]>(QUERIES.courts, []),
+    safeFetch<any[]>(QUERIES.mediaAll, []),
   ])
 
   return (
@@ -63,6 +65,18 @@ export default async function DoneraPage() {
             <Swish settings={settings} num="01" numText="STÖD" className="section-dark" />
           </ScrollReveal>
         )}
+
+        {/* In-kind gear donations — independent of swishNumber. Hides itself
+            if gearWhatsappNumber is not set in Sanity. */}
+        <ScrollReveal>
+          <GearDonations
+            settings={settings}
+            media={media}
+            num="02"
+            numText="UTRUSTNING"
+            className="section-alt"
+          />
+        </ScrollReveal>
       </main>
       <Footer settings={settings} courts={courts} />
     </>

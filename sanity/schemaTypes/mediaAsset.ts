@@ -50,6 +50,7 @@ export default defineType({
           {title: 'Merch / Apparel', value: 'merch'},
           {title: 'Court photo', value: 'court'},
           {title: 'Sponsor asset', value: 'sponsor'},
+          {title: 'Community / Gear donations gallery', value: 'community'},
         ],
       },
       validation: r => r.required(),
