@@ -1,20 +1,16 @@
-// List all players in Sanity — useful when the previous patch script
-// didn't match a player (e.g. wrong first-name spelling) so Cris can
-// see the actual data and pick the right doc.
+// List all players in Sanity — useful when the patch-nikos script didn't
+// match the right player so you can see the actual data and pick a doc ID.
 //
-// Run:
-//   cd ~/ifmba/sanity
-//   npx sanity exec list-players.mjs --with-user-token
+// Run from the project root (where .env.local lives):
+//   cd ~/ifmba
+//   node sanity/list-players.mjs
 //
-// Outputs a table of every player doc with _id, name, nationality, flag.
-// Highlights anyone with a Greek flag or nationality so the Albania
-// fix is obvious to apply.
+// No Sanity CLI needed. Reads projectId + token from .env.local.
 
-import { getCliClient } from 'sanity/cli'
-
-const client = getCliClient({ apiVersion: '2024-01-01' })
+import { getReadClient } from './_client.mjs'
 
 async function main() {
+  const client = await getReadClient()
   const players = await client.fetch(
     `*[_type=="player"] | order(number asc){
       _id, firstName, lastName, number, nationality, flag, active
@@ -26,7 +22,7 @@ async function main() {
     return
   }
 
-  console.log(`\n▸ ${players.length} player document(s) in Sanity:\n`)
+  console.log(`▸ ${players.length} player document(s) in Sanity:\n`)
 
   const pad = (s, n) => String(s ?? '').padEnd(n, ' ').slice(0, n)
   console.log(
@@ -58,12 +54,11 @@ async function main() {
     )
   }
 
-  console.log(`\nTo patch a specific player, run:`)
-  console.log(`  npx sanity exec patch-nikos-albania.mjs --with-user-token`)
-  console.log(`(or edit that script first to match the right firstName / _id)`)
+  console.log(`\nTo patch a specific player:`)
+  console.log(`  TARGET_ID=<id> node sanity/patch-nikos-albania.mjs`)
 }
 
 main().catch((err) => {
-  console.error('✗ Failed:', err)
+  console.error('✗ Failed:', err.message)
   process.exit(1)
 })

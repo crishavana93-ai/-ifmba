@@ -1,24 +1,22 @@
 // Patch the "Nikos" player document → nationality: Albania, flag: 🇦🇱
 //
-// Run from inside the Sanity Studio project:
-//   cd ~/ifmba/sanity
-//   npx sanity exec patch-nikos-albania.mjs --with-user-token
+// Run from the project root (where .env.local lives):
+//   cd ~/ifmba
+//   node sanity/patch-nikos-albania.mjs
 //
 // MATCH STRATEGY (in order):
 //   1. If env var TARGET_ID is set, patch only that doc (safest).
-//        TARGET_ID=player-abc123 npx sanity exec patch-nikos-albania.mjs ...
+//        TARGET_ID=player-abc123 node sanity/patch-nikos-albania.mjs
 //   2. firstName starts with "Nikos" / "Niko" / "Nick" (case-insensitive)
 //   3. Players whose current nationality is "Greek/Grekland" / flag 🇬🇷
 //
 // If multiple candidates are found, the script lists them and exits
-// without patching — set TARGET_ID to pick the exact one. This avoids
-// accidentally mass-patching every Greek player.
+// without patching — re-run with TARGET_ID to pick the exact one.
 
-import { getCliClient } from 'sanity/cli'
-
-const client = getCliClient({ apiVersion: '2024-01-01' })
+import { getWriteClient } from './_client.mjs'
 
 async function main() {
+  const client = await getWriteClient()
   const targetId = process.env.TARGET_ID
 
   let matches
@@ -45,7 +43,10 @@ async function main() {
   }
 
   if (!matches.length) {
-    console.log('✗ No matching player found. Run `npx sanity exec list-players.mjs` first to see all players and pick a TARGET_ID.')
+    console.log(
+      '✗ No matching player found. Run `node sanity/list-players.mjs` first ' +
+        'to see all players and pick a TARGET_ID.',
+    )
     return
   }
 
@@ -63,7 +64,7 @@ async function main() {
       '\n⚠ Multiple candidates — refusing to patch all of them automatically.',
     )
     console.log('   Re-run with TARGET_ID set to the exact _id, e.g.:')
-    console.log(`     TARGET_ID=${matches[0]._id} npx sanity exec patch-nikos-albania.mjs --with-user-token`)
+    console.log(`     TARGET_ID=${matches[0]._id} node sanity/patch-nikos-albania.mjs`)
     return
   }
 
@@ -77,6 +78,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('✗ Patch failed:', err)
+  console.error('✗ Patch failed:', err.message)
   process.exit(1)
 })

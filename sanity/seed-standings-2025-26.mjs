@@ -1,25 +1,13 @@
 // MBA Standings seed — Div 3 Skåne Herr · 2025/26
 //
-// Run from inside the Sanity Studio project:
-//   cd ~/ifmba/sanity
-//   npx sanity exec seed-standings-2025-26.mjs --with-user-token
+// Run from the project root (where .env.local lives):
+//   cd ~/ifmba
+//   node sanity/seed-standings-2025-26.mjs
 //
-// What it does:
-//   - Upserts 8 `standing` documents for Div 3 Skåne Herr 2025/26
-//   - MBA is set to 7-0 (current actual record, top of table)
-//   - Other teams are seeded with internally-consistent records so the
-//     table reads as a real mid-season snapshot, not random numbers.
-//
-// Safe to run multiple times — every doc has a stable _id and is
-// createOrReplace'd. To overwrite with even fresher real numbers later,
-// just edit the ROWS array below and re-run.
-//
-// To wipe all standings instead and start from scratch, run:
-//   npx sanity documents delete '*[_type=="standing"]'
+// Upserts 8 `standing` documents with MBA at 7-0 (current real record).
+// Safe to re-run — every doc has a stable _id and is createOrReplace'd.
 
-import { getCliClient } from 'sanity/cli'
-
-const client = getCliClient({ apiVersion: '2024-01-01' })
+import { getWriteClient } from './_client.mjs'
 
 // One row per team. Stable _id = `standing-div3-<slug>` so re-runs upsert.
 const ROWS = [
@@ -42,8 +30,8 @@ function slug(s) {
 }
 
 async function main() {
-  const dataset = client.config().dataset
-  console.log(`▸ Seeding Div 3 standings into dataset: ${dataset}`)
+  const client = await getWriteClient()
+  console.log(`▸ Seeding Div 3 standings ...`)
 
   for (const row of ROWS) {
     const _id = `standing-div3-${slug(row.team)}`
@@ -59,10 +47,25 @@ async function main() {
     )
   }
 
+  // Also delete any OLD standings docs that don't match our new _id pattern
+  // (the source of the lingering 5-0 record). Match div3-series docs whose
+  // _id doesn't start with our slug prefix.
+  const stale = await client.fetch(
+    `*[_type=="standing" && (series == "div3" || !defined(series)) && !(_id in $keep)]{_id, team, wins, losses}`,
+    { keep: ROWS.map((r) => `standing-div3-${slug(r.team)}`) },
+  )
+  if (stale.length) {
+    console.log(`\n▸ Deleting ${stale.length} stale standings doc(s):`)
+    for (const s of stale) {
+      console.log(`   - ${s.team || '(no team)'} (${s.wins ?? '?'}-${s.losses ?? '?'}) · _id=${s._id}`)
+      await client.delete(s._id)
+    }
+  }
+
   console.log('\n✓ Done. Hard-refresh ifmba.se in ~60s (Next.js ISR window).')
 }
 
 main().catch((err) => {
-  console.error('✗ Seed failed:', err)
+  console.error('✗ Seed failed:', err.message)
   process.exit(1)
 })
