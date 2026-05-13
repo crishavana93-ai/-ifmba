@@ -17,10 +17,10 @@ export default function Squad({
       id="squad"
     >
       <div className="contain">
-        <div className="label r">Säsong 2025/26 · 8 nationer</div>
+        <div className="label r">Säsong 2025/26 · 9 nationer</div>
         <h2
           className="title r"
-          dangerouslySetInnerHTML={{ __html: '8 Nationer, <em>ett lag</em>' }}
+          dangerouslySetInnerHTML={{ __html: '9 Nationer, <em>ett lag</em>' }}
         />
         <div className="ribbon-wrap" style={{ marginTop: 'clamp(24px,3vw,40px)' }}>
           <div
@@ -34,6 +34,10 @@ export default function Squad({
           >
             {players
               .filter((p: any) => p && p.active !== false)
+              // Hide players without a photo — placeholder navy boxes with
+              // just a number look broken on the live site. Cris uploads
+              // a photo in Sanity Studio → that player rejoins the lineup.
+              .filter((p: any) => !!p.photoUrl)
               .map((p: any) => {
               const hasPhoto = !!p.photoUrl
               return (

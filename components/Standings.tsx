@@ -27,15 +27,17 @@ export default function Standings({
   const [tab, setTab] = useState<'div3' | 'div2'>('div3')
 
   // ── Div 3 Skåne Herr · 2025/26 — current season ─────────────────────
+  // MBA at 7-0 (undefeated, top of the table). Other teams' GP shifted
+  // upward to keep the table internally consistent (most teams now ~7 GP).
   const div3Sample: Row[] = [
-    { team: 'Malmö Basket Amatörer', position: 1, wins: 5, losses: 0, points: 10, isUs: true },
-    { team: 'Team4Q Div3', position: 2, wins: 4, losses: 1, points: 8 },
-    { team: 'Malmö Ballers', position: 3, wins: 4, losses: 2, points: 8 },
+    { team: 'Malmö Basket Amatörer', position: 1, wins: 7, losses: 0, points: 14, isUs: true },
+    { team: 'Team4Q Div3', position: 2, wins: 5, losses: 2, points: 10 },
+    { team: 'Malmö Ballers', position: 3, wins: 5, losses: 2, points: 10 },
     { team: 'Malbas Motion', position: 4, wins: 4, losses: 3, points: 8 },
-    { team: 'Halmstad BC', position: 5, wins: 3, losses: 2, points: 6 },
-    { team: 'Helamalmö Basket', position: 6, wins: 2, losses: 4, points: 4 },
-    { team: 'Malbas Vit', position: 7, wins: 0, losses: 5, points: 0 },
-    { team: 'IK Eos Lund HJ', position: 8, wins: 0, losses: 5, points: 0 },
+    { team: 'Halmstad BC', position: 5, wins: 3, losses: 4, points: 6 },
+    { team: 'Helamalmö Basket', position: 6, wins: 2, losses: 5, points: 4 },
+    { team: 'Malbas Vit', position: 7, wins: 1, losses: 6, points: 2 },
+    { team: 'IK Eos Lund HJ', position: 8, wins: 0, losses: 7, points: 0 },
   ]
 
   const fromSanity = standings || []

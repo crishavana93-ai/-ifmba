@@ -53,7 +53,7 @@ const dict: Record<string, { sv: string; en: string }> = {
   'hero.seeTable':    { sv: 'Se tabellen', en: 'See standings' },
   'hero.scroll':      { sv: 'SCROLL',      en: 'SCROLL' },
   'hero.sub':         {
-    sv: 'Inte bara ett lag — en familj, en rörelse, en stad. 8 nationer. 1 tröja. Malmös streetball headquarters.',
+    sv: 'Inte bara ett lag — en familj, en rörelse, en stad. 9 nationer. 1 tröja. Malmös streetball headquarters.',
     en: 'Not just a team — a family, a movement, a city. 9 nations. 1 jersey. Malmö\u2019s streetball headquarters.',
   },
 

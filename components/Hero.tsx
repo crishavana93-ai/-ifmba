@@ -88,7 +88,7 @@ export default function Hero({ settings }: { settings: any }) {
 
         <p className="hero-sub">
           {settings?.heroTaglineSv ||
-            'Inte bara ett lag — en familj, en rörelse, en stad. 8 nationer. 1 tröja. Malmös streetball headquarters.'}
+            'Inte bara ett lag — en familj, en rörelse, en stad. 9 nationer. 1 tröja. Malmös streetball headquarters.'}
         </p>
 
         <div className="hero-actions">
