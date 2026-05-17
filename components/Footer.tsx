@@ -168,6 +168,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
               <a href="/#news">Nyheter</a>
               <a href="/#standings">Tabell</a>
               <a href="/#squad">Trupp</a>
+              <a href="/butik">Shop</a>
               <a href="/hallar">Hallar</a>
               <a href="/partners">Partners</a>
               <a href="/anslut">Bli medlem</a>

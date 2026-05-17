@@ -107,4 +107,16 @@ export const QUERIES = {
     "uploadedImageUrl": image.asset->url,
     "image": image
   }`,
+
+  // Shop products — dropship/POD catalog rendered at /butik.
+  // Only in-stock items, sorted by display order then newest.
+  shopProducts: `*[_type == "dropshipProduct" && inStock == true]
+    | order(coalesce(order, 100) asc, _createdAt desc){
+      _id, name, "slug": slug.current,
+      category, sourceType, sourceUrl, sourceCostSek,
+      priceSek, compareAtPriceSek,
+      "imageUrl": image.asset->url,
+      descriptionSv, descriptionEn,
+      tag, shipsFrom
+    }`,
 }

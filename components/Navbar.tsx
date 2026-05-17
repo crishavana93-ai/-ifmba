@@ -80,7 +80,10 @@ export default function Navbar() {
           <a {...hashLinkProps('standings')}>{t('nav.table')}</a>
           <a {...hashLinkProps('squad')}>{t('nav.squad')}</a>
           <a {...hashLinkProps('media')}>{t('nav.gallery')}</a>
-          <a {...hashLinkProps('apparel')}>{t('nav.merch')}</a>
+          {/* MERCH now points to the dedicated /butik storefront (was a
+              homepage anchor). The Apparel section on the homepage stays
+              as a teaser that links here. */}
+          <Link href="/butik" onClick={() => setMenuOpen(false)}>{t('nav.merch')}</Link>
           <Link href="/partners" onClick={() => setMenuOpen(false)}>{t('nav.partners')}</Link>
         </div>
 
