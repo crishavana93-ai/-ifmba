@@ -168,7 +168,16 @@ async function main() {
   console.log(`▸ Seeding ${ROWS.length} Fan Drop products into /butik catalog ...\n`)
 
   for (const r of ROWS) {
-    const sourceUrl = `https://www.aliexpress.com/wholesale?SearchText=${encodeURIComponent(r.aliSearch)}&shipFromCountry=ES,PL,CZ,DE`
+    // Pre-filtered AliExpress URL: sorted by orders (best-sellers first),
+    // limited to EU warehouses (Spain, Poland, Czech Republic, Germany —
+    // ships in 3–7 days to Sweden vs 14–28 from China). Also caps min
+    // rating to 4.5+ via the URL param.
+    const sourceUrl =
+      `https://www.aliexpress.com/wholesale?` +
+      `SearchText=${encodeURIComponent(r.aliSearch)}` +
+      `&shipFromCountry=ES,PL,CZ,DE` +
+      `&SortType=total_tranpro_desc` +    // sort by orders desc (most sold first)
+      `&minRating=4.5`
     const _id = `dropshipProduct-${r.slug}`
 
     await client.createOrReplace({
@@ -186,14 +195,16 @@ async function main() {
       descriptionEn: r.descEn,
       tag: r.tag || null,
       shipsFrom: 'eu',
-      // Start as out-of-stock so the page doesn't show empty-photo cards
-      // before Cris uploads images. Flip to true in Studio when ready.
-      inStock: false,
+      // Live by default — page shows intentional empty-photo placeholders
+      // (category icon + name) until Cris uploads real images via Studio.
+      // To hide a specific product, open it in Studio and uncheck "In Stock".
+      inStock: true,
       order: r.order,
     })
 
+    const margin = Math.round((1 - r.sourceCostSek / r.priceSek) * 100)
     console.log(
-      `  ✓ ${r.name.padEnd(34)} ${String(r.priceSek).padStart(4)} kr  · margin ~${Math.round((1 - r.sourceCostSek / r.priceSek) * 100)}%`,
+      `  ✓ ${r.name.padEnd(34)} ${String(r.priceSek).padStart(4)} kr  · cost ${String(r.sourceCostSek).padStart(3)}  · ${margin}% margin`,
     )
   }
 

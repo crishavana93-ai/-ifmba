@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react'
 /**
  * ShopGrid — renders a section of dropshipProducts as a card grid.
  *
@@ -43,6 +44,28 @@ function fmtSek(n: number | undefined) {
   return new Intl.NumberFormat('sv-SE').format(n) + ' kr'
 }
 
+/** Calculate margin from source cost + retail. Returns null if either is missing. */
+function calcMargin(cost?: number, price?: number): number | null {
+  if (!cost || !price || price <= 0) return null
+  return Math.round((1 - cost / price) * 100)
+}
+
+/** Category → icon glyph mapping for the empty-photo state. */
+function categoryGlyph(cat?: string): string {
+  switch (cat) {
+    case 'apparel-jersey':       return '\u{1F3BD}' // 🎽 running shirt
+    case 'apparel-shorts':       return '\u{1FA73}' // 🩳 shorts
+    case 'apparel-hoodie':       return '\u{1F455}' // 👕
+    case 'apparel-cap':          return '\u{1F9E2}' // 🧢
+    case 'apparel-tee':          return '\u{1F455}' // 👕
+    case 'accessories-compression': return '\u{1F4AA}' // 💪
+    case 'accessories-socks':    return '\u{1F9E6}' // 🧦
+    case 'accessories-bags':     return '\u{1F392}' // 🎒
+    case 'fan-gear':             return '\u{1F3C0}' // 🏀
+    default:                     return '\u{1F3C0}' // 🏀
+  }
+}
+
 export default function ShopGrid({
   products,
   eyebrow,
@@ -61,6 +84,21 @@ export default function ShopGrid({
   className?: string
 }) {
   const { lang } = useLang()
+
+  // Admin view: append `?admin=1` to /butik URL to reveal cost + margin per
+  // card (so Cris can scan profitability at a glance without exposing it
+  // to customers). Survives navigation via localStorage.
+  const [adminMode, setAdminMode] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('admin') === '1') {
+      window.localStorage.setItem('mba_shop_admin', '1')
+    } else if (params.get('admin') === '0') {
+      window.localStorage.removeItem('mba_shop_admin')
+    }
+    setAdminMode(window.localStorage.getItem('mba_shop_admin') === '1')
+  }, [])
 
   return (
     <section
@@ -99,8 +137,13 @@ export default function ShopGrid({
                   {p.imageUrl ? (
                     <img src={p.imageUrl} alt={p.name} loading="lazy" decoding="async" />
                   ) : (
+                    // Intentional empty state — category icon + product name,
+                    // looks designed rather than broken until the photo lands.
                     <div className="shop-photo-empty">
-                      {lang === 'en' ? 'Photo coming' : 'Bild laddas upp'}
+                      <span className="shop-empty-icon" aria-hidden="true">
+                        {categoryGlyph(p.category)}
+                      </span>
+                      <span className="shop-empty-label">{p.name}</span>
                     </div>
                   )}
                 </div>
@@ -119,6 +162,10 @@ export default function ShopGrid({
                   <a className="shop-cta" href={mailto}>
                     {lang === 'en' ? 'Reserve →' : 'Reservera →'}
                   </a>
+
+                  {adminMode && (
+                    <AdminInfo product={p} />
+                  )}
                 </div>
               </article>
             )
@@ -126,5 +173,38 @@ export default function ShopGrid({
         </div>
       </div>
     </section>
+  )
+}
+
+/** Admin-only block visible when ?admin=1 set on /butik. Shows source cost,
+ *  retail, margin %, and a link to the supplier page. Never shown to
+ *  customers in the default view. */
+function AdminInfo({ product: p }: { product: Product }) {
+  const margin = calcMargin(p.sourceCostSek, p.priceSek)
+  return (
+    <div className="shop-admin">
+      <div className="shop-admin-row">
+        <span>Cost</span>
+        <span>{fmtSek(p.sourceCostSek)}</span>
+      </div>
+      <div className="shop-admin-row">
+        <span>Retail</span>
+        <span>{fmtSek(p.priceSek)}</span>
+      </div>
+      <div className="shop-admin-row shop-admin-margin">
+        <span>Margin</span>
+        <span>{margin !== null ? `${margin}%` : '—'}</span>
+      </div>
+      {p.sourceUrl && (
+        <a
+          className="shop-admin-source"
+          href={p.sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open supplier ↗
+        </a>
+      )}
+    </div>
   )
 }
