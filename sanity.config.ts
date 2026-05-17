@@ -193,6 +193,16 @@ export default defineConfig({
                   .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
               ),
             S.divider(),
+            // /butik shop catalog — added 2026-05-13. Without this entry the
+            // dropshipProduct schema exists but never appears in the sidebar.
+            S.listItem()
+              .title('🛍️ Shop Products (/butik)')
+              .child(
+                S.documentTypeList('dropshipProduct')
+                  .title('Shop products — display order')
+                  .defaultOrdering([{field: 'order', direction: 'asc'}]),
+              ),
+            S.divider(),
             S.listItem()
               .title('Site settings')
               .child(
