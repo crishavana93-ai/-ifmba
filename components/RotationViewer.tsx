@@ -26,6 +26,11 @@ type Product = {
   _id: string
   name: string
   imageUrl?: string | null
+  /** Transparent-PNG of just the design, pre-cleaned via remove.bg and saved
+   *  in Sanity under `cleanDesign`. When set, we use this directly and skip
+   *  the runtime chroma-key entirely — far better quality than algorithmic
+   *  background removal of the AliExpress whole-shirt photo. */
+  cleanDesignUrl?: string | null
   priceSek: number
 }
 
@@ -79,11 +84,22 @@ export default function RotationViewer({
   // so the overlay shows JUST the print, not the AliExpress shirt outline.
   const [cleanedDesignUrl, setCleanedDesignUrl] = useState<string | null>(null)
 
-  // When the active product changes, do live background removal on its image
-  // and use the cleaned PNG as the overlay source. Same chroma-key algorithm
-  // as the admin Mockup Studio, but runs automatically on every click.
+  // When the active product changes, decide the overlay source:
+  //   1. If product has a `cleanDesignUrl` (pre-cleaned via remove.bg and
+  //      saved to Sanity), use it DIRECTLY — no chroma-key needed. This is
+  //      the new preferred path: way better quality than algorithmic bg
+  //      removal of the AliExpress whole-shirt photo.
+  //   2. Otherwise, fall back to runtime chroma-key on the product photo
+  //      (legacy path, lower quality, leaves shirt-fabric halos on some
+  //      designs).
   useEffect(() => {
-    if (!product?.imageUrl) { setCleanedDesignUrl(null); return }
+    if (!product) { setCleanedDesignUrl(null); return }
+    // FAST PATH: manually-cleaned transparent PNG → just use it
+    if (product.cleanDesignUrl) {
+      setCleanedDesignUrl(product.cleanDesignUrl)
+      return
+    }
+    if (!product.imageUrl) { setCleanedDesignUrl(null); return }
     let cancelled = false
     const img = new Image()
     img.crossOrigin = 'anonymous'
@@ -174,7 +190,7 @@ export default function RotationViewer({
     img.onerror = () => setCleanedDesignUrl(product.imageUrl!)
     img.src = product.imageUrl
     return () => { cancelled = true }
-  }, [product?.imageUrl])
+  }, [product?._id, product?.imageUrl, product?.cleanDesignUrl])
 
   // Preload all frames so dragging is instant (no flicker mid-scrub)
   useEffect(() => {

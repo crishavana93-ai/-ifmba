@@ -103,6 +103,25 @@ export default defineType({
       description: 'Square crop preferred (1:1). Use a clean studio shot — no AliExpress watermarks.',
     }),
     defineField({
+      // Transparent-background PNG showing JUST the design / print, with no
+      // t-shirt fabric or photo background around it. Used by the on-model
+      // RotationViewer on /butik and the MockupGenerator preview so we get
+      // a clean composite ("print on the model's chest") instead of having
+      // to chroma-key the dark shirt fabric out at render time.
+      //
+      // How to produce one (cheapest path): drop the AliExpress product photo
+      // into https://remove.bg (50 free/month), download the transparent PNG,
+      // upload here. Takes ~30 seconds per product.
+      name: 'cleanDesign',
+      title: 'Clean Design PNG (transparent background)',
+      type: 'image',
+      options: {hotspot: false, accept: 'image/png'},
+      description:
+        'Transparent-background PNG of JUST the print/graphic — no fabric, no photo background. ' +
+        'Drop the product image into remove.bg → download → upload here. ' +
+        'If empty, /butik falls back to algorithmic chroma-key on the Product Photo (lower quality).',
+    }),
+    defineField({
       name: 'lifestyleImage',
       title: 'On-Model Photo (Optional)',
       type: 'image',

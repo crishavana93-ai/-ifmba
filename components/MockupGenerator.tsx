@@ -99,9 +99,12 @@ export default function MockupGenerator() {
   const [bgTolerance, setBgTolerance] = useState<number>(70)
   const [exporting, setExporting] = useState(false)
   const [exportedUrl, setExportedUrl] = useState<string | null>(null)
-  // Sanity integration — load products + save mockup back
+  // Sanity integration — load products + save mockup back.
+  // `cleanDesignUrl` is the transparent-bg version (manually produced via
+  // remove.bg and uploaded to Sanity). When present, we use it as-is and
+  // disable the live chroma-key — no algorithmic background removal needed.
   const [products, setProducts] = useState<Array<{
-    _id: string; name: string; imageUrl: string; sourceUrl?: string
+    _id: string; name: string; imageUrl: string; cleanDesignUrl?: string | null; sourceUrl?: string
   }>>([])
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [saving, setSaving] = useState(false)
@@ -194,7 +197,7 @@ export default function MockupGenerator() {
   // Uses the same session-auth API endpoint pattern as the reservation form
   // (works because the user must be logged into Sanity Studio to access this page).
   useEffect(() => {
-    const SANITY_QUERY = '*[_type=="dropshipProduct" && inStock == true] | order(order asc){_id, name, "imageUrl": image.asset->url, sourceUrl}'
+    const SANITY_QUERY = '*[_type=="dropshipProduct" && inStock == true] | order(order asc){_id, name, "imageUrl": image.asset->url, "cleanDesignUrl": cleanDesign.asset->url, sourceUrl}'
     fetch(`https://3zuy5n8l.api.sanity.io/v2024-01-01/data/query/production?query=${encodeURIComponent(SANITY_QUERY)}`, {
       credentials: 'include',
     })
@@ -207,17 +210,27 @@ export default function MockupGenerator() {
       })
   }, [])
 
-  // When user picks a product, load its image as the design
+  // When user picks a product, load its design.
+  // Prefer `cleanDesignUrl` (pre-cleaned transparent PNG via remove.bg) when
+  // present — that path produces dramatically better mockups than the
+  // runtime chroma-key on the AliExpress whole-shirt photo. We also auto-
+  // disable bg removal in that case (the design is already transparent;
+  // running chroma-key on it would clobber print colors).
   const handleProductPick = useCallback((id: string) => {
     setSelectedProductId(id)
     setSaved(false)
     setExportedUrl(null)
     if (!id) { setDesignUrl(null); return }
     const p = products.find((x) => x._id === id)
-    if (!p?.imageUrl) return
+    if (!p) return
     setDesignName(p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-    // CORS: Sanity CDN allows cross-origin, so we can use the URL directly.
-    setDesignUrl(p.imageUrl)
+    if (p.cleanDesignUrl) {
+      setDesignUrl(p.cleanDesignUrl)
+      setRemoveDesignBg(false) // already transparent — don't touch it
+    } else if (p.imageUrl) {
+      setDesignUrl(p.imageUrl)
+      setRemoveDesignBg(true) // fall back to runtime chroma-key
+    }
   }, [products])
 
   // Handle file upload

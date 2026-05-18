@@ -38,6 +38,10 @@ type Product = {
   _id: string
   name: string
   imageUrl?: string | null
+  /** Transparent-PNG version of the design alone — produced manually via
+   *  remove.bg and stored under the `cleanDesign` field in Sanity. When
+   *  present, the RotationViewer skips runtime chroma-key for a clean composite. */
+  cleanDesignUrl?: string | null
   priceSek: number
   category?: string
 }

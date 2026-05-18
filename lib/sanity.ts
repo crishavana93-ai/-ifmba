@@ -110,12 +110,18 @@ export const QUERIES = {
 
   // Shop products — dropship/POD catalog rendered at /butik.
   // Only in-stock items, sorted by display order then newest.
+  //
+  // cleanDesignUrl: the transparent-PNG version of just the print (produced
+  // manually via remove.bg and uploaded under the `cleanDesign` field). When
+  // present, the RotationViewer + Mockup admin uses it directly instead of
+  // chroma-keying the AliExpress photo at render time → far better quality.
   shopProducts: `*[_type == "dropshipProduct" && inStock == true]
     | order(coalesce(order, 100) asc, _createdAt desc){
       _id, name, "slug": slug.current,
       category, sourceType, sourceUrl, sourceCostSek,
       priceSek, compareAtPriceSek,
       "imageUrl": image.asset->url,
+      "cleanDesignUrl": cleanDesign.asset->url,
       descriptionSv, descriptionEn,
       tag, shipsFrom
     }`,
