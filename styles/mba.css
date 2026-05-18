@@ -5044,11 +5044,19 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 @media (max-width: 720px) {
   .showroom .showroom-stage {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
+  .showroom-info {
+    padding: 12px 16px;
+    text-align: center;
+    align-items: center;
+  }
+  .showroom-info-cta { margin-left: auto; margin-right: auto; }
 }
 .showroom-canvas {
   position: relative;
-  aspect-ratio: 4 / 4.5;
+  /* Slightly taller on desktop, squarer on mobile (less screen real-estate) */
+  aspect-ratio: 1 / 1;
   /* Soft studio-y gradient — top brighter, bottom subtle navy haze.
      The shirt sits centered with a contact shadow grounding it. */
   background:
@@ -5060,6 +5068,9 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
     0 4px 24px rgba(11, 18, 32, 0.08),
     inset 0 -40px 80px rgba(11, 18, 32, 0.04);
   touch-action: none;
+}
+@media (min-width: 721px) {
+  .showroom-canvas { aspect-ratio: 4 / 3.8; }
 }
 /* The Canvas component takes 100%/100% from R3F by default — just enforce. */
 .showroom-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -5130,6 +5141,11 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
   margin-top: clamp(20px, 2vw, 32px);
+}
+@media (max-width: 480px) {
+  /* On phones: 2-up grid with shorter cards so thumbs stay tappable. */
+  .showroom-thumbs { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .showroom-thumb-name { font-size: 9px; padding: 6px 8px; min-height: 32px; }
 }
 .showroom-thumb {
   display: flex; flex-direction: column;

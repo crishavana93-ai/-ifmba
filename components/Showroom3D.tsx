@@ -65,22 +65,51 @@ function ShirtFromModel({ textureUrl }: { textureUrl?: string }) {
   const { scene } = useGLTF('/models/tshirt.glb') as any
 
   // Clone so multiple instances don't share state; we mutate materials below.
-  const cloned = useMemo(() => scene.clone(true), [scene])
+  // Cloning the materials too (`true` deep flag) so texture overrides on this
+  // instance don't bleed into other usages of the same GLB.
+  const cloned = useMemo(() => {
+    const c = scene.clone(true)
+    // Also clone every material so we can mutate freely without affecting
+    // the cached source asset (which would survive across page navigations).
+    c.traverse((obj: any) => {
+      if (obj.isMesh && obj.material) {
+        obj.material = Array.isArray(obj.material)
+          ? obj.material.map((m: THREE.Material) => m.clone())
+          : obj.material.clone()
+      }
+    })
+    return c
+  }, [scene])
 
   // Apply the product texture by overriding every mesh's baseColor map.
+  // Handles both single materials and material arrays. Disposes the previous
+  // texture before swapping so we don't leak GPU memory.
   useEffect(() => {
     if (!cloned) return
-    if (!textureUrl) {
-      // No product yet — restore default white material so the model is clean
+
+    const setMaps = (tex: THREE.Texture | null) => {
       cloned.traverse((obj: any) => {
-        if (obj.isMesh && obj.material) {
-          obj.material.map = null
-          obj.material.color = new THREE.Color('#ffffff')
-          obj.material.needsUpdate = true
+        if (!obj.isMesh || !obj.material) return
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material]
+        for (const m of mats) {
+          // Dispose previous map to free GPU memory
+          if (m.map && m.map !== tex) m.map.dispose?.()
+          m.map = tex
+          if (tex) {
+            m.color = new THREE.Color('#ffffff')
+          } else {
+            m.color = new THREE.Color('#f5f3ec') // soft cream when no texture
+          }
+          m.needsUpdate = true
         }
       })
+    }
+
+    if (!textureUrl) {
+      setMaps(null)
       return
     }
+
     const loader = new THREE.TextureLoader()
     loader.setCrossOrigin('anonymous')
     loader.load(
@@ -88,15 +117,10 @@ function ShirtFromModel({ textureUrl }: { textureUrl?: string }) {
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace
         tex.anisotropy = 8
-        tex.flipY = false // GLB models use flipY:false by convention
-        cloned.traverse((obj: any) => {
-          if (obj.isMesh && obj.material) {
-            obj.material.map = tex
-            // Tint to white so the texture shows true color
-            obj.material.color = new THREE.Color('#ffffff')
-            obj.material.needsUpdate = true
-          }
-        })
+        tex.flipY = false
+        setMaps(tex)
+        // eslint-disable-next-line no-console
+        console.log('[Showroom3D] texture applied:', textureUrl)
       },
       undefined,
       (err) => {
@@ -106,7 +130,7 @@ function ShirtFromModel({ textureUrl }: { textureUrl?: string }) {
     )
   }, [cloned, textureUrl])
 
-  // Subtle idle sway — same as procedural version for consistency
+  // Subtle idle sway
   useFrame((state) => {
     if (!ref.current) return
     const t = state.clock.getElapsedTime()
@@ -114,7 +138,9 @@ function ShirtFromModel({ textureUrl }: { textureUrl?: string }) {
   })
 
   return (
-    <group ref={ref} scale={1.6} position={[0, -0.6, 0]}>
+    // Scaled down from 1.6 → 0.95 so the shirt sits inside the canvas
+    // with breathing room (Cris flagged it as too big 2026-05-18).
+    <group ref={ref} scale={0.95} position={[0, -0.35, 0]}>
       <primitive object={cloned} />
     </group>
   )
@@ -278,7 +304,7 @@ export default function Showroom3D({
         <div className="showroom-stage">
           <div className="showroom-canvas">
             <Canvas
-              camera={{ position: [0, 0.05, 3.4], fov: 32 }}
+              camera={{ position: [0, 0.15, 4.2], fov: 30 }}
               dpr={[1, 2]}
               gl={{ antialias: true, alpha: true }}
               shadows
