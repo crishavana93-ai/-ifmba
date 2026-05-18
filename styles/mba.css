@@ -5319,9 +5319,16 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .mockup-gen-stage-wrap {
   position: sticky;
   top: 100px;
+  /* Cap the wrapper so the stage can't grow past the viewport on big monitors.
+     Previously the model's head was cut off above the fold on a typical
+     laptop because the stage grew to the column's full width. */
+  max-width: min(520px, 75vh);
+  margin-inline: auto;
 }
 .mockup-gen-stage {
   position: relative;
+  /* Template is 1024×1024 — keep 1:1 to avoid distorting it. The cap above
+     keeps the SIZE manageable. */
   aspect-ratio: 1;
   background: #fff;
   border-radius: 8px;
