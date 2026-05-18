@@ -12,8 +12,9 @@ import siteSettings from './siteSettings'
 import mediaAsset from './mediaAsset'
 import swedenNews from './swedenNews'
 import dropshipProduct from './dropshipProduct'
+import reservation from './reservation'
 
-export const schemaTypes = [mediaAsset, swedenNews, player, match, standing, court, sponsor, sponsorLead, subscriber, predictionRound, prediction, newsPost, siteSettings, dropshipProduct]
+export const schemaTypes = [mediaAsset, swedenNews, player, match, standing, court, sponsor, sponsorLead, subscriber, predictionRound, prediction, newsPost, siteSettings, dropshipProduct, reservation]
 
 // Sanity v3 `defineConfig` expects a `schema` object: `{ types: [...] }`.
 // Export both shapes so any `sanity.config.ts` style (schema or schemaTypes) resolves.

@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 /**
  * ShopGrid — renders a section of dropshipProducts as a card grid.
  *
@@ -100,6 +100,10 @@ export default function ShopGrid({
     setAdminMode(window.localStorage.getItem('mba_shop_admin') === '1')
   }, [])
 
+  // Reservation modal — only one card at a time. Setting `reserving` to a
+  // product opens the modal; null closes it.
+  const [reserving, setReserving] = useState<Product | null>(null)
+
   return (
     <section
       className={`shopgrid section ${className || ''}`.trim()}
@@ -117,15 +121,6 @@ export default function ShopGrid({
         <div className="shopgrid-grid">
           {products.map((p) => {
             const desc = (lang === 'en' ? p.descriptionEn : p.descriptionSv) || ''
-            const subject =
-              lang === 'en'
-                ? `Reservation: ${p.name}`
-                : `Beställning: ${p.name}`
-            const orderBody =
-              lang === 'en'
-                ? `Hi MBA,\n\nI'd like to reserve:\n\n• ${p.name} — ${fmtSek(p.priceSek)}\n\nMy size: \nShipping address: \n\nThanks!`
-                : `Hej MBA,\n\nJag vill reservera:\n\n• ${p.name} — ${fmtSek(p.priceSek)}\n\nMin storlek: \nLeveransadress: \n\nTack!`
-            const mailto = `mailto:mba.malmo.basket@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(orderBody)}`
 
             return (
               <article key={p._id} className="shop-card">
@@ -159,9 +154,13 @@ export default function ShopGrid({
                     )}
                   </div>
 
-                  <a className="shop-cta" href={mailto}>
+                  <button
+                    type="button"
+                    className="shop-cta"
+                    onClick={() => setReserving(p)}
+                  >
                     {lang === 'en' ? 'Reserve →' : 'Reservera →'}
-                  </a>
+                  </button>
 
                   {adminMode && (
                     <AdminInfo product={p} />
@@ -172,7 +171,196 @@ export default function ShopGrid({
           })}
         </div>
       </div>
+
+      {reserving && (
+        <ReservationModal
+          product={reserving}
+          lang={lang}
+          onClose={() => setReserving(null)}
+        />
+      )}
     </section>
+  )
+}
+
+/**
+ * ReservationModal — collects customer details and POSTs to /api/reservation.
+ * On success: shows confirmation + auto-closes after 4s.
+ * On error: surfaces the message and keeps the form populated.
+ */
+function ReservationModal({
+  product,
+  lang,
+  onClose,
+}: {
+  product: Product
+  lang: 'sv' | 'en'
+  onClose: () => void
+}) {
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [size, setSize] = useState('M')
+  const [quantity, setQuantity] = useState(1)
+  const [address, setAddress] = useState('')
+  const [note, setNote] = useState('')
+  const [website, setWebsite] = useState('') // honeypot
+  const [submitting, setSubmitting] = useState(false)
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState('')
+  const mountedAt = useMemo(() => Date.now(), [])
+
+  // Auto-close on success after 4s so the customer sees the confirmation.
+  useEffect(() => {
+    if (!done) return
+    const t = setTimeout(onClose, 4000)
+    return () => clearTimeout(t)
+  }, [done, onClose])
+
+  // Esc closes the modal
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  const t = lang === 'en'
+    ? {
+        title: 'Reserve',
+        subtitle: 'We confirm by email within 24h with payment + delivery details.',
+        name: 'Your name', email: 'Email', size: 'Size', qty: 'Quantity',
+        address: 'Shipping address (optional)',
+        note: 'Note for MBA (optional)',
+        submit: 'Send reservation', sending: 'Sending…',
+        done: 'Reservation received!',
+        doneBody: 'We just emailed you a confirmation. We\'ll follow up within 24h.',
+        cancel: 'Cancel',
+      }
+    : {
+        title: 'Reservera',
+        subtitle: 'Vi bekräftar via e-post inom 24 timmar med betalning + leverans.',
+        name: 'Ditt namn', email: 'E-post', size: 'Storlek', qty: 'Antal',
+        address: 'Leveransadress (valfritt)',
+        note: 'Meddelande till MBA (valfritt)',
+        submit: 'Skicka reservation', sending: 'Skickar…',
+        done: 'Reservation mottagen!',
+        doneBody: 'Vi har just mailat dig en bekräftelse. Vi hör av oss inom 24 timmar.',
+        cancel: 'Avbryt',
+      }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    if (submitting) return
+    const trimmed = email.trim()
+    if (!name.trim()) return setError(lang === 'en' ? 'Please add your name.' : 'Vänligen fyll i ditt namn.')
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      return setError(lang === 'en' ? 'Please enter a valid email.' : 'Vänligen ange en giltig e-postadress.')
+    }
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/reservation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product._id,
+          email: trimmed,
+          name: name.trim(),
+          size,
+          quantity,
+          shippingAddress: address.trim(),
+          note: note.trim(),
+          website_url: website,
+          elapsedMs: Date.now() - mountedAt,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.ok) throw new Error(data?.error || `HTTP ${res.status}`)
+      setDone(true)
+    } catch (err: any) {
+      setError(err?.message || 'Something went wrong.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="rsv-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="rsv-modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="rsv-close" onClick={onClose} aria-label="Close">×</button>
+
+        {done ? (
+          <div className="rsv-done">
+            <div className="rsv-done-icon">✓</div>
+            <h3 className="rsv-done-title">{t.done}</h3>
+            <p className="rsv-done-body">{t.doneBody}</p>
+          </div>
+        ) : (
+          <>
+            <div className="rsv-head">
+              <div className="rsv-head-product">
+                {product.imageUrl && (
+                  <img src={product.imageUrl} alt={product.name} />
+                )}
+                <div>
+                  <h3 className="rsv-head-name">{product.name}</h3>
+                  <div className="rsv-head-price">{fmtSek(product.priceSek)}</div>
+                </div>
+              </div>
+              <p className="rsv-subtitle">{t.subtitle}</p>
+            </div>
+
+            <form className="rsv-form" onSubmit={handleSubmit} noValidate>
+              {/* Honeypot — hidden from real humans */}
+              <div aria-hidden="true" style={{ position: 'absolute', left: -9999, width: 1, height: 1, overflow: 'hidden' }}>
+                <label>Website <input type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} /></label>
+              </div>
+
+              <div className="rsv-field">
+                <label htmlFor="rsv-name">{t.name}</label>
+                <input id="rsv-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
+              </div>
+
+              <div className="rsv-field">
+                <label htmlFor="rsv-email">{t.email}</label>
+                <input id="rsv-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" inputMode="email" />
+              </div>
+
+              <div className="rsv-row">
+                <div className="rsv-field" style={{ flex: 2 }}>
+                  <label htmlFor="rsv-size">{t.size}</label>
+                  <select id="rsv-size" value={size} onChange={(e) => setSize(e.target.value)}>
+                    {['XS','S','M','L','XL','XXL'].map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div className="rsv-field" style={{ flex: 1 }}>
+                  <label htmlFor="rsv-qty">{t.qty}</label>
+                  <input id="rsv-qty" type="number" min={1} max={10} value={quantity} onChange={(e) => setQuantity(Math.max(1, Math.min(10, Number(e.target.value) || 1)))} />
+                </div>
+              </div>
+
+              <div className="rsv-field">
+                <label htmlFor="rsv-address">{t.address}</label>
+                <textarea id="rsv-address" rows={3} value={address} onChange={(e) => setAddress(e.target.value)} autoComplete="street-address" />
+              </div>
+
+              <div className="rsv-field">
+                <label htmlFor="rsv-note">{t.note}</label>
+                <textarea id="rsv-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
+              </div>
+
+              {error && <div className="rsv-error" role="alert">{error}</div>}
+
+              <div className="rsv-actions">
+                <button type="button" className="rsv-btn rsv-btn-ghost" onClick={onClose}>{t.cancel}</button>
+                <button type="submit" className="rsv-btn rsv-btn-primary" disabled={submitting}>
+                  {submitting ? t.sending : t.submit}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
   )
 }
 

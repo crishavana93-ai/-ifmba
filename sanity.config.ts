@@ -202,6 +202,13 @@ export default defineConfig({
                   .title('Shop products — display order')
                   .defaultOrdering([{field: 'order', direction: 'asc'}]),
               ),
+            S.listItem()
+              .title('📥 Reservations (inbox)')
+              .child(
+                S.documentTypeList('reservation')
+                  .title('Reservations — newest first')
+                  .defaultOrdering([{field: 'createdAt', direction: 'desc'}]),
+              ),
             S.divider(),
             S.listItem()
               .title('Site settings')

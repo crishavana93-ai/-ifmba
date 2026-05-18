@@ -4879,3 +4879,142 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .shop-cta:hover {
   background: var(--yellow); color: var(--ink); border-color: var(--yellow);
 }
+.shop-cta { cursor: pointer; font-family: inherit; }
+
+/* ═══════════════════════════════════════════════════════
+   RESERVATION MODAL — pops up on Reservera click
+   ═══════════════════════════════════════════════════════ */
+.rsv-overlay {
+  position: fixed; inset: 0;
+  z-index: 9000;
+  background: rgba(11, 18, 32, 0.78);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(12px, 3vw, 32px);
+  animation: rsvFade 0.18s ease-out;
+}
+@keyframes rsvFade { from { opacity: 0; } to { opacity: 1; } }
+.rsv-modal {
+  position: relative;
+  background: var(--bg);
+  color: var(--ink);
+  max-width: 460px; width: 100%;
+  max-height: 92vh; overflow-y: auto;
+  border-radius: 8px;
+  padding: clamp(20px, 3vw, 32px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: rsvSlide 0.25s var(--spring);
+}
+@keyframes rsvSlide {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.rsv-close {
+  position: absolute; top: 12px; right: 16px;
+  background: none; border: 0;
+  font-size: 28px; line-height: 1;
+  cursor: pointer; color: rgba(11,18,32,0.45);
+  width: 32px; height: 32px;
+  transition: color 0.2s;
+}
+.rsv-close:hover { color: var(--ink); }
+
+.rsv-head { margin-bottom: 18px; }
+.rsv-head-product {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(11,18,32,0.08);
+  margin-bottom: 12px;
+}
+.rsv-head-product img {
+  width: 64px; height: 64px;
+  object-fit: cover; border-radius: 4px;
+  flex-shrink: 0;
+  background: #f2f1ec;
+}
+.rsv-head-name {
+  margin: 0; font-size: 16px; font-weight: 800;
+  letter-spacing: -0.01em; line-height: 1.2;
+}
+.rsv-head-price {
+  font-family: var(--mono); font-size: 14px;
+  font-weight: 700; color: var(--ink);
+  margin-top: 4px;
+}
+.rsv-subtitle {
+  margin: 0; font-size: 13px; line-height: 1.5;
+  color: rgba(11,18,32,0.65);
+}
+
+.rsv-form { display: flex; flex-direction: column; gap: 14px; position: relative; }
+.rsv-field { display: flex; flex-direction: column; gap: 5px; }
+.rsv-field label {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(11,18,32,0.6); font-weight: 700;
+}
+.rsv-field input,
+.rsv-field select,
+.rsv-field textarea {
+  font-family: inherit; font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid rgba(11,18,32,0.18);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color 0.2s;
+}
+.rsv-field input:focus,
+.rsv-field select:focus,
+.rsv-field textarea:focus {
+  outline: none;
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(255,203,5,0.25);
+}
+.rsv-row { display: flex; gap: 10px; }
+.rsv-error {
+  background: #fff0f0; color: #a01b1b;
+  padding: 10px 14px; border-radius: 4px;
+  font-size: 13px; border: 1px solid rgba(160,27,27,0.2);
+}
+.rsv-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 8px;
+}
+.rsv-btn {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 800;
+  padding: 12px 22px;
+  border-radius: 100px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.15s, background 0.2s, color 0.2s;
+}
+.rsv-btn-ghost {
+  background: transparent; color: rgba(11,18,32,0.65);
+  border-color: rgba(11,18,32,0.18);
+}
+.rsv-btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+.rsv-btn-primary {
+  background: var(--yellow); color: var(--ink);
+}
+.rsv-btn-primary:hover { transform: translateY(-1px); }
+.rsv-btn-primary:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+.rsv-done { text-align: center; padding: 20px 0; }
+.rsv-done-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--yellow); color: var(--ink);
+  font-size: 36px; font-weight: 900;
+  margin-bottom: 16px;
+  animation: rsvCheck 0.4s var(--spring);
+}
+@keyframes rsvCheck {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+.rsv-done-title { margin: 0 0 8px 0; font-size: 22px; font-weight: 900; letter-spacing: -0.01em; }
+.rsv-done-body { margin: 0; color: rgba(11,18,32,0.7); line-height: 1.55; }
