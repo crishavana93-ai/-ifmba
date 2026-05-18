@@ -80,10 +80,17 @@ export default function Navbar() {
           <a {...hashLinkProps('standings')}>{t('nav.table')}</a>
           <a {...hashLinkProps('squad')}>{t('nav.squad')}</a>
           <a {...hashLinkProps('media')}>{t('nav.gallery')}</a>
-          {/* MERCH now points to the dedicated /butik storefront (was a
-              homepage anchor). The Apparel section on the homepage stays
-              as a teaser that links here. */}
-          <Link href="/butik" onClick={() => setMenuOpen(false)}>{t('nav.merch')}</Link>
+          {/* SHOP — dedicated /butik storefront. Highlighted with a yellow
+              "NEW" dot to draw the eye until the launch is no longer fresh
+              (~3 months from May 2026, then strip the dot). */}
+          <Link
+            href="/butik"
+            className="nav-shop-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            {t('nav.merch')}
+            <span className="nav-shop-dot" aria-hidden="true" />
+          </Link>
           <Link href="/partners" onClick={() => setMenuOpen(false)}>{t('nav.partners')}</Link>
         </div>
 
