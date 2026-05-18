@@ -22,6 +22,35 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+/** Auto-crop transparent borders from a canvas. After chroma-key the design
+ *  often has 30-50% transparent padding around the actual print — this trims
+ *  to the bounding box of non-transparent pixels so size% reflects the print. */
+function trimTransparent(src: HTMLCanvasElement): HTMLCanvasElement {
+  const ctx = src.getContext('2d')
+  if (!ctx) return src
+  const { width, height } = src
+  const data = ctx.getImageData(0, 0, width, height).data
+  let minX = width, minY = height, maxX = -1, maxY = -1
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 20) {
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+  if (maxX < minX || maxY < minY) return src // all transparent
+  const w = maxX - minX + 1
+  const h = maxY - minY + 1
+  const out = document.createElement('canvas')
+  out.width = w
+  out.height = h
+  out.getContext('2d')!.drawImage(src, minX, minY, w, h, 0, 0, w, h)
+  return out
+}
+
 type Template = {
   id: string
   label: string
@@ -49,7 +78,11 @@ export default function MockupGenerator() {
   const [designName, setDesignName] = useState<string>('design')
   // Position + size as % of template (so it's resolution-independent)
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
-  const [size, setSize] = useState<number>(9) // much smaller default — chest area only
+  // After the live chroma-key auto-trims the print out of its photo padding,
+  // size% now reflects the ACTUAL print width, not the photo bbox. A real
+  // chest print is ~25 cm on a 50 cm shirt — about 22-26% of the template
+  // width once you include the head. 22% is a good default.
+  const [size, setSize] = useState<number>(22)
   const [displacement, setDisplacement] = useState<number>(8)
   const [blendMode, setBlendMode] = useState<'multiply' | 'normal' | 'overlay' | 'soft-light'>('multiply')
   const [opacity, setOpacity] = useState<number>(100)
@@ -60,7 +93,10 @@ export default function MockupGenerator() {
   const [recolorShirt, setRecolorShirt] = useState<boolean>(false)
   // NEW: remove design's background color (chroma key)
   const [removeDesignBg, setRemoveDesignBg] = useState<boolean>(true)
-  const [bgTolerance, setBgTolerance] = useState<number>(40)
+  // 70 handles AliExpress dual-bg photos (white margin + dark shirt fabric)
+  // out of the box. Lower → preserve more print detail (good for line art);
+  // higher → remove more shirt fabric (good for photos that bleed dark).
+  const [bgTolerance, setBgTolerance] = useState<number>(70)
   const [exporting, setExporting] = useState(false)
   const [exportedUrl, setExportedUrl] = useState<string | null>(null)
   // Sanity integration — load products + save mockup back
@@ -74,11 +110,85 @@ export default function MockupGenerator() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
 
+  // Live-preview chroma-keyed version of the design. We pre-process here on
+  // EVERY designUrl / tolerance change so the user actually SEES the bg
+  // removal in the stage — previously the canvas-only chroma-key meant the
+  // preview was lying ("auto-remove ON" but big black square still visible).
+  const [cleanedPreviewUrl, setCleanedPreviewUrl] = useState<string | null>(null)
+
   // Initialize position from template's default chest area
   useEffect(() => {
     setPos({ x: template.defaultChest.x, y: template.defaultChest.y })
     setSize(template.defaultChest.width)
   }, [template])
+
+  // Live preview chroma-key — same multi-point sampling as the export path,
+  // but runs in a useEffect so the on-screen design updates as you drag the
+  // tolerance slider. Without this, the preview shows the raw image (with
+  // its black photo bg) while the export comes out clean → confusing.
+  useEffect(() => {
+    if (!designUrl) { setCleanedPreviewUrl(null); return }
+    if (!removeDesignBg) { setCleanedPreviewUrl(designUrl); return }
+    let cancelled = false
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      if (cancelled) return
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.drawImage(img, 0, 0)
+      try {
+        const dData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const iw = canvas.width
+        const ih = canvas.height
+        const sampleAt = (x: number, y: number): [number, number, number] => {
+          const i = (y * iw + x) * 4
+          return [dData.data[i], dData.data[i + 1], dData.data[i + 2]]
+        }
+        const samples: Array<[number, number, number]> = [
+          sampleAt(0, 0),
+          sampleAt(iw - 1, 0),
+          sampleAt(0, ih - 1),
+          sampleAt(iw - 1, ih - 1),
+          sampleAt(Math.floor(iw / 2), 0),
+          sampleAt(Math.floor(iw / 2), ih - 1),
+          sampleAt(0, Math.floor(ih / 2)),
+          sampleAt(iw - 1, Math.floor(ih / 2)),
+        ]
+        const TOL = bgTolerance
+        for (let i = 0; i < dData.data.length; i += 4) {
+          const r = dData.data[i], g = dData.data[i + 1], b = dData.data[i + 2]
+          let minDist = Infinity
+          for (const [sr, sg, sb] of samples) {
+            const d = Math.sqrt((r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2)
+            if (d < minDist) minDist = d
+            if (d < TOL) break
+          }
+          if (minDist < TOL) {
+            dData.data[i + 3] = 0
+          } else if (minDist < TOL * 1.5) {
+            dData.data[i + 3] = Math.round(255 * ((minDist - TOL) / (TOL * 0.5)))
+          }
+        }
+        ctx.putImageData(dData, 0, 0)
+        // Also auto-trim the cleaned image so size% maps to the actual print,
+        // not the black/white photo padding around it. Without this, a 25%
+        // size slider produces a print that LOOKS 15% because half of the
+        // image is empty transparent border.
+        const trimmed = trimTransparent(canvas)
+        setCleanedPreviewUrl(trimmed.toDataURL('image/png'))
+      } catch (err) {
+        console.warn('[MockupGenerator] preview chroma-key skipped:', err)
+        setCleanedPreviewUrl(designUrl)
+      }
+    }
+    img.onerror = () => setCleanedPreviewUrl(designUrl)
+    img.src = designUrl
+    return () => { cancelled = true }
+  }, [designUrl, removeDesignBg, bgTolerance])
 
   // Load the product catalog from Sanity on mount.
   // Uses the same session-auth API endpoint pattern as the reservation form
@@ -429,12 +539,44 @@ export default function MockupGenerator() {
                   transform: 'translate(-50%, -50%)',
                   mixBlendMode: blendMode,
                   opacity: opacity / 100,
-                  // CSS preview can't show displacement; that happens at export time
+                  // Live displacement filter — fakes fabric folds in the preview.
+                  // Full warping still happens at export time; this is a hint.
+                  filter: displacement > 0 ? 'url(#mg-displace)' : undefined,
                 }}
               >
-                <img src={designUrl} alt="design" draggable={false} />
+                <img
+                  src={cleanedPreviewUrl || designUrl}
+                  alt="design"
+                  draggable={false}
+                />
               </div>
             )}
+
+            {/* SVG filter def — referenced from .mockup-gen-design's filter:url(#mg-displace)
+                so the live preview can warp the design along the shirt's fabric folds. */}
+            <svg
+              width="0"
+              height="0"
+              style={{ position: 'absolute', pointerEvents: 'none' }}
+              aria-hidden="true"
+            >
+              <defs>
+                <filter id="mg-displace" x="-10%" y="-10%" width="120%" height="120%">
+                  <feImage
+                    href={template.displacementUrl}
+                    preserveAspectRatio="xMidYMid slice"
+                    result="dispMap"
+                  />
+                  <feDisplacementMap
+                    in="SourceGraphic"
+                    in2="dispMap"
+                    scale={displacement}
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                  />
+                </filter>
+              </defs>
+            </svg>
 
             {!designUrl && (
               <div className="mockup-gen-placeholder">
@@ -539,7 +681,7 @@ export default function MockupGenerator() {
                     <input
                       type="range"
                       min="10"
-                      max="120"
+                      max="150"
                       step="5"
                       value={bgTolerance}
                       onChange={(e) => setBgTolerance(Number(e.target.value))}

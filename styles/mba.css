@@ -5238,14 +5238,16 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   pointer-events: none;
   -webkit-user-drag: none;
 }
-/* Design overlay — much smaller now (was 16%, then 32% original — both
-   too big). 10% with center positioning fits the chest area properly. */
+/* Design overlay. 18% width now — after chroma-key + auto-trim, the visible
+   print maps to ~half a chest width (~25 cm on a ~50 cm shirt). Was 10%
+   which felt postage-stamp tiny because the print was packed inside
+   transparent photo padding. */
 .rot-viewer-design {
   position: absolute;
-  top: 47%;
+  top: 44%;            /* sit on the chest, not below it */
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 10%;
+  width: 18%;
   aspect-ratio: 1;
   pointer-events: none;
   transition: opacity 0.18s ease, transform 0.18s ease;

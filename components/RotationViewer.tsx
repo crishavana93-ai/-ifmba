@@ -113,7 +113,10 @@ export default function RotationViewer({
           sampleAt(w - 1, Math.floor(h / 2)),
         ]
 
-        const TOL = 60
+        // 80 = handles AliExpress dual-bg photos (white photo margin +
+        // dark shirt fabric) out of the box. Higher than the 60 we had
+        // before — was leaving black halos around print silhouettes.
+        const TOL = 80
         for (let i = 0; i < data.data.length; i += 4) {
           const r = data.data[i], g = data.data[i + 1], b = data.data[i + 2]
           let minDist = Infinity
@@ -129,7 +132,32 @@ export default function RotationViewer({
           }
         }
         ctx.putImageData(data, 0, 0)
-        setCleanedDesignUrl(canvas.toDataURL('image/png'))
+
+        // Auto-trim the transparent borders. After chroma-key, the actual print
+        // is often only the middle 40-60% of the source photo — trimming lets
+        // the overlay's CSS width % map to the PRINT, not the empty padding.
+        let minX = w, minY = h, maxX = -1, maxY = -1
+        for (let y = 0; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            if (data.data[(y * w + x) * 4 + 3] > 20) {
+              if (x < minX) minX = x
+              if (x > maxX) maxX = x
+              if (y < minY) minY = y
+              if (y > maxY) maxY = y
+            }
+          }
+        }
+        if (maxX > minX && maxY > minY) {
+          const tw = maxX - minX + 1
+          const th = maxY - minY + 1
+          const out = document.createElement('canvas')
+          out.width = tw
+          out.height = th
+          out.getContext('2d')!.drawImage(canvas, minX, minY, tw, th, 0, 0, tw, th)
+          setCleanedDesignUrl(out.toDataURL('image/png'))
+        } else {
+          setCleanedDesignUrl(canvas.toDataURL('image/png'))
+        }
       } catch (err) {
         // CORS-tainted canvas — fall back to raw image
         console.warn('[RotationViewer] chroma-key skipped, using raw image:', err)
