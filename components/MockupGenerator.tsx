@@ -49,11 +49,18 @@ export default function MockupGenerator() {
   const [designName, setDesignName] = useState<string>('design')
   // Position + size as % of template (so it's resolution-independent)
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
-  const [size, setSize] = useState<number>(22) // width in % of template
-  const [displacement, setDisplacement] = useState<number>(8) // px of warp
+  const [size, setSize] = useState<number>(14) // smaller default — was 22
+  const [displacement, setDisplacement] = useState<number>(8)
   const [blendMode, setBlendMode] = useState<'multiply' | 'normal' | 'overlay' | 'soft-light'>('multiply')
   const [opacity, setOpacity] = useState<number>(100)
   const [showDispPreview, setShowDispPreview] = useState(false)
+  // NEW: shirt color picker — recolors navy shirt areas to any target color
+  // (default null = keep template's original navy)
+  const [shirtColor, setShirtColor] = useState<string>('#0B1220')
+  const [recolorShirt, setRecolorShirt] = useState<boolean>(false)
+  // NEW: remove design's background color (chroma key)
+  const [removeDesignBg, setRemoveDesignBg] = useState<boolean>(true)
+  const [bgTolerance, setBgTolerance] = useState<number>(40)
   const [exporting, setExporting] = useState(false)
   const [exportedUrl, setExportedUrl] = useState<string | null>(null)
 
@@ -122,6 +129,31 @@ export default function MockupGenerator() {
       // 2. Draw the template (model photo) as the base
       ctx.drawImage(tplImg, 0, 0, CANVAS_SIZE, CANVAS_SIZE)
 
+      // 2b. SHIRT COLOR RECOLOR — if enabled, walk every pixel and replace
+      // navy-blue pixels with the target color (preserving brightness).
+      // The model template's shirt is navy (~#1B2540 with shading), so we
+      // detect blue-dominant pixels and shift their hue. Hair/face/skin/
+      // pants don't fall in the blue range so they're preserved.
+      if (recolorShirt) {
+        const tplData = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+        const target = hexToRgb(shirtColor)
+        for (let i = 0; i < tplData.data.length; i += 4) {
+          const r = tplData.data[i]
+          const g = tplData.data[i + 1]
+          const b = tplData.data[i + 2]
+          // Heuristic: pixel is "shirt navy" if blue dominates and red/green are low
+          const isNavy = b > 35 && b < 110 && r < 90 && g < 90 && b > r && b > g
+          if (isNavy) {
+            // Preserve brightness — use the original pixel's luma to scale target
+            const luma = (0.299 * r + 0.587 * g + 0.114 * b) / 60 // 0..~1 for navy range
+            tplData.data[i]     = Math.min(255, target.r * luma)
+            tplData.data[i + 1] = Math.min(255, target.g * luma)
+            tplData.data[i + 2] = Math.min(255, target.b * luma)
+          }
+        }
+        ctx.putImageData(tplData, 0, 0)
+      }
+
       // 3. Render the design to an offscreen canvas with displacement applied.
       //    Canvas API doesn't have a native displacement filter, so we do it
       //    pixel-by-pixel: for each output pixel, sample the displacement
@@ -133,10 +165,37 @@ export default function MockupGenerator() {
 
       // Draw design at correct position + scale
       const dWidth = (size / 100) * CANVAS_SIZE
-      const dHeight = dWidth // assume square for now
+      const dHeight = dWidth
       const dX = (pos.x / 100) * CANVAS_SIZE - dWidth / 2
       const dY = (pos.y / 100) * CANVAS_SIZE - dHeight / 2
       dctx.drawImage(designImg, dX, dY, dWidth, dHeight)
+
+      // BACKGROUND REMOVAL — if enabled, sample the corner pixel of the
+      // design (top-left within the placed bounds), then make every pixel
+      // within `bgTolerance` of that color transparent. Works great for
+      // designs on solid backgrounds (white, black, etc.) — same trick as
+      // chroma-key green-screen, but adaptive to whatever color is in the
+      // corners.
+      if (removeDesignBg) {
+        const dData = dctx.getImageData(Math.max(0, dX), Math.max(0, dY), Math.min(dWidth, CANVAS_SIZE - dX), Math.min(dHeight, CANVAS_SIZE - dY))
+        // Sample top-left corner of the design as the background color
+        const bgR = dData.data[0]
+        const bgG = dData.data[1]
+        const bgB = dData.data[2]
+        for (let i = 0; i < dData.data.length; i += 4) {
+          const r = dData.data[i]
+          const g = dData.data[i + 1]
+          const b = dData.data[i + 2]
+          const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2)
+          if (dist < bgTolerance) {
+            dData.data[i + 3] = 0 // make transparent
+          } else if (dist < bgTolerance * 1.5) {
+            // Feather edge — partial transparency for pixels just outside threshold
+            dData.data[i + 3] = Math.round(255 * ((dist - bgTolerance) / (bgTolerance * 0.5)))
+          }
+        }
+        dctx.putImageData(dData, Math.max(0, dX), Math.max(0, dY))
+      }
 
       // 4. Apply displacement via pixel sampling
       const designData = dctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE)
@@ -302,6 +361,103 @@ export default function MockupGenerator() {
 
           {designUrl && (
             <>
+              {/* NEW — Background removal for the uploaded design. Defaults
+                  to ON so users who upload a full t-shirt photo (with shirt
+                  outline visible) get the print isolated automatically. */}
+              <div className="mockup-gen-section">
+                <label className="mockup-gen-label">
+                  Bakgrund på design
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                  <input
+                    type="checkbox"
+                    checked={removeDesignBg}
+                    onChange={(e) => setRemoveDesignBg(e.target.checked)}
+                  />
+                  Ta bort designens bakgrund automatiskt
+                </label>
+                {removeDesignBg && (
+                  <>
+                    <label className="mockup-gen-label" style={{ marginTop: 8 }}>
+                      Tolerans <span>({bgTolerance})</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="10"
+                      max="120"
+                      step="5"
+                      value={bgTolerance}
+                      onChange={(e) => setBgTolerance(Number(e.target.value))}
+                    />
+                    <div style={{ fontSize: 11, opacity: 0.6, marginTop: 2 }}>
+                      Mer = tar bort fler färger. Mindre = bevarar fler detaljer.
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* NEW — Shirt color picker. Replaces every navy pixel in the
+                  template with the chosen color, preserving fabric shading.
+                  Lets one model template serve products of any shirt color. */}
+              <div className="mockup-gen-section">
+                <label className="mockup-gen-label">
+                  Tröjans färg
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                  <input
+                    type="checkbox"
+                    checked={recolorShirt}
+                    onChange={(e) => setRecolorShirt(e.target.checked)}
+                  />
+                  Byt tröjfärg
+                </label>
+                {recolorShirt && (
+                  <>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+                      <input
+                        type="color"
+                        value={shirtColor}
+                        onChange={(e) => setShirtColor(e.target.value)}
+                        style={{ width: 48, height: 32, padding: 0, border: '1px solid rgba(11,18,32,0.18)', borderRadius: 4 }}
+                      />
+                      <input
+                        type="text"
+                        value={shirtColor}
+                        onChange={(e) => setShirtColor(e.target.value)}
+                        style={{ flex: 1, padding: 8, fontSize: 12, border: '1px solid rgba(11,18,32,0.18)', borderRadius: 4, fontFamily: 'var(--mono)' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                      {[
+                        { c: '#000000', name: 'Svart' },
+                        { c: '#FFFFFF', name: 'Vit' },
+                        { c: '#0B1220', name: 'Marin' },
+                        { c: '#FFCB05', name: 'Gul' },
+                        { c: '#7A0E0E', name: 'Röd' },
+                        { c: '#3a5f3a', name: 'Grön' },
+                        { c: '#888', name: 'Grå' },
+                      ].map((sw) => (
+                        <button
+                          key={sw.c}
+                          type="button"
+                          onClick={() => setShirtColor(sw.c)}
+                          title={sw.name}
+                          style={{
+                            width: 24, height: 24, borderRadius: 4,
+                            background: sw.c,
+                            border: shirtColor === sw.c ? '2px solid var(--yellow)' : '1px solid rgba(11,18,32,0.2)',
+                            cursor: 'pointer', padding: 0,
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 11, opacity: 0.6, marginTop: 6 }}>
+                      Färgar om marinblå tröjpixlar till vald färg. Hud/hår/byxor påverkas inte.
+                    </div>
+                  </>
+                )}
+              </div>
+
               <div className="mockup-gen-section">
                 <label className="mockup-gen-label">
                   3. Storlek <span>({size.toFixed(0)}%)</span>
@@ -433,4 +589,14 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.onerror = reject
     img.src = src
   })
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const m = hex.replace('#', '').match(/.{2}/g)
+  if (!m) return { r: 0, g: 0, b: 0 }
+  return {
+    r: parseInt(m[0], 16),
+    g: parseInt(m[1], 16),
+    b: parseInt(m[2], 16),
+  }
 }
