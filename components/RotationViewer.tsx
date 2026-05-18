@@ -67,6 +67,65 @@ export default function RotationViewer({
   const [dragging, setDragging] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
   const dragStart = useRef({ x: 0, startIdx: 0 })
+  // Cleaned design (background-removed) for the current product.
+  // We chroma-key the corner pixel and make matching colors transparent
+  // so the overlay shows JUST the print, not the AliExpress shirt outline.
+  const [cleanedDesignUrl, setCleanedDesignUrl] = useState<string | null>(null)
+
+  // When the active product changes, do live background removal on its image
+  // and use the cleaned PNG as the overlay source. Same chroma-key algorithm
+  // as the admin Mockup Studio, but runs automatically on every click.
+  useEffect(() => {
+    if (!product?.imageUrl) { setCleanedDesignUrl(null); return }
+    let cancelled = false
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      if (cancelled) return
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.drawImage(img, 0, 0)
+      try {
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        // Sample the corner pixels — average them as the bg color
+        const samples = [
+          0,
+          (canvas.width - 1) * 4,
+          (canvas.height - 1) * canvas.width * 4,
+          ((canvas.height - 1) * canvas.width + canvas.width - 1) * 4,
+        ]
+        let bgR = 0, bgG = 0, bgB = 0
+        for (const i of samples) {
+          bgR += data.data[i]
+          bgG += data.data[i + 1]
+          bgB += data.data[i + 2]
+        }
+        bgR /= 4; bgG /= 4; bgB /= 4
+        const TOL = 55
+        for (let i = 0; i < data.data.length; i += 4) {
+          const r = data.data[i], g = data.data[i + 1], b = data.data[i + 2]
+          const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2)
+          if (dist < TOL) {
+            data.data[i + 3] = 0
+          } else if (dist < TOL * 1.5) {
+            data.data[i + 3] = Math.round(255 * ((dist - TOL) / (TOL * 0.5)))
+          }
+        }
+        ctx.putImageData(data, 0, 0)
+        setCleanedDesignUrl(canvas.toDataURL('image/png'))
+      } catch (err) {
+        // CORS-tainted canvas — fall back to raw image
+        console.warn('[RotationViewer] chroma-key skipped, using raw image:', err)
+        setCleanedDesignUrl(product.imageUrl!)
+      }
+    }
+    img.onerror = () => setCleanedDesignUrl(product.imageUrl!)
+    img.src = product.imageUrl
+    return () => { cancelled = true }
+  }, [product?.imageUrl])
 
   // Preload all frames so dragging is instant (no flicker mid-scrub)
   useEffect(() => {
@@ -133,10 +192,11 @@ export default function RotationViewer({
         draggable={false}
       />
 
-      {/* Design overlay on chest — only renders if a product is active.
-          Position/scale are tuned for this specific shoot — re-tune if you
-          re-shoot with a different model or camera distance. */}
-      {product?.imageUrl && overlayOpacity > 0 && (
+      {/* Design overlay on chest — uses the chroma-keyed (background-removed)
+          version of the product image so we only see the print, not the
+          AliExpress shirt outline. The cleaning happens in a useEffect when
+          the product changes. */}
+      {cleanedDesignUrl && overlayOpacity > 0 && (
         <div
           className="rot-viewer-design"
           style={{
@@ -144,7 +204,7 @@ export default function RotationViewer({
             transform: `translate(calc(-50% + ${overlayX}px), -50%) skewX(${overlaySkew}deg)`,
           }}
         >
-          <img src={product.imageUrl} alt={product.name} draggable={false} />
+          <img src={cleanedDesignUrl} alt={product?.name || ''} draggable={false} />
         </div>
       )}
 

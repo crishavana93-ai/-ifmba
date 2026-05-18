@@ -5238,16 +5238,14 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   pointer-events: none;
   -webkit-user-drag: none;
 }
-/* Design overlay sits inside the chest area of the model. Sized smaller
-   than before (was 32% — overflowed past the body silhouette and looked
-   like a phantom shirt floating behind him). 16% keeps the overlay tight
-   to the chest panel only. */
+/* Design overlay — much smaller now (was 16%, then 32% original — both
+   too big). 10% with center positioning fits the chest area properly. */
 .rot-viewer-design {
   position: absolute;
-  top: 45%;   /* chest center on the new Gemini frames (was 38%) */
+  top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 16%;
+  width: 10%;
   aspect-ratio: 1;
   pointer-events: none;
   transition: opacity 0.18s ease, transform 0.18s ease;

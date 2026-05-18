@@ -49,7 +49,7 @@ export default function MockupGenerator() {
   const [designName, setDesignName] = useState<string>('design')
   // Position + size as % of template (so it's resolution-independent)
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
-  const [size, setSize] = useState<number>(14) // smaller default — was 22
+  const [size, setSize] = useState<number>(9) // much smaller default — chest area only
   const [displacement, setDisplacement] = useState<number>(8)
   const [blendMode, setBlendMode] = useState<'multiply' | 'normal' | 'overlay' | 'soft-light'>('multiply')
   const [opacity, setOpacity] = useState<number>(100)
@@ -594,8 +594,8 @@ export default function MockupGenerator() {
                 </label>
                 <input
                   type="range"
-                  min="5"
-                  max="60"
+                  min="3"
+                  max="35"
                   step="1"
                   value={size}
                   onChange={(e) => setSize(Number(e.target.value))}
