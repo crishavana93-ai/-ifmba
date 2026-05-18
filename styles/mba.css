@@ -5205,3 +5205,69 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   text-underline-offset: 2px;
 }
 .showroom-credit a:hover { color: var(--ink); }
+
+/* ═══════════════════════════════════════════════════════
+   ROTATION VIEWER — 8-frame drag-to-spin from real video
+   ═══════════════════════════════════════════════════════ */
+.rot-viewer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 478 / 850;  /* matches the source video's portrait dims */
+  max-height: 65vh;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #f7f5ee 0%, #e8e4d8 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y; /* allow vertical page scroll, capture horizontal */
+  box-shadow:
+    0 4px 24px rgba(11, 18, 32, 0.10),
+    inset 0 -40px 80px rgba(11, 18, 32, 0.04);
+}
+.rot-viewer-frame {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+/* Design overlay positioned on the chest. Sized as a percentage of the
+   viewer width so it scales with mobile/desktop. */
+.rot-viewer-design {
+  position: absolute;
+  top: 38%;   /* chest area on the model */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  mix-blend-mode: multiply; /* blends with fabric for a "printed" look */
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+.rot-viewer-design img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+.rot-viewer-hint {
+  position: absolute;
+  bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: rgba(11, 18, 32, 0.7);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 8px 16px;
+  border-radius: 100px;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  animation: rotHint 2.2s ease-in-out infinite;
+}
+@keyframes rotHint {
+  0%, 100% { transform: translateX(-50%); }
+  50%      { transform: translateX(calc(-50% + 12px)); }
+}

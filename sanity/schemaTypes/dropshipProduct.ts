@@ -103,6 +103,19 @@ export default defineType({
       description: 'Square crop preferred (1:1). Use a clean studio shot — no AliExpress watermarks.',
     }),
     defineField({
+      name: 'lifestyleImage',
+      title: 'On-Model Photo (Optional)',
+      type: 'image',
+      options: {hotspot: true, accept: 'image/*'},
+      description: 'Photo of a real person wearing the product. Shown via a "Wear it" lightbox on the card. Portrait or square works best.',
+    }),
+    defineField({
+      name: 'lifestyleImageUrl',
+      title: 'On-Model Photo URL (Alternative)',
+      type: 'url',
+      description: 'Use this if the photo is already hosted (e.g. /lifestyle/model-mba-tee.webp on the public folder). Overrides the upload above.',
+    }),
+    defineField({
       name: 'descriptionSv',
       title: 'Description (Swedish)',
       type: 'text',

@@ -19,9 +19,10 @@ import ScrollProgress from '@/components/ScrollProgress'
 import ScrollReveal from '@/components/ScrollReveal'
 import BackToTop from '@/components/BackToTop'
 import ShopGrid from '@/components/ShopGrid'
-// 3D showroom lives behind a Client Component wrapper because Next.js 16
-// forbids `dynamic({ssr:false})` inside Server Components like this one.
-import Showroom3DLazy from '@/components/Showroom3DLazy'
+// Showroom now uses real-photo rotation instead of 3D — small bundle, can
+// import directly without the lazy wrapper. Showroom3DLazy.tsx still exists
+// in case we ever bring back the Three.js viewer.
+import Showroom from '@/components/Showroom3D'
 
 export const revalidate = 60
 
@@ -86,13 +87,13 @@ export default async function ButikPage() {
           </section>
         ) : (
           <>
-            {/* 3D Showroom — interactive viewer above the grid. Only renders
-                if there are tee products to map onto the mannequin. */}
+            {/* Showroom — real-photo rotation viewer above the grid. Only
+                renders if there are tee products to overlay onto the model. */}
             {fanDrop.some((p) => p.category === 'apparel-tee') && (
-              <Showroom3DLazy
+              <Showroom
                 products={fanDrop}
                 num="00"
-                numText="3D"
+                numText="LIVE"
                 className="section-alt"
               />
             )}
