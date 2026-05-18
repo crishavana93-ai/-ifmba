@@ -43,16 +43,23 @@ const FRAMES = Array.from({ length: FRAME_COUNT }, (_, i) =>
   `/lifestyle/rotation/frame-${String(i).padStart(2, '0')}.webp`,
 )
 
-/** Opacity multiplier per frame for the design overlay.
- *  Front (0) = full visible · turned-away frames (2,3,4) = hidden ·
- *  3/4 angles (1, 5) = partial · side (6) = chest perpendicular, hidden. */
-const OVERLAY_OPACITY = [1.0, 0.65, 0.15, 0.0, 0.0, 0.55, 0.0]
+/** Opacity multiplier per frame for the design overlay. Re-tuned after the
+ *  frame re-ordering — clockwise rotation from front:
+ *    0 = front (full chest visible)
+ *    1 = ¾ right (face turned left, chest at ¾) — partial
+ *    2 = side right (chest perpendicular) — barely visible
+ *    3 = ¾ back-right — BACK to camera, hidden
+ *    4 = full back — hidden
+ *    5 = ¾ back-left — BACK to camera, hidden
+ *    6 = side left (chest perpendicular other way) — barely visible
+ */
+const OVERLAY_OPACITY = [1.0, 0.65, 0.05, 0.0, 0.0, 0.0, 0.05]
 
 /** Horizontal offset (px) per frame — design shifts as body rotates. */
-const OVERLAY_X_OFFSET = [0, -14, -28, 0, 0, 24, 0]
+const OVERLAY_X_OFFSET = [0, -12, -30, 0, 0, 0, 30]
 
 /** SkewX angle (deg) per frame — fakes 3D body rotation under the design. */
-const OVERLAY_SKEW = [0, -10, -22, 0, 0, 16, 0]
+const OVERLAY_SKEW = [0, -10, -22, 0, 0, 0, 22]
 
 export default function RotationViewer({
   product,
