@@ -63,6 +63,13 @@ export default function MockupGenerator() {
   const [bgTolerance, setBgTolerance] = useState<number>(40)
   const [exporting, setExporting] = useState(false)
   const [exportedUrl, setExportedUrl] = useState<string | null>(null)
+  // Sanity integration — load products + save mockup back
+  const [products, setProducts] = useState<Array<{
+    _id: string; name: string; imageUrl: string; sourceUrl?: string
+  }>>([])
+  const [selectedProductId, setSelectedProductId] = useState<string>('')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -72,6 +79,36 @@ export default function MockupGenerator() {
     setPos({ x: template.defaultChest.x, y: template.defaultChest.y })
     setSize(template.defaultChest.width)
   }, [template])
+
+  // Load the product catalog from Sanity on mount.
+  // Uses the same session-auth API endpoint pattern as the reservation form
+  // (works because the user must be logged into Sanity Studio to access this page).
+  useEffect(() => {
+    const SANITY_QUERY = '*[_type=="dropshipProduct" && inStock == true] | order(order asc){_id, name, "imageUrl": image.asset->url, sourceUrl}'
+    fetch(`https://3zuy5n8l.api.sanity.io/v2024-01-01/data/query/production?query=${encodeURIComponent(SANITY_QUERY)}`, {
+      credentials: 'include',
+    })
+      .then((r) => r.json())
+      .then((j) => {
+        if (Array.isArray(j?.result)) setProducts(j.result)
+      })
+      .catch((err) => {
+        console.warn('[MockupGenerator] failed to load products:', err)
+      })
+  }, [])
+
+  // When user picks a product, load its image as the design
+  const handleProductPick = useCallback((id: string) => {
+    setSelectedProductId(id)
+    setSaved(false)
+    setExportedUrl(null)
+    if (!id) { setDesignUrl(null); return }
+    const p = products.find((x) => x._id === id)
+    if (!p?.imageUrl) return
+    setDesignName(p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
+    // CORS: Sanity CDN allows cross-origin, so we can use the URL directly.
+    setDesignUrl(p.imageUrl)
+  }, [products])
 
   // Handle file upload
   const handleFile = useCallback((file: File) => {
@@ -263,6 +300,64 @@ export default function MockupGenerator() {
     document.body.removeChild(a)
   }
 
+  // Save the generated mockup directly back to the selected Sanity product.
+  // Uploads the PNG as a Sanity asset, then patches the product's `image`
+  // field with the new asset reference. Requires the user to have an active
+  // Sanity Studio session (cookie auth).
+  const saveToSanity = useCallback(async () => {
+    if (!exportedUrl || !selectedProductId) return
+    setSaving(true)
+    setSaved(false)
+    try {
+      // 1. Convert dataURL → Blob
+      const blob = await (await fetch(exportedUrl)).blob()
+
+      // 2. Upload to Sanity assets
+      const upRes = await fetch(
+        'https://3zuy5n8l.api.sanity.io/v2024-01-01/assets/images/production',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': blob.type || 'image/png' },
+          body: blob,
+        },
+      )
+      const upBody = await upRes.json()
+      if (!upRes.ok) throw new Error(`Upload failed: ${upRes.status}`)
+      const assetId = upBody?.document?._id
+
+      // 3. Patch the product to use the new image
+      const patchRes = await fetch(
+        'https://3zuy5n8l.api.sanity.io/v2024-01-01/data/mutate/production',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mutations: [{
+              patch: {
+                id: selectedProductId,
+                set: {
+                  image: {
+                    _type: 'image',
+                    asset: { _type: 'reference', _ref: assetId },
+                  },
+                },
+              },
+            }],
+          }),
+        },
+      )
+      if (!patchRes.ok) throw new Error(`Patch failed: ${patchRes.status}`)
+      setSaved(true)
+    } catch (err: any) {
+      console.error('[MockupGenerator] save to Sanity failed:', err)
+      alert(`Save failed: ${err?.message || err}. Check console for details.`)
+    } finally {
+      setSaving(false)
+    }
+  }, [exportedUrl, selectedProductId])
+
   return (
     <div className="mockup-gen">
       <div className="mockup-gen-header">
@@ -341,8 +436,38 @@ export default function MockupGenerator() {
             </select>
           </div>
 
+          {/* NEW — Load directly from Sanity. Skips the manual download
+              of AliExpress photo → upload to studio cycle entirely. */}
+          {products.length > 0 && (
+            <div className="mockup-gen-section" style={{
+              background: 'rgba(255, 203, 5, 0.10)',
+              padding: 14,
+              borderRadius: 6,
+              border: '1px solid rgba(255, 203, 5, 0.35)',
+            }}>
+              <label className="mockup-gen-label">
+                ⚡ Snabbladda från Sanity
+              </label>
+              <select
+                value={selectedProductId}
+                onChange={(e) => handleProductPick(e.target.value)}
+              >
+                <option value="">— Välj en produkt —</option>
+                {products.map((p) => (
+                  <option key={p._id} value={p._id}>{p.name}</option>
+                ))}
+              </select>
+              <div style={{ fontSize: 11, opacity: 0.7, marginTop: 6 }}>
+                Laddar produktbilden från Sanity direkt. Ingen nedladdning behövs.
+              </div>
+            </div>
+          )}
+
           <div className="mockup-gen-section">
             <label className="mockup-gen-label">2. Ladda upp design (PNG)</label>
+            <div style={{ fontSize: 11, opacity: 0.6, marginBottom: 4 }}>
+              … eller ladda upp en egen fil:
+            </div>
             <input
               type="file"
               accept="image/png,image/jpeg,image/webp"
@@ -352,7 +477,12 @@ export default function MockupGenerator() {
               <button
                 type="button"
                 className="mockup-gen-btn-ghost"
-                onClick={() => { setDesignUrl(null); setExportedUrl(null) }}
+                onClick={() => {
+                  setDesignUrl(null)
+                  setExportedUrl(null)
+                  setSelectedProductId('')
+                  setSaved(false)
+                }}
               >
                 Ta bort design
               </button>
@@ -541,13 +671,45 @@ export default function MockupGenerator() {
               {exportedUrl && (
                 <div className="mockup-gen-section">
                   <label className="mockup-gen-label">Klar! 🎉</label>
+
+                  {/* Primary CTA: save back to Sanity (if a product was picked) */}
+                  {selectedProductId && (
+                    <button
+                      type="button"
+                      className="mockup-gen-btn-primary"
+                      onClick={saveToSanity}
+                      disabled={saving || saved}
+                      style={{ marginBottom: 8 }}
+                    >
+                      {saving ? 'Sparar…' : saved ? '✓ Sparad i Sanity' : '⚡ Spara till Sanity-produkt'}
+                    </button>
+                  )}
+
+                  {/* Always available: download as PNG (use case: save locally
+                      to upload to a different product, or use elsewhere) */}
                   <button
                     type="button"
-                    className="mockup-gen-btn-primary"
+                    className="mockup-gen-btn-ghost"
                     onClick={downloadExport}
                   >
                     Ladda ner PNG
                   </button>
+
+                  {saved && (
+                    <div style={{
+                      fontSize: 12,
+                      marginTop: 8,
+                      padding: 8,
+                      background: '#e8f5e8',
+                      borderRadius: 4,
+                      color: '#1b5e20',
+                    }}>
+                      ✓ Mockup uppladdad. Hård-refresha{' '}
+                      <a href="/butik" target="_blank" rel="noopener">/butik</a>
+                      {' '}om ~60 sekunder för att se den live.
+                    </div>
+                  )}
+
                   <details style={{ marginTop: 8 }}>
                     <summary style={{ fontSize: 12, cursor: 'pointer' }}>Förhandsgranskning</summary>
                     <img
