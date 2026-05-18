@@ -5023,3 +5023,148 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 }
 .rsv-done-title { margin: 0 0 8px 0; font-size: 22px; font-weight: 900; letter-spacing: -0.01em; }
 .rsv-done-body { margin: 0; color: rgba(11,18,32,0.7); line-height: 1.55; }
+
+/* ═══════════════════════════════════════════════════════
+   3D SHOWROOM — interactive t-shirt viewer
+   ═══════════════════════════════════════════════════════ */
+.showroom .showroom-body {
+  max-width: 540px;
+  margin: 12px 0 0;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.5;
+  opacity: 0.85;
+}
+.showroom .showroom-stage {
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 280px);
+  gap: clamp(24px, 3vw, 48px);
+  margin-top: clamp(28px, 3vw, 40px);
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .showroom .showroom-stage {
+    grid-template-columns: 1fr;
+  }
+}
+.showroom-canvas {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background:
+    radial-gradient(circle at 50% 40%, #ffffff 0%, #f2f1ec 60%, #e4e3de 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(11, 18, 32, 0.08);
+  box-shadow: 0 4px 24px rgba(11, 18, 32, 0.08);
+  touch-action: none;
+}
+/* The Canvas component takes 100%/100% from R3F by default — just enforce. */
+.showroom-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.showroom-hint {
+  position: absolute;
+  bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(11, 18, 32, 0.55);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 6px 14px;
+  border-radius: 100px;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  animation: showroomHint 4s ease-in-out infinite;
+}
+@keyframes showroomHint {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+.showroom-info {
+  display: flex; flex-direction: column;
+  gap: 8px;
+  padding: clamp(16px, 2vw, 24px);
+}
+.showroom-info-name {
+  font-size: clamp(18px, 1.5vw, 22px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.showroom-info-price {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.showroom-info-cta {
+  display: inline-flex; align-items: center;
+  margin-top: 14px;
+  padding: 11px 22px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+  text-decoration: none;
+  width: fit-content;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.showroom-info-cta:hover {
+  background: var(--yellow);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+/* Thumbnail picker row — sits below the canvas */
+.showroom-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: clamp(20px, 2vw, 32px);
+}
+.showroom-thumb {
+  display: flex; flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  border: 2px solid transparent;
+  background: var(--bg);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+.showroom-thumb:hover {
+  transform: translateY(-3px);
+  border-color: rgba(11, 18, 32, 0.18);
+  box-shadow: 0 6px 16px rgba(11, 18, 32, 0.1);
+}
+.showroom-thumb.is-active {
+  border-color: var(--yellow);
+  box-shadow: 0 4px 14px rgba(255, 203, 5, 0.5);
+}
+.showroom-thumb img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #f2f1ec;
+  display: block;
+}
+.showroom-thumb-name {
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: left;
+  line-height: 1.3;
+  background: var(--bg);
+  min-height: 38px;
+  display: flex; align-items: center;
+}

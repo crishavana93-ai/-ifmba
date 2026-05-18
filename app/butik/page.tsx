@@ -19,6 +19,9 @@ import ScrollProgress from '@/components/ScrollProgress'
 import ScrollReveal from '@/components/ScrollReveal'
 import BackToTop from '@/components/BackToTop'
 import ShopGrid from '@/components/ShopGrid'
+// 3D showroom lives behind a Client Component wrapper because Next.js 16
+// forbids `dynamic({ssr:false})` inside Server Components like this one.
+import Showroom3DLazy from '@/components/Showroom3DLazy'
 
 export const revalidate = 60
 
@@ -83,6 +86,17 @@ export default async function ButikPage() {
           </section>
         ) : (
           <>
+            {/* 3D Showroom — interactive viewer above the grid. Only renders
+                if there are tee products to map onto the mannequin. */}
+            {fanDrop.some((p) => p.category === 'apparel-tee') && (
+              <Showroom3DLazy
+                products={fanDrop}
+                num="00"
+                numText="3D"
+                className="section-alt"
+              />
+            )}
+
             {mbaOfficial.length > 0 && (
               <ScrollReveal>
                 <ShopGrid
@@ -106,6 +120,8 @@ export default async function ButikPage() {
                   num="02"
                   numText="FAN DROP"
                   className="section-alt"
+                  /* The Fan Drop section's grid uses `id="fan-drop"` so the
+                     Showroom's "Se detaljer ↓" CTA can scroll smoothly to it. */
                 />
               </ScrollReveal>
             )}
