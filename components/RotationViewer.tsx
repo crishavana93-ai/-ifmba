@@ -29,23 +29,30 @@ type Product = {
   priceSek: number
 }
 
-const FRAME_COUNT = 8
+// 7 frames (replaced the 8 video-extracted frames with Gemini-generated
+// composite + standalone front + side, 2026-05-18). Indexed:
+//   0 — front (face camera)
+//   1 — ¾-right (~51° rotated)
+//   2 — ¾-back-right (~103°)
+//   3 — full back (~154°)
+//   4 — ¾-back-left (~206°)
+//   5 — ¾-left (~257°)
+//   6 — side profile (~309°)
+const FRAME_COUNT = 7
 const FRAMES = Array.from({ length: FRAME_COUNT }, (_, i) =>
   `/lifestyle/rotation/frame-${String(i).padStart(2, '0')}.webp`,
 )
 
 /** Opacity multiplier per frame for the design overlay.
- *  Index 0 = front (full visible), index 4 = back (hidden), others fade.
- *  Tweak these by feel — they assume the model rotated clockwise.
- */
-const OVERLAY_OPACITY = [1.0, 0.85, 0.35, 0.0, 0.0, 0.0, 0.35, 0.85]
+ *  Front (0) = full visible · turned-away frames (2,3,4) = hidden ·
+ *  3/4 angles (1, 5) = partial · side (6) = chest perpendicular, hidden. */
+const OVERLAY_OPACITY = [1.0, 0.65, 0.15, 0.0, 0.0, 0.55, 0.0]
 
-/** Horizontal offset (px) of the design overlay per frame.
- *  Model's chest stays roughly centered but shifts slightly with rotation. */
-const OVERLAY_X_OFFSET = [0, -8, -22, 0, 0, 0, 22, 8]
+/** Horizontal offset (px) per frame — design shifts as body rotates. */
+const OVERLAY_X_OFFSET = [0, -14, -28, 0, 0, 24, 0]
 
-/** SkewX angle (deg) per frame — fakes the body's rotation under the design. */
-const OVERLAY_SKEW = [0, -8, -22, 0, 0, 0, 22, 8]
+/** SkewX angle (deg) per frame — fakes 3D body rotation under the design. */
+const OVERLAY_SKEW = [0, -10, -22, 0, 0, 16, 0]
 
 export default function RotationViewer({
   product,

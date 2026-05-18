@@ -5212,22 +5212,29 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .rot-viewer {
   position: relative;
   width: 100%;
-  aspect-ratio: 478 / 850;  /* matches the source video's portrait dims */
-  max-height: 65vh;
+  /* Updated to match Gemini's 540×1024 frame aspect (was 478×850 from the
+     original video shoot). The frames have pure-white BG already, so the
+     viewer background just needs to be off-white to feel like a studio. */
+  aspect-ratio: 540 / 1024;
+  max-height: 75vh;
   margin: 0 auto;
-  background: linear-gradient(180deg, #f7f5ee 0%, #e8e4d8 100%);
+  background: #ffffff;
   border-radius: 8px;
   overflow: hidden;
   user-select: none;
-  touch-action: pan-y; /* allow vertical page scroll, capture horizontal */
+  touch-action: pan-y;
   box-shadow:
     0 4px 24px rgba(11, 18, 32, 0.10),
-    inset 0 -40px 80px rgba(11, 18, 32, 0.04);
+    inset 0 -40px 80px rgba(11, 18, 32, 0.03);
 }
 .rot-viewer-frame {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover;
+  /* `contain` instead of `cover` — shows the full frame including the face,
+     letterboxing on either side. Cris flagged the face was cropped under
+     the previous `cover` setting (the viewer was wider than the portrait
+     image, so object-fit:cover chopped top/bottom). */
+  object-fit: contain;
   pointer-events: none;
   -webkit-user-drag: none;
 }
