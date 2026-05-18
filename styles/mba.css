@@ -5055,8 +5055,14 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 }
 .showroom-canvas {
   position: relative;
-  /* Slightly taller on desktop, squarer on mobile (less screen real-estate) */
-  aspect-ratio: 1 / 1;
+  /* Match the RotationViewer's portrait aspect (540×1024) so we don't get
+     a big empty beige stripe below the figure on desktop. Was 1:1 — caused
+     a ~200px void under the viewer because the rot-viewer is portrait and
+     its max-height capped it before it could fill the square canvas. */
+  aspect-ratio: 540 / 1024;
+  max-height: 75vh;
+  max-width: 100%;
+  margin-inline: auto;
   /* Soft studio-y gradient — top brighter, bottom subtle navy haze.
      The shirt sits centered with a contact shadow grounding it. */
   background:
@@ -5070,7 +5076,7 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   touch-action: none;
 }
 @media (min-width: 721px) {
-  .showroom-canvas { aspect-ratio: 4 / 3.8; }
+  .showroom-canvas { aspect-ratio: 540 / 1024; max-height: 60vh; }
 }
 /* The Canvas component takes 100%/100% from R3F by default — just enforce. */
 .showroom-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -5319,17 +5325,16 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .mockup-gen-stage-wrap {
   position: sticky;
   top: 100px;
-  /* Cap the wrapper so the stage can't grow past the viewport on big monitors.
-     Previously the model's head was cut off above the fold on a typical
-     laptop because the stage grew to the column's full width. */
-  max-width: min(520px, 75vh);
-  margin-inline: auto;
 }
 .mockup-gen-stage {
   position: relative;
-  /* Template is 1024×1024 — keep 1:1 to avoid distorting it. The cap above
-     keeps the SIZE manageable. */
+  /* Template is 1024×1024, so 1:1 keeps it undistorted. The max-width +
+     max-height pair caps the stage so the full model fits above the fold
+     on a typical laptop screen (was overflowing). */
   aspect-ratio: 1;
+  max-width: 520px;
+  max-height: 75vh;
+  margin-inline: auto;
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
