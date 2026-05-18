@@ -25,8 +25,8 @@
  *     remove.bg and re-upload. The viewer is then a true "design on shirt".
  */
 
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { OrbitControls, Environment, ContactShadows } from '@react-three/drei'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 
@@ -44,78 +44,119 @@ function fmtSek(n?: number) {
 }
 
 /**
- * Procedural t-shirt mesh — composed of a body (torso cylinder) + two
- * sleeves (smaller cylinders) + a neck cutout. The chest is a slightly
- * curved plane that catches the product texture.
+ * Procedural t-shirt mesh — tapered cylinder body + curved chest panel
+ * (built as a partial cylinder so it hugs the torso instead of floating),
+ * angled sleeves, neck cutout. The chest panel uses cylindrical UV mapping
+ * so the texture wraps naturally with the body curve.
  *
- * The geometry is intentionally simple so the texture reads clearly.
- * Total mesh: ~3K triangles.
+ * Geometry deliberately simple (~5K triangles) — clean reading of the
+ * product texture is more important than realistic cloth folds.
  */
 function ShirtMesh({ textureUrl, color = '#0B1220' }: { textureUrl?: string; color?: string }) {
   const ref = useRef<THREE.Group>(null)
 
-  // Load texture imperatively so we can null-check + replace cleanly
+  // Load texture imperatively so we can null-check + replace cleanly +
+  // log errors (without an onError, CORS failures fail silently).
   const [texture, setTexture] = useState<THREE.Texture | null>(null)
   useEffect(() => {
     if (!textureUrl) { setTexture(null); return }
     const loader = new THREE.TextureLoader()
     loader.setCrossOrigin('anonymous')
-    loader.load(textureUrl, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace
-      tex.anisotropy = 8
-      setTexture(tex)
-    })
+    loader.load(
+      textureUrl,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace
+        tex.anisotropy = 8
+        tex.minFilter = THREE.LinearMipMapLinearFilter
+        tex.magFilter = THREE.LinearFilter
+        setTexture(tex)
+      },
+      undefined,
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.warn('[Showroom3D] texture load failed:', textureUrl, err)
+      },
+    )
   }, [textureUrl])
 
-  // Subtle idle sway so the model feels alive even before user interaction
+  // Subtle idle sway so the model feels alive before user interaction
   useFrame((state) => {
     if (!ref.current) return
     const t = state.clock.getElapsedTime()
-    ref.current.rotation.y = Math.sin(t * 0.3) * 0.04
+    ref.current.rotation.y = Math.sin(t * 0.4) * 0.06
   })
 
+  // Shared shirt material — slight roughness like cotton, low metalness
+  const bodyMat = useMemo(
+    () => new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.82,
+      metalness: 0.02,
+      side: THREE.DoubleSide,
+    }),
+    [color],
+  )
+
   return (
-    <group ref={ref}>
-      {/* Body — slightly elliptical cylinder for a t-shirt silhouette */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[1.05, 0.92, 2.3, 48, 1, true]} />
-        <meshStandardMaterial color={color} side={THREE.DoubleSide} roughness={0.7} metalness={0.05} />
+    <group ref={ref} position={[0, -0.4, 0]}>
+      {/* TORSO — tapered cylinder: wider at chest, narrower at hem.
+          openEnded so the chest panel can sit on the front face. */}
+      <mesh material={bodyMat}>
+        <cylinderGeometry args={[0.85, 0.72, 2.0, 64, 4, true]} />
       </mesh>
 
-      {/* Front chest panel — receives the product texture */}
-      <mesh position={[0, 0.05, 1.02]}>
-        <planeGeometry args={[1.55, 1.85, 1, 1]} />
+      {/* FRONT CHEST PANEL — partial cylinder hugging the body's front curve.
+          thetaLength = how much of the cylinder we use (1.2 rad ≈ 69° front arc).
+          thetaStart positions the arc on the front face (looking +Z). */}
+      <mesh position={[0, 0, 0.001]}>
+        <cylinderGeometry
+          args={[0.86, 0.73, 1.6, 32, 1, true, Math.PI / 2 - 0.6, 1.2]}
+        />
         <meshStandardMaterial
           map={texture || null}
           color={texture ? '#ffffff' : color}
-          roughness={0.65}
-          metalness={0.05}
-          transparent
+          roughness={0.7}
+          metalness={0.02}
+          side={THREE.DoubleSide}
+          transparent={false}
         />
       </mesh>
 
-      {/* Left sleeve */}
-      <mesh position={[-1.1, 0.5, 0]} rotation={[0, 0, Math.PI / 2.3]}>
-        <cylinderGeometry args={[0.42, 0.38, 0.95, 32]} />
-        <meshStandardMaterial color={color} roughness={0.7} />
+      {/* LEFT SLEEVE — angled down + outward, tapered */}
+      <group position={[-0.78, 0.78, 0]} rotation={[0, 0, Math.PI / 2.6]}>
+        <mesh material={bodyMat}>
+          <cylinderGeometry args={[0.32, 0.26, 0.85, 24]} />
+        </mesh>
+      </group>
+
+      {/* RIGHT SLEEVE — mirror */}
+      <group position={[0.78, 0.78, 0]} rotation={[0, 0, -Math.PI / 2.6]}>
+        <mesh material={bodyMat}>
+          <cylinderGeometry args={[0.32, 0.26, 0.85, 24]} />
+        </mesh>
+      </group>
+
+      {/* SHOULDER CAPS — tiny spheres to round the body↔sleeve join */}
+      <mesh position={[-0.72, 0.97, 0]} material={bodyMat}>
+        <sphereGeometry args={[0.34, 24, 16]} />
+      </mesh>
+      <mesh position={[0.72, 0.97, 0]} material={bodyMat}>
+        <sphereGeometry args={[0.34, 24, 16]} />
       </mesh>
 
-      {/* Right sleeve */}
-      <mesh position={[1.1, 0.5, 0]} rotation={[0, 0, -Math.PI / 2.3]}>
-        <cylinderGeometry args={[0.42, 0.38, 0.95, 32]} />
-        <meshStandardMaterial color={color} roughness={0.7} />
+      {/* CREW NECK — slightly recessed ring */}
+      <mesh position={[0, 1.0, 0]} rotation={[Math.PI / 2, 0, 0]} material={bodyMat}>
+        <torusGeometry args={[0.24, 0.05, 12, 32]} />
       </mesh>
 
-      {/* Neck ring */}
-      <mesh position={[0, 1.15, 0]}>
-        <torusGeometry args={[0.32, 0.06, 16, 48]} />
-        <meshStandardMaterial color={color} roughness={0.6} />
+      {/* TOP CAP — closes the top of the torso (otherwise you see through) */}
+      <mesh position={[0, 1.0, 0]} rotation={[Math.PI / 2, 0, 0]} material={bodyMat}>
+        <ringGeometry args={[0.24, 0.85, 32]} />
       </mesh>
 
-      {/* Bottom hem ring (subtle definition) */}
-      <mesh position={[0, -1.15, 0]}>
-        <torusGeometry args={[0.92, 0.04, 12, 48]} />
-        <meshStandardMaterial color={color} roughness={0.6} />
+      {/* HEM CAP — closes the bottom */}
+      <mesh position={[0, -1.0, 0]} rotation={[-Math.PI / 2, 0, 0]} material={bodyMat}>
+        <circleGeometry args={[0.72, 32]} />
       </mesh>
     </group>
   )
@@ -165,28 +206,46 @@ export default function Showroom3D({
         <div className="showroom-stage">
           <div className="showroom-canvas">
             <Canvas
-              camera={{ position: [0, 0.2, 4.2], fov: 38 }}
+              camera={{ position: [0, 0.05, 3.4], fov: 32 }}
               dpr={[1, 2]}
               gl={{ antialias: true, alpha: true }}
+              shadows
             >
-              {/* Lighting setup — three-point lighting for the shirt */}
-              <ambientLight intensity={0.55} />
-              <directionalLight position={[3, 4, 5]} intensity={1.1} castShadow />
-              <directionalLight position={[-3, 2, -2]} intensity={0.45} color="#FFCB05" />
-              <hemisphereLight args={['#ffffff', '#0B1220', 0.4]} />
+              {/* Studio lighting — key (front-right), fill (front-left, yellow
+                  to echo brand), back rim (top-back-left), ambient floor */}
+              <ambientLight intensity={0.4} />
+              <directionalLight
+                position={[2.5, 3.5, 4]}
+                intensity={1.3}
+                castShadow
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+              />
+              <directionalLight position={[-3, 2, 3]} intensity={0.55} color="#FFCB05" />
+              <directionalLight position={[0, 3, -3]} intensity={0.7} color="#ffffff" />
+              <hemisphereLight args={['#fff8e0', '#1a2540', 0.35]} />
 
               <Suspense fallback={null}>
                 <ShirtMesh textureUrl={active?.imageUrl || undefined} />
+                {/* Soft contact shadow on the floor — grounds the shirt */}
+                <ContactShadows
+                  position={[0, -1.45, 0]}
+                  opacity={0.45}
+                  scale={5}
+                  blur={2.4}
+                  far={2}
+                  color="#0B1220"
+                />
               </Suspense>
 
               <OrbitControls
                 enablePan={false}
-                minDistance={2.8}
-                maxDistance={6}
-                minPolarAngle={Math.PI / 3}
-                maxPolarAngle={Math.PI / 1.6}
-                autoRotate={false}
-                rotateSpeed={0.8}
+                minDistance={2.6}
+                maxDistance={5.5}
+                minPolarAngle={Math.PI / 2.6}
+                maxPolarAngle={Math.PI / 1.7}
+                rotateSpeed={0.85}
+                target={[0, -0.1, 0]}
               />
             </Canvas>
             <div className="showroom-hint" aria-hidden="true">↻ Dra för att rotera</div>

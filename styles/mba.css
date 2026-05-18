@@ -5048,13 +5048,17 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 }
 .showroom-canvas {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 4.5;
+  /* Soft studio-y gradient — top brighter, bottom subtle navy haze.
+     The shirt sits centered with a contact shadow grounding it. */
   background:
-    radial-gradient(circle at 50% 40%, #ffffff 0%, #f2f1ec 60%, #e4e3de 100%);
+    radial-gradient(ellipse at 50% 30%, #ffffff 0%, #f5f3ec 45%, #e6e2d6 100%);
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(11, 18, 32, 0.08);
-  box-shadow: 0 4px 24px rgba(11, 18, 32, 0.08);
+  box-shadow:
+    0 4px 24px rgba(11, 18, 32, 0.08),
+    inset 0 -40px 80px rgba(11, 18, 32, 0.04);
   touch-action: none;
 }
 /* The Canvas component takes 100%/100% from R3F by default — just enforce. */
