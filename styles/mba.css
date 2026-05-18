@@ -4871,15 +4871,20 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   margin-top: 12px; padding: 9px 16px;
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 100px;
+  /* Explicit background — browser default <button> bg is white-ish, which
+     blew out the text on our dark navy cards (Cris flagged the unreadable
+     RESERVE pill 2026-05-18). */
+  background: transparent;
   font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
   font-weight: 800; text-transform: uppercase;
-  color: #fff; text-decoration: none;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 .shop-cta:hover {
   background: var(--yellow); color: var(--ink); border-color: var(--yellow);
 }
-.shop-cta { cursor: pointer; font-family: inherit; }
 
 /* ═══════════════════════════════════════════════════════
    RESERVATION MODAL — pops up on Reservera click
