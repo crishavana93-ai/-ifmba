@@ -5172,3 +5172,20 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   min-height: 38px;
   display: flex; align-items: center;
 }
+
+.showroom-credit {
+  margin-top: clamp(20px, 2vw, 28px);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(11, 18, 32, 0.45);
+  text-align: center;
+}
+.showroom-credit a {
+  color: rgba(11, 18, 32, 0.65);
+  text-decoration: underline;
+  text-decoration-color: rgba(11, 18, 32, 0.2);
+  text-underline-offset: 2px;
+}
+.showroom-credit a:hover { color: var(--ink); }

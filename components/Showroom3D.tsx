@@ -26,9 +26,13 @@
  */
 
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Environment, ContactShadows } from '@react-three/drei'
+import { OrbitControls, ContactShadows, useGLTF } from '@react-three/drei'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
+
+// Pre-load the model so the first user interaction is instant.
+// Path is /public/models/tshirt.glb — Next.js serves /public at the root.
+useGLTF.preload('/models/tshirt.glb')
 
 type Product = {
   _id: string
@@ -44,15 +48,83 @@ function fmtSek(n?: number) {
 }
 
 /**
- * Procedural t-shirt mesh — tapered cylinder body + curved chest panel
- * (built as a partial cylinder so it hugs the torso instead of floating),
- * angled sleeves, neck cutout. The chest panel uses cylindrical UV mapping
- * so the texture wraps naturally with the body curve.
+ * Real .glb t-shirt — loaded from /public/models/tshirt.glb.
+ * Source: "T-Shirt Low Poly" by JC4862 on Sketchfab (CC BY 4.0).
+ * https://sketchfab.com/3d-models/t-shirt-low-poly-3e4b13a502884acfbd79cee0f9cd8876
  *
- * Geometry deliberately simple (~5K triangles) — clean reading of the
- * product texture is more important than realistic cloth folds.
+ * Texture pipeline: we traverse the loaded scene graph and replace the
+ * `map` on every mesh's material with our product texture. The model's
+ * UV unwrap places the design on the chest area naturally.
+ *
+ * If the model fails to load (e.g. file missing), the Suspense boundary
+ * in the parent falls back to <ShirtMeshProcedural> so the showroom never
+ * shows a broken state.
  */
-function ShirtMesh({ textureUrl, color = '#0B1220' }: { textureUrl?: string; color?: string }) {
+function ShirtFromModel({ textureUrl }: { textureUrl?: string }) {
+  const ref = useRef<THREE.Group>(null)
+  const { scene } = useGLTF('/models/tshirt.glb') as any
+
+  // Clone so multiple instances don't share state; we mutate materials below.
+  const cloned = useMemo(() => scene.clone(true), [scene])
+
+  // Apply the product texture by overriding every mesh's baseColor map.
+  useEffect(() => {
+    if (!cloned) return
+    if (!textureUrl) {
+      // No product yet — restore default white material so the model is clean
+      cloned.traverse((obj: any) => {
+        if (obj.isMesh && obj.material) {
+          obj.material.map = null
+          obj.material.color = new THREE.Color('#ffffff')
+          obj.material.needsUpdate = true
+        }
+      })
+      return
+    }
+    const loader = new THREE.TextureLoader()
+    loader.setCrossOrigin('anonymous')
+    loader.load(
+      textureUrl,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace
+        tex.anisotropy = 8
+        tex.flipY = false // GLB models use flipY:false by convention
+        cloned.traverse((obj: any) => {
+          if (obj.isMesh && obj.material) {
+            obj.material.map = tex
+            // Tint to white so the texture shows true color
+            obj.material.color = new THREE.Color('#ffffff')
+            obj.material.needsUpdate = true
+          }
+        })
+      },
+      undefined,
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.warn('[Showroom3D] texture load failed:', textureUrl, err)
+      },
+    )
+  }, [cloned, textureUrl])
+
+  // Subtle idle sway — same as procedural version for consistency
+  useFrame((state) => {
+    if (!ref.current) return
+    const t = state.clock.getElapsedTime()
+    ref.current.rotation.y = Math.sin(t * 0.4) * 0.06
+  })
+
+  return (
+    <group ref={ref} scale={1.6} position={[0, -0.6, 0]}>
+      <primitive object={cloned} />
+    </group>
+  )
+}
+
+/**
+ * Procedural fallback — used only if the .glb fails to load. Kept around
+ * so the showroom never shows a broken state.
+ */
+function ShirtMeshProcedural({ textureUrl, color = '#0B1220' }: { textureUrl?: string; color?: string }) {
   const ref = useRef<THREE.Group>(null)
 
   // Load texture imperatively so we can null-check + replace cleanly +
@@ -226,7 +298,7 @@ export default function Showroom3D({
               <hemisphereLight args={['#fff8e0', '#1a2540', 0.35]} />
 
               <Suspense fallback={null}>
-                <ShirtMesh textureUrl={active?.imageUrl || undefined} />
+                <ShirtFromModel textureUrl={active?.imageUrl || undefined} />
                 {/* Soft contact shadow on the floor — grounds the shirt */}
                 <ContactShadows
                   position={[0, -1.45, 0]}
@@ -279,6 +351,26 @@ export default function Showroom3D({
               </button>
             )
           })}
+        </div>
+
+        {/* CC-BY 4.0 attribution required by the model's license. */}
+        <div className="showroom-credit">
+          3D-modell:{' '}
+          <a
+            href="https://sketchfab.com/3d-models/t-shirt-low-poly-3e4b13a502884acfbd79cee0f9cd8876"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            “T-Shirt Low Poly” by JC4862
+          </a>{' '}
+          ·{' '}
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CC BY 4.0
+          </a>
         </div>
       </div>
     </section>
