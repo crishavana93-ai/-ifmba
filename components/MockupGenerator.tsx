@@ -214,24 +214,49 @@ export default function MockupGenerator() {
       // chroma-key green-screen, but adaptive to whatever color is in the
       // corners.
       if (removeDesignBg) {
-        const dData = dctx.getImageData(Math.max(0, dX), Math.max(0, dY), Math.min(dWidth, CANVAS_SIZE - dX), Math.min(dHeight, CANVAS_SIZE - dY))
-        // Sample top-left corner of the design as the background color
-        const bgR = dData.data[0]
-        const bgG = dData.data[1]
-        const bgB = dData.data[2]
+        const ix = Math.max(0, dX)
+        const iy = Math.max(0, dY)
+        const iw = Math.min(dWidth, CANVAS_SIZE - ix)
+        const ih = Math.min(dHeight, CANVAS_SIZE - iy)
+        const dData = dctx.getImageData(ix, iy, iw, ih)
+
+        // Multi-point chroma-key — sample 8 perimeter points (4 corners +
+        // 4 mid-edges) and treat each as a distinct background color.
+        // Handles AliExpress photos with white photo BG AROUND a colored
+        // t-shirt: the corners catch the photo BG, the mid-edges catch
+        // the t-shirt fabric. Anything matching ANY sample becomes transparent.
+        const sampleAt = (x: number, y: number): [number, number, number] => {
+          const i = (y * iw + x) * 4
+          return [dData.data[i], dData.data[i + 1], dData.data[i + 2]]
+        }
+        const samples: Array<[number, number, number]> = [
+          sampleAt(0, 0),
+          sampleAt(iw - 1, 0),
+          sampleAt(0, ih - 1),
+          sampleAt(iw - 1, ih - 1),
+          sampleAt(Math.floor(iw / 2), 0),
+          sampleAt(Math.floor(iw / 2), ih - 1),
+          sampleAt(0, Math.floor(ih / 2)),
+          sampleAt(iw - 1, Math.floor(ih / 2)),
+        ]
+
         for (let i = 0; i < dData.data.length; i += 4) {
           const r = dData.data[i]
           const g = dData.data[i + 1]
           const b = dData.data[i + 2]
-          const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2)
-          if (dist < bgTolerance) {
-            dData.data[i + 3] = 0 // make transparent
-          } else if (dist < bgTolerance * 1.5) {
-            // Feather edge — partial transparency for pixels just outside threshold
-            dData.data[i + 3] = Math.round(255 * ((dist - bgTolerance) / (bgTolerance * 0.5)))
+          let minDist = Infinity
+          for (const [sr, sg, sb] of samples) {
+            const d = Math.sqrt((r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2)
+            if (d < minDist) minDist = d
+            if (d < bgTolerance) break
+          }
+          if (minDist < bgTolerance) {
+            dData.data[i + 3] = 0
+          } else if (minDist < bgTolerance * 1.5) {
+            dData.data[i + 3] = Math.round(255 * ((minDist - bgTolerance) / (bgTolerance * 0.5)))
           }
         }
-        dctx.putImageData(dData, Math.max(0, dX), Math.max(0, dY))
+        dctx.putImageData(dData, ix, iy)
       }
 
       // 4. Apply displacement via pixel sampling

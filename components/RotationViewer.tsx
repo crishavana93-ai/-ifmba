@@ -90,28 +90,42 @@ export default function RotationViewer({
       ctx.drawImage(img, 0, 0)
       try {
         const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
-        // Sample the corner pixels — average them as the bg color
-        const samples = [
-          0,
-          (canvas.width - 1) * 4,
-          (canvas.height - 1) * canvas.width * 4,
-          ((canvas.height - 1) * canvas.width + canvas.width - 1) * 4,
-        ]
-        let bgR = 0, bgG = 0, bgB = 0
-        for (const i of samples) {
-          bgR += data.data[i]
-          bgG += data.data[i + 1]
-          bgB += data.data[i + 2]
+        const w = canvas.width
+        const h = canvas.height
+
+        // Multi-point chroma-key: sample 8 perimeter points (4 corners + 4
+        // mid-edges) as DISTINCT background colors. Removes any pixel close
+        // to ANY sample. This handles designs with two bg layers — photo
+        // background (white, sampled from true corners) + t-shirt fabric
+        // (black/dark, sampled from mid-edges where the shirt is visible).
+        const sampleAt = (x: number, y: number): [number, number, number] => {
+          const i = (y * w + x) * 4
+          return [data.data[i], data.data[i + 1], data.data[i + 2]]
         }
-        bgR /= 4; bgG /= 4; bgB /= 4
-        const TOL = 55
+        const samples: Array<[number, number, number]> = [
+          sampleAt(0, 0),
+          sampleAt(w - 1, 0),
+          sampleAt(0, h - 1),
+          sampleAt(w - 1, h - 1),
+          sampleAt(Math.floor(w / 2), 0),
+          sampleAt(Math.floor(w / 2), h - 1),
+          sampleAt(0, Math.floor(h / 2)),
+          sampleAt(w - 1, Math.floor(h / 2)),
+        ]
+
+        const TOL = 60
         for (let i = 0; i < data.data.length; i += 4) {
           const r = data.data[i], g = data.data[i + 1], b = data.data[i + 2]
-          const dist = Math.sqrt((r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2)
-          if (dist < TOL) {
+          let minDist = Infinity
+          for (const [sr, sg, sb] of samples) {
+            const d = Math.sqrt((r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2)
+            if (d < minDist) minDist = d
+            if (d < TOL) break // early exit
+          }
+          if (minDist < TOL) {
             data.data[i + 3] = 0
-          } else if (dist < TOL * 1.5) {
-            data.data[i + 3] = Math.round(255 * ((dist - TOL) / (TOL * 0.5)))
+          } else if (minDist < TOL * 1.5) {
+            data.data[i + 3] = Math.round(255 * ((minDist - TOL) / (TOL * 0.5)))
           }
         }
         ctx.putImageData(data, 0, 0)
