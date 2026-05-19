@@ -52,32 +52,58 @@ async function getProductDesignUrl(productId: string): Promise<string | null> {
 }
 
 /**
- * Strip white/light pixels around a design's edges. Most product photos
- * have a near-white background; this turns it transparent. Designs that
- * are already transparent (proper remove.bg output) pass through unchanged.
+ * Multi-point chroma-key: turn background pixels transparent by sampling
+ * 8 perimeter points (4 corners + 4 mid-edges) as DISTINCT bg colors,
+ * then making every pixel within `TOL` distance of ANY sample transparent.
+ *
+ * Handles AliExpress product photos which often have TWO layers:
+ *   - White photo background (sampled from true corners)
+ *   - Dark/black t-shirt fabric (sampled from mid-edges where the shirt
+ *     fills the perimeter)
+ *
+ * Designs already transparent (proper remove.bg output) pass through
+ * almost unchanged — the perimeter samples would all be (0,0,0,0) which
+ * doesn't match any opaque print pixel within tolerance.
  */
 async function chromaKeyToTransparent(input: Buffer): Promise<Buffer> {
-  // sharp's `removeAlpha` + threshold trick: tint near-white to alpha.
-  // We use `ensureAlpha` + raw pixel manipulation via `.composite()` is
-  // overkill for this — instead we rely on sharp's built-in support for
-  // PNG transparency: if the input is already PNG with alpha, sharp
-  // preserves it. For JPGs, we manually map near-white to alpha=0 by
-  // reading raw pixels.
-  const img = sharp(input).ensureAlpha()
-  const { data, info } = await img
-    .raw()
-    .toBuffer({ resolveWithObject: true })
-  const out = Buffer.from(data) // mutable copy
-  const TOL = 28 // distance from pure white that still counts as bg
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({
+    resolveWithObject: true,
+  })
+  const out = Buffer.from(data)
+  const w = info.width
+  const h = info.height
+  const px = (x: number, y: number): [number, number, number] => {
+    const i = (y * w + x) * 4
+    return [out[i], out[i + 1], out[i + 2]]
+  }
+  const samples: Array<[number, number, number]> = [
+    px(0, 0),
+    px(w - 1, 0),
+    px(0, h - 1),
+    px(w - 1, h - 1),
+    px(Math.floor(w / 2), 0),
+    px(Math.floor(w / 2), h - 1),
+    px(0, Math.floor(h / 2)),
+    px(w - 1, Math.floor(h / 2)),
+  ]
+  const TOL = 70 // RGB distance — handles slight gradients in shirt fabric
   for (let i = 0; i < out.length; i += 4) {
     const r = out[i], g = out[i + 1], b = out[i + 2]
-    // Near-white: all three channels above 255-TOL
-    if (r > 255 - TOL && g > 255 - TOL && b > 255 - TOL) {
+    let minDist = Infinity
+    for (const [sr, sg, sb] of samples) {
+      const d = Math.sqrt((r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2)
+      if (d < minDist) minDist = d
+      if (d < TOL) break // early exit
+    }
+    if (minDist < TOL) {
       out[i + 3] = 0
+    } else if (minDist < TOL * 1.5) {
+      // Soft edge — fade out gradually for a less hard-cut look
+      out[i + 3] = Math.round(255 * ((minDist - TOL) / (TOL * 0.5)))
     }
   }
   return sharp(out, {
-    raw: { width: info.width, height: info.height, channels: 4 },
+    raw: { width: w, height: h, channels: 4 },
   }).png().toBuffer()
 }
 
