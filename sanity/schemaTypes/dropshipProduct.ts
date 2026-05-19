@@ -112,14 +112,22 @@ export default defineType({
       // How to produce one (cheapest path): drop the AliExpress product photo
       // into https://remove.bg (50 free/month), download the transparent PNG,
       // upload here. Takes ~30 seconds per product.
+      //
+      // VERIFY: after uploading, the thumbnail should show a grey/white
+      // CHECKERED pattern behind the print (that's how Sanity displays
+      // transparency). If you see solid white or a full t-shirt outline,
+      // the PNG isn't actually transparent — re-run through remove.bg.
       name: 'cleanDesign',
       title: 'Clean Design PNG (transparent background)',
       type: 'image',
       options: {hotspot: false, accept: 'image/png'},
       description:
-        'Transparent-background PNG of JUST the print/graphic — no fabric, no photo background. ' +
-        'Drop the product image into remove.bg → download → upload here. ' +
-        'If empty, /butik falls back to algorithmic chroma-key on the Product Photo (lower quality).',
+        '⚠ Must be a TRANSPARENT PNG. After upload, look for a CHECKERED ' +
+        'pattern in the preview — that means transparency is working. ' +
+        'If you see a black t-shirt or solid background, the file is wrong. ' +
+        'Fix: upload to https://remove.bg, download the result, upload here. ' +
+        'If left empty, /butik falls back to algorithmic chroma-key on the ' +
+        'Product Photo (often leaves a dark halo around the print).',
     }),
     defineField({
       name: 'lifestyleImage',

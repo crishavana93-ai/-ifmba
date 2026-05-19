@@ -76,30 +76,32 @@ async function chromaKeyToTransparent(input: Buffer): Promise<Buffer> {
     const i = (y * w + x) * 4
     return [out[i], out[i + 1], out[i + 2]]
   }
-  // 8 perimeter samples. These catch the photo's outer background — usually
-  // white or grey on AliExpress catalog shots.
-  const perimeter: Array<[number, number, number]> = [
+  // ALWAYS sample 8 perimeter + 8 inset points. Perimeter catches the
+  // outer photo background (white/grey usually). Insets catch the shirt
+  // fabric color, which on basketball merch is almost always dark/black.
+  // The previous "only if all perimeter is light" heuristic was too strict
+  // — a single dark pixel on any corner (e.g., shirt extending to edge)
+  // killed inset sampling and the black shirt leaked through.
+  //
+  // 8% inset is safe-ish: deep enough to be inside the shirt fabric on
+  // a centered product photo, but rarely deep enough to hit a print
+  // (most prints are in the middle 40-60% of the photo). For products
+  // where the print extends to 84% of the photo width, this MAY nibble
+  // print edges — those need a manual remove.bg pass on the cleanDesign.
+  const ix = Math.floor(w * 0.08)
+  const iy = Math.floor(h * 0.08)
+  const samples: Array<[number, number, number]> = [
+    // Perimeter (8)
     px(0, 0), px(w - 1, 0), px(0, h - 1), px(w - 1, h - 1),
     px(Math.floor(w / 2), 0), px(Math.floor(w / 2), h - 1),
     px(0, Math.floor(h / 2)), px(w - 1, Math.floor(h / 2)),
+    // Insets — corners and edge midpoints (8)
+    px(ix, iy), px(w - 1 - ix, iy),
+    px(ix, h - 1 - iy), px(w - 1 - ix, h - 1 - iy),
+    px(Math.floor(w / 2), iy), px(Math.floor(w / 2), h - 1 - iy),
+    px(ix, Math.floor(h / 2)), px(w - 1 - ix, Math.floor(h / 2)),
   ]
-
-  // Adaptive: if all 8 perimeter samples are LIGHT (shirt is centered in
-  // photo with white margin), we ALSO need to sample dark shirt fabric
-  // colors — otherwise the black shirt around the print leaks through.
-  // 5% inset is safe: past the white margin, into the shirt but not deep
-  // enough to hit a centered print.
-  const allLight = perimeter.every(([r, g, b]) => (r + g + b) / 3 > 200)
-  const samples = [...perimeter]
-  if (allLight) {
-    const ix = Math.floor(w * 0.05)
-    const iy = Math.floor(h * 0.05)
-    samples.push(
-      px(ix, iy), px(w - 1 - ix, iy),
-      px(ix, h - 1 - iy), px(w - 1 - ix, h - 1 - iy),
-    )
-  }
-  const TOL = 70
+  const TOL = 75 // slightly looser to handle JPEG compression noise
   for (let i = 0; i < out.length; i += 4) {
     const r = out[i], g = out[i + 1], b = out[i + 2]
     let minDist = Infinity
