@@ -216,14 +216,21 @@ export async function GET(
     }
     const designBuf = Buffer.from(await designRes.arrayBuffer())
 
-    // Process the design: chroma-key out white background, then trim
+    // 2026-05-19: chroma-key DISABLED on the server. The heuristic was
+    // helping some products (white-bg AliExpress photos) but actively
+    // destroying others (dark-print designs like Kobe Mamba where the
+    // print's dark colors are indistinguishable from the dark shirt
+    // fabric). The right pipeline is:
+    //   1. Run each product's source photo through remove.bg ONCE
+    //      (proper AI segmentation, not pixel-distance heuristics)
+    //   2. Upload the resulting transparent PNG to Sanity's cleanDesign
+    //   3. Server just trims any transparent borders and composites
+    // Use sanity/process-designs-removebg.mjs to batch this for all
+    // products at once via remove.bg's paid API.
     let designProcessed: Buffer
     try {
-      const keyed = await chromaKeyToTransparent(designBuf)
-      designProcessed = await trimTransparent(keyed)
+      designProcessed = await trimTransparent(designBuf)
     } catch (e) {
-      // If chroma-key fails (e.g. design already perfectly transparent),
-      // fall back to the original
       designProcessed = designBuf
     }
 
