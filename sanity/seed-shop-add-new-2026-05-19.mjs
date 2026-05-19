@@ -11,7 +11,67 @@
 //
 // Safe to re-run — stable _ids based on slug, upserts via createOrReplace.
 
-import { getWriteClient } from './_client.mjs'
+import { createClient } from '@sanity/client'
+import { readFileSync, existsSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+// Hardcode the project + dataset so the script works without .env.local
+// being fully populated. Only the WRITE TOKEN must come from env (it's the
+// only sensitive value).
+const SANITY_PROJECT_ID = '3zuy5n8l'
+const SANITY_DATASET = 'production'
+
+function loadDotEnv() {
+  const here = dirname(fileURLToPath(import.meta.url))
+  const candidates = [
+    resolve(here, '..', '.env.local'),
+    resolve(here, '..', '.env'),
+    resolve(process.cwd(), '.env.local'),
+  ]
+  for (const path of candidates) {
+    if (!existsSync(path)) continue
+    const text = readFileSync(path, 'utf8')
+    for (const raw of text.split('\n')) {
+      const line = raw.trim()
+      if (!line || line.startsWith('#')) continue
+      const eq = line.indexOf('=')
+      if (eq === -1) continue
+      const key = line.slice(0, eq).trim()
+      let val = line.slice(eq + 1).trim()
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1)
+      }
+      if (!process.env[key]) process.env[key] = val
+    }
+    return path
+  }
+  return null
+}
+
+async function getWriteClient() {
+  const loadedFrom = loadDotEnv()
+  // Prefer either SANITY_API_WRITE_TOKEN or the legacy SANITY_API_TOKEN —
+  // some envs use the latter name. Pass --token=sk_... on the CLI to override.
+  const cliToken = process.argv.find((a) => a.startsWith('--token='))?.slice(8)
+  const token = cliToken || process.env.SANITY_API_WRITE_TOKEN || process.env.SANITY_API_TOKEN
+  if (!token) {
+    throw new Error(
+      'Need a Sanity write token. Get one at https://www.sanity.io/manage → ' +
+        'Project (3zuy5n8l) → API → Tokens → "Add API token" (Editor permission). ' +
+        'Then run again with:\n  SANITY_API_WRITE_TOKEN=sk_... node sanity/seed-shop-add-new-2026-05-19.mjs\n' +
+        'OR pass inline:  node sanity/seed-shop-add-new-2026-05-19.mjs --token=sk_...',
+    )
+  }
+  console.log(`[client] projectId=${SANITY_PROJECT_ID} dataset=${SANITY_DATASET} env=${loadedFrom || '(none)'}\n`)
+  return createClient({
+    projectId: SANITY_PROJECT_ID,
+    dataset: SANITY_DATASET,
+    apiVersion: '2024-01-01',
+    token,
+    useCdn: false,
+  })
+}
 
 const NEW_PRODUCTS = [
   {
