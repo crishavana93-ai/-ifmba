@@ -48,23 +48,21 @@ const FRAMES = Array.from({ length: FRAME_COUNT }, (_, i) =>
   `/lifestyle/rotation/frame-${String(i).padStart(2, '0')}.webp`,
 )
 
-/** Opacity multiplier per frame for the design overlay. Re-tuned after the
- *  frame re-ordering — clockwise rotation from front:
- *    0 = front (full chest visible)
- *    1 = ¾ right (face turned left, chest at ¾) — partial
- *    2 = side right (chest perpendicular) — barely visible
- *    3 = ¾ back-right — BACK to camera, hidden
- *    4 = full back — hidden
- *    5 = ¾ back-left — BACK to camera, hidden
- *    6 = side left (chest perpendicular other way) — barely visible
- */
-const OVERLAY_OPACITY = [1.0, 0.65, 0.05, 0.0, 0.0, 0.0, 0.05]
+/** Opacity multiplier per frame for the design overlay. Side and back
+ *  views are forced to 0 — no distortion artifact from a skewed rectangle
+ *  sitting on the model's shoulder when the chest isn't facing camera.
+ *  Printful and other pro mockup tools handle this the same way: the
+ *  design only renders on the front-facing frame; rotating just shows
+ *  the blank garment from each angle. */
+const OVERLAY_OPACITY = [1.0, 0.35, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-/** Horizontal offset (px) per frame — design shifts as body rotates. */
-const OVERLAY_X_OFFSET = [0, -12, -30, 0, 0, 0, 30]
+/** Horizontal offset (px) per frame — design shifts as body rotates.
+ *  Only matters where opacity > 0 (frames 0 and 1). */
+const OVERLAY_X_OFFSET = [0, -18, 0, 0, 0, 0, 0]
 
-/** SkewX angle (deg) per frame — fakes 3D body rotation under the design. */
-const OVERLAY_SKEW = [0, -10, -22, 0, 0, 0, 22]
+/** SkewX angle (deg) per frame — fakes 3D body rotation under the design.
+ *  Smaller skew on frame 1 → less visible warping. */
+const OVERLAY_SKEW = [0, -6, 0, 0, 0, 0, 0]
 
 export default function RotationViewer({
   product,
@@ -84,22 +82,17 @@ export default function RotationViewer({
   // so the overlay shows JUST the print, not the AliExpress shirt outline.
   const [cleanedDesignUrl, setCleanedDesignUrl] = useState<string | null>(null)
 
-  // When the active product changes, decide the overlay source:
-  //   1. If product has a `cleanDesignUrl` (pre-cleaned via remove.bg and
-  //      saved to Sanity), use it DIRECTLY — no chroma-key needed. This is
-  //      the new preferred path: way better quality than algorithmic bg
-  //      removal of the AliExpress whole-shirt photo.
-  //   2. Otherwise, fall back to runtime chroma-key on the product photo
-  //      (legacy path, lower quality, leaves shirt-fabric halos on some
-  //      designs).
+  // When the active product changes, run chroma-key on the overlay source.
+  // Prefer `cleanDesignUrl` (manually pre-cleaned via remove.bg, saved to
+  // Sanity) when present — it has less leftover background to strip — but
+  // ALWAYS run chroma-key as a safety net, because users sometimes upload
+  // a not-quite-transparent PNG and we'd otherwise render a white box.
+  // Falls back to `imageUrl` (the raw AliExpress photo) when no clean
+  // design has been uploaded.
   useEffect(() => {
     if (!product) { setCleanedDesignUrl(null); return }
-    // FAST PATH: manually-cleaned transparent PNG → just use it
-    if (product.cleanDesignUrl) {
-      setCleanedDesignUrl(product.cleanDesignUrl)
-      return
-    }
-    if (!product.imageUrl) { setCleanedDesignUrl(null); return }
+    const sourceUrl = product.cleanDesignUrl || product.imageUrl
+    if (!sourceUrl) { setCleanedDesignUrl(null); return }
     let cancelled = false
     const img = new Image()
     img.crossOrigin = 'anonymous'
@@ -184,11 +177,11 @@ export default function RotationViewer({
       } catch (err) {
         // CORS-tainted canvas — fall back to raw image
         console.warn('[RotationViewer] chroma-key skipped, using raw image:', err)
-        setCleanedDesignUrl(product.imageUrl!)
+        setCleanedDesignUrl(sourceUrl)
       }
     }
-    img.onerror = () => setCleanedDesignUrl(product.imageUrl!)
-    img.src = product.imageUrl
+    img.onerror = () => setCleanedDesignUrl(sourceUrl)
+    img.src = sourceUrl
     return () => { cancelled = true }
   }, [product?._id, product?.imageUrl, product?.cleanDesignUrl])
 

@@ -5251,22 +5251,18 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   -webkit-user-drag: none;
 }
 /* Design overlay — sits on the chest at its true colors, not blended into
-   the shirt. Previously used mix-blend-mode:multiply which made the print
-   look washed out / semi-transparent over a dark navy fabric (the multiply
-   blend darkens the design's whites against the shirt). Cris wanted the
-   print to appear "just the right color as shown" → switch to normal
-   blend mode (default). Bumped width to 30% so the print reads at a real
-   chest-print scale on the customer page. */
+   the shirt. 45% width now (was 30%) per Cris's "+50% size" request, so
+   the print reads at a clearly-sized chest scale rather than a small
+   patch in the middle. No mix-blend-mode — design shows in actual colors. */
 .rot-viewer-design {
   position: absolute;
   top: 42%;            /* sit on the chest, not below it */
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30%;
+  width: 45%;
   aspect-ratio: 1;
   pointer-events: none;
   transition: opacity 0.18s ease, transform 0.18s ease;
-  /* no mix-blend-mode — show the design in its actual colors */
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
 }
 .rot-viewer-design img {
