@@ -87,8 +87,14 @@ export default async function ButikPage() {
           </section>
         ) : (
           <>
-            {/* Showroom — real-photo rotation viewer above the grid. Only
-                renders if there are tee products to overlay onto the model. */}
+            {/* SINGLE SECTION — Showroom is now the entire shop UX:
+                  - Click any thumbnail → model swaps to wearing that shirt's video
+                  - Click "Reservera →" → opens the reservation modal inline
+                The legacy Fan Drop ShopGrid was redundant (same products in a
+                less interactive layout) and was removed 2026-05-19 per Cris.
+                MBA Official kept as a separate section IF any official-source
+                products exist — they have a different filming spec and ship
+                from a different warehouse. */}
             {fanDrop.some((p) => p.category === 'apparel-tee') && (
               <Showroom
                 products={fanDrop}
@@ -108,21 +114,6 @@ export default async function ButikPage() {
                   num="01"
                   numText="OFFICIAL"
                   className="section-dark"
-                />
-              </ScrollReveal>
-            )}
-            {fanDrop.length > 0 && (
-              <ScrollReveal>
-                <ShopGrid
-                  products={fanDrop}
-                  eyebrow="Fan Drop"
-                  title="Streetball <em>energy</em>"
-                  body="Handplockad streetwear som matchar MBA-paletten. Frakt från EU-lager på 3–7 dagar."
-                  num="02"
-                  numText="FAN DROP"
-                  className="section-alt"
-                  /* The Fan Drop section's grid uses `id="fan-drop"` so the
-                     Showroom's "Se detaljer ↓" CTA can scroll smoothly to it. */
                 />
               </ScrollReveal>
             )}

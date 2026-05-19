@@ -27,6 +27,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import RotationViewer from './RotationViewer'
+import { ReservationModal } from './ShopGrid'
 
 // 3D mannequin pipeline (Three.js + GLB model) retired 2026-05-18 in favor of
 // real-photo rotation. The .glb model in /public/models/tshirt.glb is kept
@@ -40,11 +41,11 @@ type Product = {
   name: string
   imageUrl?: string | null
   cleanDesignUrl?: string | null
-  /** Real model-wearing-the-shirt video (Sanity `mockupVideo` field). When
-   *  present, RotationViewer plays it on loop — beats every algorithmic
-   *  compositing path for authenticity. */
   mockupVideoUrl?: string | null
   priceSek: number
+  compareAtPriceSek?: number
+  descriptionSv?: string
+  descriptionEn?: string
   category?: string
 }
 
@@ -73,11 +74,22 @@ export default function Showroom3D({
   )
 
   const [active, setActive] = useState<Product | null>(usable[0] || null)
+  // Detect language from <html lang> attribute (same approach ShopGrid uses).
+  // Defaults to Swedish since the page is /butik.
+  const [lang, setLang] = useState<'sv' | 'en'>('sv')
+  useEffect(() => {
+    const htmlLang = document.documentElement.lang
+    if (htmlLang === 'en') setLang('en')
+  }, [])
+  // Reservation modal — only opens when user clicks RESERVE on the active product.
+  const [reserving, setReserving] = useState<Product | null>(null)
   useEffect(() => {
     if (!active && usable.length > 0) setActive(usable[0])
   }, [usable, active])
 
   if (usable.length === 0) return null
+
+  const desc = active ? (lang === 'en' ? active.descriptionEn : active.descriptionSv) || '' : ''
 
   return (
     <section
@@ -87,30 +99,36 @@ export default function Showroom3D({
       id="showroom"
     >
       <div className="contain">
-        <div className="label">3D Showroom</div>
+        <div className="label">MBA Shop</div>
         <h2 className="title">
           Bär <em>plagget</em> innan du köper
         </h2>
         <p className="showroom-body">
-          Dra för att rotera. Klicka ett plagg nedan för att byta tröjan direkt.
+          Klicka ett plagg nedan — modellen byter direkt. Klicka <em>Reservera</em> när du hittar din passform.
         </p>
 
         <div className="showroom-stage">
           <div className="showroom-canvas">
-            {/* Replaced the Three.js mannequin (Sketchfab + procedural fallback)
-                with the real-photo rotation viewer 2026-05-18. Cris wanted a
-                photoreal model rather than 3D geometry — frames extracted from
-                a 20s phone shoot of a teammate spinning in a blank tee. */}
             <RotationViewer product={active} />
           </div>
 
           {active && (
             <div className="showroom-info">
               <div className="showroom-info-name">{active.name}</div>
-              <div className="showroom-info-price">{fmtSek(active.priceSek)}</div>
-              <a className="showroom-info-cta" href="#fan-drop">
-                Se detaljer ↓
-              </a>
+              {desc && <p className="showroom-info-desc">{desc}</p>}
+              <div className="showroom-info-priceblock">
+                <span className="showroom-info-price">{fmtSek(active.priceSek)}</span>
+                {!!active.compareAtPriceSek && active.compareAtPriceSek > active.priceSek && (
+                  <span className="showroom-info-compare">{fmtSek(active.compareAtPriceSek)}</span>
+                )}
+              </div>
+              <button
+                type="button"
+                className="showroom-info-cta"
+                onClick={() => setReserving(active)}
+              >
+                {lang === 'en' ? 'Reserve →' : 'Reservera →'}
+              </button>
             </div>
           )}
         </div>
@@ -134,13 +152,18 @@ export default function Showroom3D({
           })}
         </div>
 
-        {/* The Sketchfab .glb credit is no longer required (we removed the 3D
-            model and use real photos now). Replaced with a soft hint about how
-            the rotation works. */}
         <div className="showroom-credit">
-          Riktig modell · 8 bildrutor från video · Dra eller svep för att rotera
+          Riktig modell · Video byter när du klickar · Frakt från EU-lager
         </div>
       </div>
+
+      {reserving && (
+        <ReservationModal
+          product={reserving as any}
+          lang={lang}
+          onClose={() => setReserving(null)}
+        />
+      )}
     </section>
   )
 }

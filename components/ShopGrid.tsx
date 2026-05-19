@@ -188,7 +188,7 @@ export default function ShopGrid({
  * On success: shows confirmation + auto-closes after 4s.
  * On error: surfaces the message and keeps the form populated.
  */
-function ReservationModal({
+export function ReservationModal({
   product,
   lang,
   onClose,
