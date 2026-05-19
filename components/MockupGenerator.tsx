@@ -513,6 +513,51 @@ export default function MockupGenerator() {
     }
   }, [exportedUrl, selectedProductId])
 
+  // Save ONLY the design position + size to Sanity (designX/Y/Width).
+  // Separate from saveToSanity (which uploads the full composited PNG) —
+  // this is the lightweight path: admin drags the design into place, clicks
+  // "Save position", the server compositor at /api/mockup/[id]/0.webp
+  // immediately reflects the new position on next refresh.
+  const [savingPos, setSavingPos] = useState(false)
+  const [savedPos, setSavedPos] = useState(false)
+  const savePositionToSanity = useCallback(async () => {
+    if (!selectedProductId) return
+    setSavingPos(true)
+    setSavedPos(false)
+    try {
+      const patchRes = await fetch(
+        'https://3zuy5n8l.api.sanity.io/v2024-01-01/data/mutate/production',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mutations: [{
+              patch: {
+                id: selectedProductId,
+                set: {
+                  designX: pos.x,
+                  designY: pos.y,
+                  designWidth: size,
+                },
+              },
+            }],
+          }),
+        },
+      )
+      if (!patchRes.ok) throw new Error(`Patch failed: ${patchRes.status}`)
+      setSavedPos(true)
+      // Trigger the server preview to refresh by bumping `saved` (which the
+      // server-preview img URL uses as cache-buster)
+      setSaved(true)
+    } catch (err: any) {
+      console.error('[MockupGenerator] save position failed:', err)
+      alert(`Save position failed: ${err?.message || err}. Make sure you're logged into Sanity Studio.`)
+    } finally {
+      setSavingPos(false)
+    }
+  }, [selectedProductId, pos.x, pos.y, size])
+
   return (
     <div className="mockup-gen">
       <div className="mockup-gen-header">
@@ -878,6 +923,22 @@ export default function MockupGenerator() {
                 >
                   {exporting ? 'Genererar…' : 'Generera mockup'}
                 </button>
+
+                {/* NEW: lightweight "save position" — just persists X/Y/Width
+                    to Sanity so the server compositor at /api/mockup/[id]/0
+                    matches the local editor exactly. No PNG upload. */}
+                {selectedProductId && (
+                  <button
+                    type="button"
+                    className="mockup-gen-btn-ghost"
+                    onClick={savePositionToSanity}
+                    disabled={savingPos}
+                    style={{ marginTop: 8 }}
+                    title="Saves design X/Y position + width to Sanity so the customer-facing /butik shows the print in the same spot you positioned it here."
+                  >
+                    {savingPos ? 'Sparar position…' : savedPos ? '✓ Position sparad' : '📍 Spara position (X/Y/storlek)'}
+                  </button>
+                )}
               </div>
 
               {exportedUrl && (

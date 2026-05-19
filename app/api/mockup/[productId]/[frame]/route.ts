@@ -38,17 +38,33 @@ export const revalidate = 31536000 // 1 year
 const SANITY_PROJECT = '3zuy5n8l'
 const SANITY_DATASET = 'production'
 
-async function getProductDesignUrl(productId: string): Promise<string | null> {
-  // Query Sanity for the product's cleanDesignUrl (preferred) or imageUrl.
-  // Public reads don't need a token.
+type ProductMockupData = {
+  url: string | null
+  designX: number | null
+  designY: number | null
+  designWidth: number | null
+}
+
+async function getProductMockupData(productId: string): Promise<ProductMockupData> {
+  // Query Sanity for the design URL + saved local-editor position/size.
+  // Position values are in PERCENT (0-100); null when admin hasn't set them
+  // yet (server falls back to FRAME_SPECS defaults).
   const query = encodeURIComponent(
-    `*[_type=="dropshipProduct" && _id=="${productId.replace(/"/g, '')}"][0]{"clean": cleanDesign.asset->url, "raw": image.asset->url}`,
+    `*[_type=="dropshipProduct" && _id=="${productId.replace(/"/g, '')}"][0]{` +
+      `"clean": cleanDesign.asset->url, "raw": image.asset->url, ` +
+      `designX, designY, designWidth}`,
   )
   const url = `https://${SANITY_PROJECT}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`
   const res = await fetch(url, { next: { revalidate: 300 } })
-  if (!res.ok) return null
+  if (!res.ok) return { url: null, designX: null, designY: null, designWidth: null }
   const json = await res.json()
-  return json?.result?.clean || json?.result?.raw || null
+  const r = json?.result || {}
+  return {
+    url: r.clean || r.raw || null,
+    designX: typeof r.designX === 'number' ? r.designX : null,
+    designY: typeof r.designY === 'number' ? r.designY : null,
+    designWidth: typeof r.designWidth === 'number' ? r.designWidth : null,
+  }
 }
 
 /**
@@ -181,8 +197,8 @@ export async function GET(
       })
     }
 
-    const designUrl = await getProductDesignUrl(productId)
-    if (!designUrl) {
+    const productData = await getProductMockupData(productId)
+    if (!productData.url) {
       return new NextResponse(new Uint8Array(baseFrame), {
         headers: {
           'Content-Type': 'image/webp',
@@ -192,7 +208,7 @@ export async function GET(
     }
 
     // Fetch the design PNG/JPG
-    const designRes = await fetch(designUrl)
+    const designRes = await fetch(productData.url)
     if (!designRes.ok) {
       return new NextResponse(new Uint8Array(baseFrame), {
         headers: { 'Content-Type': 'image/webp', 'Cache-Control': 'public, max-age=300' },
@@ -211,9 +227,14 @@ export async function GET(
       designProcessed = designBuf
     }
 
-    // Resize the design to chest dimensions. Width comes from FRAME_SPECS,
-    // height auto-scales. Apply scaleX for ¾-angle compression.
-    const targetW = Math.round(FRAME_WIDTH * spec.width * (spec.scaleX ?? 1))
+    // Resolve position + size: prefer admin's saved values from the local
+    // editor (designX/Y/Width as percentages 0-100), fall back to the
+    // FRAME_SPECS defaults. Frame 1+ still applies its perspective scaleX
+    // for the ¾ angle, but anchored to the saved chest position.
+    const baseCx = (productData.designX ?? spec.cx * 100) / 100
+    const baseCy = (productData.designY ?? spec.cy * 100) / 100
+    const baseW = (productData.designWidth ?? spec.width * 100) / 100
+    const targetW = Math.round(FRAME_WIDTH * baseW * (spec.scaleX ?? 1))
     const designMeta = await sharp(designProcessed).metadata()
     const aspect = (designMeta.width || 1) / (designMeta.height || 1)
     const targetH = Math.round(targetW / aspect)
@@ -223,8 +244,8 @@ export async function GET(
 
     // Composite onto the base frame at the chest position. sharp's composite
     // takes top-left coords, so we shift from chest center.
-    const left = Math.round(FRAME_WIDTH * spec.cx - targetW / 2)
-    const top = Math.round(FRAME_HEIGHT * spec.cy - targetH / 2)
+    const left = Math.round(FRAME_WIDTH * baseCx - targetW / 2)
+    const top = Math.round(FRAME_HEIGHT * baseCy - targetH / 2)
     const composited = await sharp(baseFrame)
       .composite([{ input: designResized, left, top }])
       .webp({ quality: 88 })

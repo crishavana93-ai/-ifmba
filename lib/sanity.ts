@@ -122,6 +122,7 @@ export const QUERIES = {
       priceSek, compareAtPriceSek,
       "imageUrl": image.asset->url,
       "cleanDesignUrl": cleanDesign.asset->url,
+      designX, designY, designWidth,
       descriptionSv, descriptionEn,
       tag, shipsFrom
     }`,

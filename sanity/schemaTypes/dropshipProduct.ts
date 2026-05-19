@@ -103,6 +103,33 @@ export default defineType({
       description: 'Square crop preferred (1:1). Use a clean studio shot — no AliExpress watermarks.',
     }),
     defineField({
+      // Where the design sits on the front rotation frame (frame 0).
+      // Set by the local editor at /butik/admin/mockup when admin drags
+      // the design and clicks "Save position". Server compositor reads
+      // these values and pixel-renders frame 0 to match the local editor.
+      // Frames 1-6 derive their position from FRAME_SPECS perspective
+      // offsets relative to these values.
+      name: 'designX',
+      title: 'Design X position (% of frame width)',
+      type: 'number',
+      description: 'Chest center horizontal — 0=left edge, 100=right edge, 50=center. Default 50.',
+      validation: (r) => r.min(0).max(100),
+    }),
+    defineField({
+      name: 'designY',
+      title: 'Design Y position (% of frame height)',
+      type: 'number',
+      description: 'Chest center vertical — 0=top, 100=bottom. Default 45 (sits on chest, not too high).',
+      validation: (r) => r.min(0).max(100),
+    }),
+    defineField({
+      name: 'designWidth',
+      title: 'Design Width (% of frame width)',
+      type: 'number',
+      description: 'How wide the print appears. 25-35 is a real chest-print scale on a tee. Default 30.',
+      validation: (r) => r.min(5).max(80),
+    }),
+    defineField({
       // Transparent-background PNG showing JUST the design / print, with no
       // t-shirt fabric or photo background around it. Used by the on-model
       // RotationViewer on /butik and the MockupGenerator preview so we get

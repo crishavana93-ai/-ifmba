@@ -36,29 +36,26 @@ export type FrameSpec = {
 }
 
 /**
- * 7 frames, clockwise rotation from front:
- *   0 = front (face camera, chest direct)
- *   1 = ¾ right (face turned to viewer's left, chest at ¾)
- *   2 = side right (chest perpendicular — hidden)
- *   3 = ¾ back-right (back to camera — hidden)
- *   4 = full back (hidden)
- *   5 = ¾ back-left (back to camera — hidden)
- *   6 = side left (chest perpendicular other way — hidden)
+ * 7 frames, clockwise rotation from front. After A/B testing the ¾-angle
+ * compositing, we decided to show the design ONLY on frame 0 (front). The
+ * compressed ¾-view design always looked janky — the human eye spots the
+ * difference between a real perspective warp and an algorithmic squish.
+ * Printful's own mockup tool does the same: each angle is a separate
+ * static composite; rotating shows model+blank-shirt on side/back angles
+ * and model+design only on the front shot. Less work, more credible.
+ *
+ *   0 = front (face camera, chest direct) — design VISIBLE
+ *   1-6 = ¾ / side / back — design HIDDEN (blank model rotates)
  */
 export const FRAME_SPECS: FrameSpec[] = [
   // 0 — front: chest dead center, dropped slightly below the collarbone
   { visible: true, cx: 0.50, cy: 0.45, width: 0.42 },
-  // 1 — ¾ right: chest shifts left as body rotates clockwise; compressed
-  { visible: true, cx: 0.46, cy: 0.45, width: 0.30, scaleX: 0.70 },
-  // 2 — side right: no chest visible
+  // 1-6 — all other angles: design not composited (model shows blank)
   { visible: false, cx: 0, cy: 0, width: 0 },
-  // 3 — ¾ back-right: back to camera
   { visible: false, cx: 0, cy: 0, width: 0 },
-  // 4 — full back
   { visible: false, cx: 0, cy: 0, width: 0 },
-  // 5 — ¾ back-left
   { visible: false, cx: 0, cy: 0, width: 0 },
-  // 6 — side left
+  { visible: false, cx: 0, cy: 0, width: 0 },
   { visible: false, cx: 0, cy: 0, width: 0 },
 ]
 
