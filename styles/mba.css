@@ -5055,12 +5055,14 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 }
 .showroom-canvas {
   position: relative;
-  /* Match the RotationViewer's portrait aspect (540×1024) so we don't get
-     a big empty beige stripe below the figure on desktop. Was 1:1 — caused
-     a ~200px void under the viewer because the rot-viewer is portrait and
-     its max-height capped it before it could fill the square canvas. */
-  aspect-ratio: 540 / 1024;
-  max-height: 75vh;
+  /* Drive size from viewport HEIGHT, not from grid column width — keeps the
+     full figure visible on a typical laptop AND prevents the empty beige
+     void we got with the aspect-ratio+max-height combo (those two break
+     each other when max-height kicks in, collapsing the canvas to 0). */
+  height: 70vh;
+  /* Width derived from the rot-viewer's 540/1024 portrait aspect, so the
+     canvas hugs the figure exactly — no stripes left or right either. */
+  width: calc(70vh * 540 / 1024);
   max-width: 100%;
   margin-inline: auto;
   /* Soft studio-y gradient — top brighter, bottom subtle navy haze.
@@ -5076,7 +5078,11 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
   touch-action: none;
 }
 @media (min-width: 721px) {
-  .showroom-canvas { aspect-ratio: 540 / 1024; max-height: 60vh; }
+  .showroom-canvas {
+    height: 60vh;
+    width: calc(60vh * 540 / 1024);
+    max-width: 100%;
+  }
 }
 /* The Canvas component takes 100%/100% from R3F by default — just enforce. */
 .showroom-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
