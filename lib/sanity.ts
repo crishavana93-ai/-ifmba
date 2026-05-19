@@ -117,7 +117,7 @@ export const QUERIES = {
   // chroma-keying the AliExpress photo at render time → far better quality.
   shopProducts: `*[_type == "dropshipProduct" && inStock == true]
     | order(coalesce(order, 100) asc, _createdAt desc){
-      _id, name, "slug": slug.current,
+      _id, _updatedAt, name, "slug": slug.current,
       category, sourceType, sourceUrl, sourceCostSek,
       priceSek, compareAtPriceSek,
       "imageUrl": image.asset->url,

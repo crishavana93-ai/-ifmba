@@ -36,6 +36,8 @@ import RotationViewer from './RotationViewer'
 
 type Product = {
   _id: string
+  /** Forwarded to RotationViewer as cache-bust for /api/mockup URLs. */
+  _updatedAt?: string
   name: string
   imageUrl?: string | null
   /** Transparent-PNG version of the design alone — produced manually via

@@ -25,6 +25,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type Product = {
   _id: string
+  /** Sanity's auto-tracked last-edit timestamp. Used as a cache-bust param
+   *  in the /api/mockup URLs — every product edit changes _updatedAt, which
+   *  changes the URL, which forces Vercel's CDN to re-render. Without this
+   *  the CDN would serve stale mockups forever after first render. */
+  _updatedAt?: string
   name: string
   imageUrl?: string | null
   cleanDesignUrl?: string | null
@@ -56,11 +61,16 @@ export default function RotationViewer({
   // are always populated; viewer doesn't need a fallback path.
   const frames = useMemo(() => {
     if (!product?._id) return BLANK_FRAMES
+    // _updatedAt → URL cache-bust. Any product edit (cleanDesign upload,
+    // position change, name edit) produces a new URL, busting Vercel's
+    // CDN cache instantly. Without this, edits never reach customers
+    // because the previous URL is cached for a year.
+    const cacheKey = product._updatedAt ? `?u=${encodeURIComponent(product._updatedAt)}` : ''
     return Array.from(
       { length: FRAME_COUNT },
-      (_, i) => `/api/mockup/${encodeURIComponent(product._id)}/${i}.webp`,
+      (_, i) => `/api/mockup/${encodeURIComponent(product._id)}/${i}.webp${cacheKey}`,
     )
-  }, [product?._id])
+  }, [product?._id, product?._updatedAt])
 
   // Preload all frames so dragging is instant after product change.
   // Browser-native `<link rel="preload">` would be cleaner but doesn't
