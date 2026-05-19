@@ -52,18 +52,20 @@ async function getProductDesignUrl(productId: string): Promise<string | null> {
 }
 
 /**
- * Multi-point chroma-key: turn background pixels transparent by sampling
- * 8 perimeter points (4 corners + 4 mid-edges) as DISTINCT bg colors,
- * then making every pixel within `TOL` distance of ANY sample transparent.
+ * Multi-point chroma-key: turn background pixels transparent.
  *
- * Handles AliExpress product photos which often have TWO layers:
- *   - White photo background (sampled from true corners)
- *   - Dark/black t-shirt fabric (sampled from mid-edges where the shirt
- *     fills the perimeter)
- *
- * Designs already transparent (proper remove.bg output) pass through
- * almost unchanged — the perimeter samples would all be (0,0,0,0) which
- * doesn't match any opaque print pixel within tolerance.
+ * Three-stage logic:
+ *   1. Detect if the input is ALREADY transparent (>10% pixels with alpha
+ *      < 250). If yes, return it as-is — admin has already cleaned this
+ *      design (via remove.bg or similar), and running chroma-key on a
+ *      clean PNG will only damage it by erasing print pixels that
+ *      happen to match the bg color near edges. This matches what the
+ *      admin's local editor does when "remove bg" checkbox is unchecked.
+ *   2. Otherwise, sample 16 points (8 perimeter + 8 inset) for bg colors.
+ *      Perimeter catches photo background (white/grey); inset catches
+ *      shirt fabric (usually dark).
+ *   3. Make every pixel within `TOL` RGB distance of any sample
+ *      transparent, with a soft 1.5× fade edge to avoid hard cuts.
  */
 async function chromaKeyToTransparent(input: Buffer): Promise<Buffer> {
   const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({
@@ -72,6 +74,23 @@ async function chromaKeyToTransparent(input: Buffer): Promise<Buffer> {
   const out = Buffer.from(data)
   const w = info.width
   const h = info.height
+
+  // STAGE 1: alpha detection. Count pixels that are at least partially
+  // transparent. If a significant fraction is already transparent, the
+  // image was deliberately cleaned by the admin — trust it, don't touch.
+  let transparentCount = 0
+  const totalPixels = w * h
+  for (let i = 3; i < out.length; i += 4) {
+    if (out[i] < 250) transparentCount++
+  }
+  const transparentRatio = transparentCount / totalPixels
+  if (transparentRatio > 0.10) {
+    // Already transparent enough — return original PNG unchanged.
+    // (Re-encoding here is harmless but preserves the exact pixels.)
+    return sharp(out, {
+      raw: { width: w, height: h, channels: 4 },
+    }).png().toBuffer()
+  }
   const px = (x: number, y: number): [number, number, number] => {
     const i = (y * w + x) * 4
     return [out[i], out[i + 1], out[i + 2]]
