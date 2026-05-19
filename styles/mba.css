@@ -5374,14 +5374,14 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 }
 .mockup-gen-stage {
   position: relative;
-  /* Template is 1024×1024, so 1:1 keeps it undistorted. The max-width +
-     max-height pair caps the stage so the full model fits above the fold
-     on a typical laptop screen (was overflowing). */
-  aspect-ratio: 1;
-  max-width: 520px;
+  /* Template is now the rotation frame-00.webp (540×1024 portrait), so
+     aspect ratio must match to avoid letterboxing. Capped at 75vh tall
+     so the full model fits above the fold on a typical laptop. */
+  aspect-ratio: 540 / 1024;
   max-height: 75vh;
+  max-width: calc(75vh * 540 / 1024);
   margin-inline: auto;
-  background: #fff;
+  background: #f5f3ec;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(11, 18, 32, 0.12);

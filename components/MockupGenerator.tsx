@@ -64,11 +64,16 @@ const TEMPLATES: Template[] = [
   {
     id: 'navy-tee-male',
     label: 'Navy Tee · Male Model',
-    imageUrl: '/mockup-templates/navy-tee-male.jpg',
+    // Use the SAME front-view rotation frame the customer sees on /butik
+    // so the admin's drag-to-position preview is a true 1:1 of what the
+    // public site renders. Was /mockup-templates/navy-tee-male.jpg (a
+    // different square photo of the same model) — caused subtle mismatches
+    // between admin preview and customer view.
+    imageUrl: '/lifestyle/rotation/frame-00.webp',
     displacementUrl: '/mockup-templates/navy-tee-male-displacement.jpg',
-    // 30% width gives a real chest-print scale on the 1024² template.
-    // Was 22% — readable but felt small next to a real Printful-style mockup.
-    defaultChest: { x: 50, y: 48, width: 30 },
+    // Defaults match FRAME_SPECS[0] in /lib/mockup-frames.ts so the local
+    // editor's initial layout equals what server compositor renders.
+    defaultChest: { x: 50, y: 45, width: 42 },
   },
 ]
 
@@ -565,30 +570,13 @@ export default function MockupGenerator() {
         <p>Skapa produktbilder utan att betala Printful. Drag designen på modellen, justera, exportera.</p>
       </div>
 
-      {/* "Single source of truth" preview — shows the actual /api/mockup
-          server-rendered frame 0 for the selected product. This is what
-          customers will see on /butik. Cache-busted with a counter so the
-          admin can see updates immediately after saving a new cleanDesign. */}
-      {selectedProductId && (
-        <div className="mockup-gen-serverpreview">
-          <div className="mockup-gen-serverpreview-label">
-            ✓ How customers see it on /butik
-          </div>
-          <img
-            src={`/api/mockup/${encodeURIComponent(selectedProductId)}/0.webp?cb=${saved ? Date.now() : ''}`}
-            alt="Server-rendered mockup"
-            className="mockup-gen-serverpreview-img"
-          />
-          <a
-            href={`/api/mockup/${encodeURIComponent(selectedProductId)}/0.webp?cb=${Date.now()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mockup-gen-serverpreview-link"
-          >
-            Open full size →
-          </a>
-        </div>
-      )}
+      {/* Single preview = the editor below. Removed the duplicate "How
+          customers see it" card 2026-05-19 — admin was seeing two views
+          that didn't match (local CSS render vs. server compositor),
+          which was confusing. Now the editor uses the SAME front-view
+          rotation frame the customer sees on /butik (see TEMPLATES above),
+          so dragging the design here is a true 1:1 of what /butik will
+          render after you click "📍 Spara position". */}
 
       <div className="mockup-gen-grid">
         {/* LEFT: Live preview stage */}
