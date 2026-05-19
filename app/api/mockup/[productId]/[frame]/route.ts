@@ -216,23 +216,13 @@ export async function GET(
     }
     const designBuf = Buffer.from(await designRes.arrayBuffer())
 
-    // 2026-05-19: chroma-key DISABLED on the server. The heuristic was
-    // helping some products (white-bg AliExpress photos) but actively
-    // destroying others (dark-print designs like Kobe Mamba where the
-    // print's dark colors are indistinguishable from the dark shirt
-    // fabric). The right pipeline is:
-    //   1. Run each product's source photo through remove.bg ONCE
-    //      (proper AI segmentation, not pixel-distance heuristics)
-    //   2. Upload the resulting transparent PNG to Sanity's cleanDesign
-    //   3. Server just trims any transparent borders and composites
-    // Use sanity/process-designs-removebg.mjs to batch this for all
-    // products at once via remove.bg's paid API.
-    let designProcessed: Buffer
-    try {
-      designProcessed = await trimTransparent(designBuf)
-    } catch (e) {
-      designProcessed = designBuf
-    }
+    // 2026-05-19 v2: NO trim, NO chroma-key. Just composite the design
+    // as-is at the full PNG canvas size. This guarantees admin and /butik
+    // render IDENTICALLY: both treat "42% width" as "42% of the FULL PNG
+    // canvas." Previously the server trimmed transparent borders before
+    // resize → server's 42% was bigger than admin's 42% (which included
+    // transparent padding). Trust whatever the admin uploads.
+    const designProcessed: Buffer = designBuf
 
     // Resolve position + size: prefer admin's saved values from the local
     // editor (designX/Y/Width as percentages 0-100), fall back to the
