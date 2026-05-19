@@ -116,7 +116,9 @@ export default function MockupGenerator() {
   // remove.bg and uploaded to Sanity). When present, we use it as-is and
   // disable the live chroma-key — no algorithmic background removal needed.
   const [products, setProducts] = useState<Array<{
-    _id: string; name: string; imageUrl: string; cleanDesignUrl?: string | null; sourceUrl?: string
+    _id: string; name: string; imageUrl: string; cleanDesignUrl?: string | null;
+    designX?: number | null; designY?: number | null; designWidth?: number | null;
+    sourceUrl?: string
   }>>([])
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [saving, setSaving] = useState(false)
@@ -209,7 +211,7 @@ export default function MockupGenerator() {
   // Uses the same session-auth API endpoint pattern as the reservation form
   // (works because the user must be logged into Sanity Studio to access this page).
   useEffect(() => {
-    const SANITY_QUERY = '*[_type=="dropshipProduct" && inStock == true] | order(order asc){_id, name, "imageUrl": image.asset->url, "cleanDesignUrl": cleanDesign.asset->url, sourceUrl}'
+    const SANITY_QUERY = '*[_type=="dropshipProduct" && inStock == true] | order(order asc){_id, name, "imageUrl": image.asset->url, "cleanDesignUrl": cleanDesign.asset->url, designX, designY, designWidth, sourceUrl}'
     fetch(`https://3zuy5n8l.api.sanity.io/v2024-01-01/data/query/production?query=${encodeURIComponent(SANITY_QUERY)}`, {
       credentials: 'include',
     })
@@ -243,7 +245,22 @@ export default function MockupGenerator() {
       setDesignUrl(p.imageUrl)
       setRemoveDesignBg(true) // fall back to runtime chroma-key
     }
-  }, [products])
+    // Load SAVED position/size from Sanity if present, otherwise use the
+    // template's defaults. Without this, every product picked would reset
+    // to the template defaults instead of restoring its persisted layout
+    // — which is why admin always looked different from /butik for products
+    // that already had designX/Y/Width values set.
+    if (typeof p.designX === 'number' && typeof p.designY === 'number') {
+      setPos({ x: p.designX, y: p.designY })
+    } else {
+      setPos({ x: template.defaultChest.x, y: template.defaultChest.y })
+    }
+    if (typeof p.designWidth === 'number') {
+      setSize(p.designWidth)
+    } else {
+      setSize(template.defaultChest.width)
+    }
+  }, [products, template])
 
   // Handle file upload
   const handleFile = useCallback((file: File) => {
@@ -277,6 +294,7 @@ export default function MockupGenerator() {
     const x = ((e.clientX - rect.left) / rect.width) * 100
     const y = ((e.clientY - rect.top) / rect.height) * 100
     setPos({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) })
+    hasUserInteracted.current = true // arm auto-save
   }
   const onPointerUp = () => { dragging.current = false }
 
@@ -525,6 +543,9 @@ export default function MockupGenerator() {
   // immediately reflects the new position on next refresh.
   const [savingPos, setSavingPos] = useState(false)
   const [savedPos, setSavedPos] = useState(false)
+  // Sync indicator: 'idle' | 'pending' | 'saving' | 'saved' | 'error'
+  // Drives the auto-save status UI so admin sees if local edits made it to Sanity.
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'pending' | 'saving' | 'saved' | 'error'>('idle')
   const savePositionToSanity = useCallback(async () => {
     if (!selectedProductId) return
     setSavingPos(true)
@@ -552,16 +573,40 @@ export default function MockupGenerator() {
       )
       if (!patchRes.ok) throw new Error(`Patch failed: ${patchRes.status}`)
       setSavedPos(true)
+      setSyncStatus('saved')
       // Trigger the server preview to refresh by bumping `saved` (which the
       // server-preview img URL uses as cache-buster)
       setSaved(true)
     } catch (err: any) {
       console.error('[MockupGenerator] save position failed:', err)
-      alert(`Save position failed: ${err?.message || err}. Make sure you're logged into Sanity Studio.`)
+      setSyncStatus('error')
     } finally {
       setSavingPos(false)
     }
   }, [selectedProductId, pos.x, pos.y, size])
+
+  // AUTO-SAVE: any time admin drags or adjusts the size slider, debounce
+  // 700ms and push to Sanity automatically. Was the #1 source of "admin
+  // and /butik don't match" — manual save button was being skipped. Track
+  // user interaction via a ref so we don't auto-save the initial values
+  // that came from the loaded product (those are already in Sanity).
+  const hasUserInteracted = useRef(false)
+  useEffect(() => {
+    // Reset interaction flag when admin picks a different product
+    hasUserInteracted.current = false
+    setSyncStatus('idle')
+  }, [selectedProductId])
+
+  useEffect(() => {
+    if (!selectedProductId || !hasUserInteracted.current) return
+    setSyncStatus('pending')
+    const t = setTimeout(() => {
+      setSyncStatus('saving')
+      savePositionToSanity()
+    }, 700)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pos.x, pos.y, size])
 
   return (
     <div className="mockup-gen">
@@ -840,10 +885,10 @@ export default function MockupGenerator() {
                 <input
                   type="range"
                   min="3"
-                  max="35"
+                  max="60"
                   step="1"
                   value={size}
-                  onChange={(e) => setSize(Number(e.target.value))}
+                  onChange={(e) => { setSize(Number(e.target.value)); hasUserInteracted.current = true }}
                 />
               </div>
 
@@ -922,9 +967,13 @@ export default function MockupGenerator() {
                     onClick={savePositionToSanity}
                     disabled={savingPos}
                     style={{ marginTop: 8 }}
-                    title="Saves design X/Y position + width to Sanity so the customer-facing /butik shows the print in the same spot you positioned it here."
+                    title="Auto-saves on every drag/resize. Click to force-save now."
                   >
-                    {savingPos ? 'Sparar position…' : savedPos ? '✓ Position sparad' : '📍 Spara position (X/Y/storlek)'}
+                    {syncStatus === 'pending' && '⏳ Auto-sparar om 1s…'}
+                    {syncStatus === 'saving' && 'Sparar position…'}
+                    {syncStatus === 'saved' && '✓ Synkad med /butik'}
+                    {syncStatus === 'error' && '⚠ Fel — klicka för att försöka igen'}
+                    {syncStatus === 'idle' && '📍 Auto-save aktiv'}
                   </button>
                 )}
               </div>
