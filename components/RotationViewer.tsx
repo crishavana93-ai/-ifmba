@@ -25,14 +25,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type Product = {
   _id: string
-  /** Sanity's auto-tracked last-edit timestamp. Used as a cache-bust param
-   *  in the /api/mockup URLs — every product edit changes _updatedAt, which
-   *  changes the URL, which forces Vercel's CDN to re-render. Without this
-   *  the CDN would serve stale mockups forever after first render. */
   _updatedAt?: string
   name: string
   imageUrl?: string | null
   cleanDesignUrl?: string | null
+  /** Real video of the model wearing this exact shirt (uploaded to Sanity's
+   *  `mockupVideo` field). When present, plays on loop instead of the
+   *  rotation-frame mockup pipeline. Highest quality option — no AI
+   *  compositing, no chroma-key, just the real shirt on the real model. */
+  mockupVideoUrl?: string | null
   priceSek: number
 }
 
@@ -118,6 +119,27 @@ export default function RotationViewer({
   const handlePointerUp = useCallback(() => {
     setDragging(false)
   }, [])
+
+  // VIDEO MODE: if the product has a real-shirt video uploaded to Sanity,
+  // play it on loop. Replaces the rotation-frame compositor — most authentic
+  // mockup possible (real model + real shirt, no AI artifacts). Falls back
+  // to the rotation frames when no video is uploaded.
+  if (product?.mockupVideoUrl) {
+    return (
+      <div className={`rot-viewer ${className || ''}`.trim()}>
+        <video
+          key={product._id}        // re-mount on product switch so video swaps cleanly
+          className="rot-viewer-frame"
+          src={product.mockupVideoUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label={`${product.name} on model`}
+        />
+      </div>
+    )
+  }
 
   return (
     <div

@@ -36,14 +36,14 @@ import RotationViewer from './RotationViewer'
 
 type Product = {
   _id: string
-  /** Forwarded to RotationViewer as cache-bust for /api/mockup URLs. */
   _updatedAt?: string
   name: string
   imageUrl?: string | null
-  /** Transparent-PNG version of the design alone — produced manually via
-   *  remove.bg and stored under the `cleanDesign` field in Sanity. When
-   *  present, the RotationViewer skips runtime chroma-key for a clean composite. */
   cleanDesignUrl?: string | null
+  /** Real model-wearing-the-shirt video (Sanity `mockupVideo` field). When
+   *  present, RotationViewer plays it on loop — beats every algorithmic
+   *  compositing path for authenticity. */
+  mockupVideoUrl?: string | null
   priceSek: number
   category?: string
 }

@@ -164,6 +164,26 @@ export default defineType({
       description: 'Photo of a real person wearing the product. Shown via a "Wear it" lightbox on the card. Portrait or square works best.',
     }),
     defineField({
+      // Real video of the model wearing THIS specific shirt — replaces the
+      // /api/mockup compositor approach for products that have one. When
+      // present, /butik plays the video on loop instead of the rotation
+      // viewer. Cleanest possible mockup: actual model + actual product,
+      // no AI compositing artifacts.
+      //
+      // Filming spec: 10-15 sec, model facing camera, slow turn so all
+      // angles are visible, neutral white background. iPhone vertical
+      // 1080×1920 or 540×960 is plenty for the viewer (~400px wide).
+      // Save as MP4 (H.264) for cross-browser support.
+      name: 'mockupVideo',
+      title: 'Model Video (Real Shirt)',
+      type: 'file',
+      options: {accept: 'video/mp4,video/webm'},
+      description:
+        'Short video (10-15s) of the model wearing this exact shirt. Replaces ' +
+        'the compositor on /butik when present. iPhone vertical MP4 is fine. ' +
+        'File: ~/Documents/MBA/tshirt-references/{nn}-{slug}.mp4 after filming.',
+    }),
+    defineField({
       name: 'lifestyleImageUrl',
       title: 'On-Model Photo URL (Alternative)',
       type: 'url',
