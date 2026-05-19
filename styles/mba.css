@@ -5398,11 +5398,15 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .mockup-gen-design {
   position: absolute;
   pointer-events: none;
-  aspect-ratio: 1;
+  /* No fixed aspect ratio — let the img inside dictate height from its
+     natural aspect, matching how the server compositor renders. The OLD
+     `aspect-ratio: 1` forced the div square and letterboxed tall designs
+     inside object-fit:contain, making admin preview smaller than /butik. */
 }
 .mockup-gen-design img {
-  width: 100%; height: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: auto;       /* natural aspect — matches server output */
+  display: block;
   -webkit-user-drag: none;
 }
 .mockup-gen-placeholder {
