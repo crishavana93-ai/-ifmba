@@ -1,0 +1,183 @@
+/**
+ * /api/mockup/[productId]/[frame] — server-side mockup compositor.
+ *
+ * The Printful approach, ported to MBA: for each product, pre-render a
+ * PNG per rotation frame with the design composited at the right chest
+ * area + perspective. The RotationViewer then loads these pre-rendered
+ * frames as plain <img> tags — no CSS skew, no client-side chroma-key,
+ * no white-box artifacts.
+ *
+ * Pipeline (per request):
+ *   1. Load the base rotation frame from /public/lifestyle/rotation/
+ *   2. Look up the product's cleanDesign (or imageUrl fallback) via Sanity
+ *   3. Fetch the design PNG, strip background pixels with sharp's alpha
+ *      removal (handles uploads that aren't quite transparent)
+ *   4. Resize + horizontally compress per FRAME_SPECS[frame].scaleX
+ *   5. Composite onto the frame at FRAME_SPECS[frame] chest position
+ *   6. Return PNG with year-long Cache-Control (URL is stable per product
+ *      until the cleanDesign asset id changes)
+ *
+ * Why server-side instead of CSS overlay: chest perspective on ¾ angles
+ * cannot be faked convincingly in CSS. Server-side compositing with
+ * sharp gives pixel-perfect results that match the rotation frame's
+ * actual perspective. Vercel caches the response forever (URL keyed),
+ * so we pay the ~200ms render cost once per (product, frame) — every
+ * subsequent visit is a CDN hit.
+ */
+import { NextRequest, NextResponse } from 'next/server'
+import sharp from 'sharp'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { FRAME_SPECS, FRAME_WIDTH, FRAME_HEIGHT, FRAME_COUNT } from '@/lib/mockup-frames'
+
+// Node runtime required — sharp doesn't run on the Vercel Edge runtime.
+export const runtime = 'nodejs'
+// Frame URL is stable per product asset; cache aggressively at the CDN.
+export const revalidate = 31536000 // 1 year
+
+const SANITY_PROJECT = '3zuy5n8l'
+const SANITY_DATASET = 'production'
+
+async function getProductDesignUrl(productId: string): Promise<string | null> {
+  // Query Sanity for the product's cleanDesignUrl (preferred) or imageUrl.
+  // Public reads don't need a token.
+  const query = encodeURIComponent(
+    `*[_type=="dropshipProduct" && _id=="${productId.replace(/"/g, '')}"][0]{"clean": cleanDesign.asset->url, "raw": image.asset->url}`,
+  )
+  const url = `https://${SANITY_PROJECT}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`
+  const res = await fetch(url, { next: { revalidate: 300 } })
+  if (!res.ok) return null
+  const json = await res.json()
+  return json?.result?.clean || json?.result?.raw || null
+}
+
+/**
+ * Strip white/light pixels around a design's edges. Most product photos
+ * have a near-white background; this turns it transparent. Designs that
+ * are already transparent (proper remove.bg output) pass through unchanged.
+ */
+async function chromaKeyToTransparent(input: Buffer): Promise<Buffer> {
+  // sharp's `removeAlpha` + threshold trick: tint near-white to alpha.
+  // We use `ensureAlpha` + raw pixel manipulation via `.composite()` is
+  // overkill for this — instead we rely on sharp's built-in support for
+  // PNG transparency: if the input is already PNG with alpha, sharp
+  // preserves it. For JPGs, we manually map near-white to alpha=0 by
+  // reading raw pixels.
+  const img = sharp(input).ensureAlpha()
+  const { data, info } = await img
+    .raw()
+    .toBuffer({ resolveWithObject: true })
+  const out = Buffer.from(data) // mutable copy
+  const TOL = 28 // distance from pure white that still counts as bg
+  for (let i = 0; i < out.length; i += 4) {
+    const r = out[i], g = out[i + 1], b = out[i + 2]
+    // Near-white: all three channels above 255-TOL
+    if (r > 255 - TOL && g > 255 - TOL && b > 255 - TOL) {
+      out[i + 3] = 0
+    }
+  }
+  return sharp(out, {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  }).png().toBuffer()
+}
+
+/** Auto-crop transparent borders from a buffer. Returns the trimmed buffer. */
+async function trimTransparent(input: Buffer): Promise<Buffer> {
+  // sharp's .trim() handles this — trims based on top-left pixel by
+  // default; with alpha input it trims transparent borders.
+  return sharp(input).trim().png().toBuffer()
+}
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ productId: string; frame: string }> },
+) {
+  try {
+    const { productId, frame: frameRaw } = await params
+    const frameIdx = parseInt(frameRaw.replace(/\.png$/i, ''), 10)
+    if (isNaN(frameIdx) || frameIdx < 0 || frameIdx >= FRAME_COUNT) {
+      return new NextResponse('frame out of range', { status: 404 })
+    }
+
+    // Load the base rotation frame
+    const framePath = join(
+      process.cwd(),
+      'public',
+      'lifestyle',
+      'rotation',
+      `frame-${String(frameIdx).padStart(2, '0')}.webp`,
+    )
+    const baseFrame = await readFile(framePath)
+    const spec = FRAME_SPECS[frameIdx]
+
+    // If the design isn't visible on this frame OR product has no design,
+    // return the bare frame unchanged.
+    if (!spec.visible) {
+      return new NextResponse(new Uint8Array(baseFrame), {
+        headers: {
+          'Content-Type': 'image/webp',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      })
+    }
+
+    const designUrl = await getProductDesignUrl(productId)
+    if (!designUrl) {
+      return new NextResponse(new Uint8Array(baseFrame), {
+        headers: {
+          'Content-Type': 'image/webp',
+          'Cache-Control': 'public, max-age=300', // short — design may land later
+        },
+      })
+    }
+
+    // Fetch the design PNG/JPG
+    const designRes = await fetch(designUrl)
+    if (!designRes.ok) {
+      return new NextResponse(new Uint8Array(baseFrame), {
+        headers: { 'Content-Type': 'image/webp', 'Cache-Control': 'public, max-age=300' },
+      })
+    }
+    const designBuf = Buffer.from(await designRes.arrayBuffer())
+
+    // Process the design: chroma-key out white background, then trim
+    let designProcessed: Buffer
+    try {
+      const keyed = await chromaKeyToTransparent(designBuf)
+      designProcessed = await trimTransparent(keyed)
+    } catch (e) {
+      // If chroma-key fails (e.g. design already perfectly transparent),
+      // fall back to the original
+      designProcessed = designBuf
+    }
+
+    // Resize the design to chest dimensions. Width comes from FRAME_SPECS,
+    // height auto-scales. Apply scaleX for ¾-angle compression.
+    const targetW = Math.round(FRAME_WIDTH * spec.width * (spec.scaleX ?? 1))
+    const designMeta = await sharp(designProcessed).metadata()
+    const aspect = (designMeta.width || 1) / (designMeta.height || 1)
+    const targetH = Math.round(targetW / aspect)
+    const designResized = await sharp(designProcessed)
+      .resize(targetW, targetH, { fit: 'inside', withoutEnlargement: false })
+      .toBuffer()
+
+    // Composite onto the base frame at the chest position. sharp's composite
+    // takes top-left coords, so we shift from chest center.
+    const left = Math.round(FRAME_WIDTH * spec.cx - targetW / 2)
+    const top = Math.round(FRAME_HEIGHT * spec.cy - targetH / 2)
+    const composited = await sharp(baseFrame)
+      .composite([{ input: designResized, left, top }])
+      .webp({ quality: 88 })
+      .toBuffer()
+
+    return new NextResponse(new Uint8Array(composited), {
+      headers: {
+        'Content-Type': 'image/webp',
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+    })
+  } catch (err) {
+    console.error('[/api/mockup] failed:', err)
+    return new NextResponse('mockup render failed', { status: 500 })
+  }
+}

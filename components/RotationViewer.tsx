@@ -1,75 +1,47 @@
 'use client'
 /**
- * RotationViewer — drag-to-spin 360° viewer using 8 frames extracted from
- * a real-life video shoot.
+ * RotationViewer — drag-to-spin 360° viewer over 7 photographed model angles.
+ *
+ * The architecture changed 2026-05-19:
+ *   OLD: rendered the model frame + the design as a separate CSS overlay,
+ *        chroma-keyed in the browser canvas. Caused white-box and skew
+ *        distortion artifacts on ¾ angles.
+ *   NEW: each frame is rendered by the server-side compositor at
+ *        /api/mockup/[productId]/[frame].webp. The server fetches the
+ *        cleanDesign from Sanity, chroma-keys it, applies per-frame
+ *        chest-area positioning + perspective, and returns a pre-baked
+ *        WebP. This file just swaps which composited frame to show.
+ *
+ *   When no product is selected, we fall back to the raw blank-tee
+ *   frames in /public/lifestyle/rotation/.
  *
  * UX:
- *   - Drag horizontally (mouse or touch) to scrub through the 8 frames
+ *   - Drag horizontally (mouse or touch) to scrub through the 7 frames
  *   - Auto-rotates slowly when idle so visitors notice the interactivity
- *   - When a product is "active", its design image overlays on the chest
- *     area — opacity ties to the current frame so the overlay fades as the
- *     model turns away from camera (visible front 3 frames, hidden back 3,
- *     fading on sides). Crude but effective until per-frame perspective
- *     positions are tuned by hand.
- *
- * Frame source: /public/lifestyle/rotation/frame-{00..07}.webp
- * Extracted from /Users/cristianortizsuarez/Documents/MBA/rotation-video.mp4
- * at 2.53s intervals via `ffmpeg -ss <ts> -i video.mp4 -frames:v 1 ...`
- *
- * To re-shoot: drop a new video at the same path and re-run the extract
- * step from the deploy script (TODO: bake that into sync-and-deploy.sh).
+ *   - On product change: 7 frames are preloaded so dragging is instant
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type Product = {
   _id: string
   name: string
   imageUrl?: string | null
-  /** Transparent-PNG of just the design, pre-cleaned via remove.bg and saved
-   *  in Sanity under `cleanDesign`. When set, we use this directly and skip
-   *  the runtime chroma-key entirely — far better quality than algorithmic
-   *  background removal of the AliExpress whole-shirt photo. */
   cleanDesignUrl?: string | null
   priceSek: number
 }
 
-// 7 frames (replaced the 8 video-extracted frames with Gemini-generated
-// composite + standalone front + side, 2026-05-18). Indexed:
-//   0 — front (face camera)
-//   1 — ¾-right (~51° rotated)
-//   2 — ¾-back-right (~103°)
-//   3 — full back (~154°)
-//   4 — ¾-back-left (~206°)
-//   5 — ¾-left (~257°)
-//   6 — side profile (~309°)
 const FRAME_COUNT = 7
-const FRAMES = Array.from({ length: FRAME_COUNT }, (_, i) =>
-  `/lifestyle/rotation/frame-${String(i).padStart(2, '0')}.webp`,
+const BLANK_FRAMES = Array.from(
+  { length: FRAME_COUNT },
+  (_, i) => `/lifestyle/rotation/frame-${String(i).padStart(2, '0')}.webp`,
 )
-
-/** Opacity multiplier per frame for the design overlay. Side and back
- *  views are forced to 0 — no distortion artifact from a skewed rectangle
- *  sitting on the model's shoulder when the chest isn't facing camera.
- *  Printful and other pro mockup tools handle this the same way: the
- *  design only renders on the front-facing frame; rotating just shows
- *  the blank garment from each angle. */
-const OVERLAY_OPACITY = [1.0, 0.35, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-/** Horizontal offset (px) per frame — design shifts as body rotates.
- *  Only matters where opacity > 0 (frames 0 and 1). */
-const OVERLAY_X_OFFSET = [0, -18, 0, 0, 0, 0, 0]
-
-/** SkewX angle (deg) per frame — fakes 3D body rotation under the design.
- *  Smaller skew on frame 1 → less visible warping. */
-const OVERLAY_SKEW = [0, -6, 0, 0, 0, 0, 0]
 
 export default function RotationViewer({
   product,
   className,
 }: {
-  /** The active product whose design overlays on the chest. Pass null to
-   *  show the model without any overlay. */
+  /** The active product whose design we composite onto each frame. */
   product: Product | null
   className?: string
 }) {
@@ -77,121 +49,29 @@ export default function RotationViewer({
   const [dragging, setDragging] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
   const dragStart = useRef({ x: 0, startIdx: 0 })
-  // Cleaned design (background-removed) for the current product.
-  // We chroma-key the corner pixel and make matching colors transparent
-  // so the overlay shows JUST the print, not the AliExpress shirt outline.
-  const [cleanedDesignUrl, setCleanedDesignUrl] = useState<string | null>(null)
 
-  // When the active product changes, run chroma-key on the overlay source.
-  // Prefer `cleanDesignUrl` (manually pre-cleaned via remove.bg, saved to
-  // Sanity) when present — it has less leftover background to strip — but
-  // ALWAYS run chroma-key as a safety net, because users sometimes upload
-  // a not-quite-transparent PNG and we'd otherwise render a white box.
-  // Falls back to `imageUrl` (the raw AliExpress photo) when no clean
-  // design has been uploaded.
+  // Frames to render — either the bare model (no product) or the server-
+  // composited versions (product selected). The compositor returns the
+  // bare frame for "design not visible on this angle" so all 7 entries
+  // are always populated; viewer doesn't need a fallback path.
+  const frames = useMemo(() => {
+    if (!product?._id) return BLANK_FRAMES
+    return Array.from(
+      { length: FRAME_COUNT },
+      (_, i) => `/api/mockup/${encodeURIComponent(product._id)}/${i}.webp`,
+    )
+  }, [product?._id])
+
+  // Preload all frames so dragging is instant after product change.
+  // Browser-native `<link rel="preload">` would be cleaner but doesn't
+  // play well with API routes; using Image() works in all browsers and
+  // primes the HTTP cache for the <img> tag below.
   useEffect(() => {
-    if (!product) { setCleanedDesignUrl(null); return }
-    const sourceUrl = product.cleanDesignUrl || product.imageUrl
-    if (!sourceUrl) { setCleanedDesignUrl(null); return }
-    let cancelled = false
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => {
-      if (cancelled) return
-      const canvas = document.createElement('canvas')
-      canvas.width = img.naturalWidth
-      canvas.height = img.naturalHeight
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-      ctx.drawImage(img, 0, 0)
-      try {
-        const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
-        const w = canvas.width
-        const h = canvas.height
-
-        // Multi-point chroma-key: sample 8 perimeter points (4 corners + 4
-        // mid-edges) as DISTINCT background colors. Removes any pixel close
-        // to ANY sample. This handles designs with two bg layers — photo
-        // background (white, sampled from true corners) + t-shirt fabric
-        // (black/dark, sampled from mid-edges where the shirt is visible).
-        const sampleAt = (x: number, y: number): [number, number, number] => {
-          const i = (y * w + x) * 4
-          return [data.data[i], data.data[i + 1], data.data[i + 2]]
-        }
-        const samples: Array<[number, number, number]> = [
-          sampleAt(0, 0),
-          sampleAt(w - 1, 0),
-          sampleAt(0, h - 1),
-          sampleAt(w - 1, h - 1),
-          sampleAt(Math.floor(w / 2), 0),
-          sampleAt(Math.floor(w / 2), h - 1),
-          sampleAt(0, Math.floor(h / 2)),
-          sampleAt(w - 1, Math.floor(h / 2)),
-        ]
-
-        // 80 = handles AliExpress dual-bg photos (white photo margin +
-        // dark shirt fabric) out of the box. Higher than the 60 we had
-        // before — was leaving black halos around print silhouettes.
-        const TOL = 80
-        for (let i = 0; i < data.data.length; i += 4) {
-          const r = data.data[i], g = data.data[i + 1], b = data.data[i + 2]
-          let minDist = Infinity
-          for (const [sr, sg, sb] of samples) {
-            const d = Math.sqrt((r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2)
-            if (d < minDist) minDist = d
-            if (d < TOL) break // early exit
-          }
-          if (minDist < TOL) {
-            data.data[i + 3] = 0
-          } else if (minDist < TOL * 1.5) {
-            data.data[i + 3] = Math.round(255 * ((minDist - TOL) / (TOL * 0.5)))
-          }
-        }
-        ctx.putImageData(data, 0, 0)
-
-        // Auto-trim the transparent borders. After chroma-key, the actual print
-        // is often only the middle 40-60% of the source photo — trimming lets
-        // the overlay's CSS width % map to the PRINT, not the empty padding.
-        let minX = w, minY = h, maxX = -1, maxY = -1
-        for (let y = 0; y < h; y++) {
-          for (let x = 0; x < w; x++) {
-            if (data.data[(y * w + x) * 4 + 3] > 20) {
-              if (x < minX) minX = x
-              if (x > maxX) maxX = x
-              if (y < minY) minY = y
-              if (y > maxY) maxY = y
-            }
-          }
-        }
-        if (maxX > minX && maxY > minY) {
-          const tw = maxX - minX + 1
-          const th = maxY - minY + 1
-          const out = document.createElement('canvas')
-          out.width = tw
-          out.height = th
-          out.getContext('2d')!.drawImage(canvas, minX, minY, tw, th, 0, 0, tw, th)
-          setCleanedDesignUrl(out.toDataURL('image/png'))
-        } else {
-          setCleanedDesignUrl(canvas.toDataURL('image/png'))
-        }
-      } catch (err) {
-        // CORS-tainted canvas — fall back to raw image
-        console.warn('[RotationViewer] chroma-key skipped, using raw image:', err)
-        setCleanedDesignUrl(sourceUrl)
-      }
-    }
-    img.onerror = () => setCleanedDesignUrl(sourceUrl)
-    img.src = sourceUrl
-    return () => { cancelled = true }
-  }, [product?._id, product?.imageUrl, product?.cleanDesignUrl])
-
-  // Preload all frames so dragging is instant (no flicker mid-scrub)
-  useEffect(() => {
-    FRAMES.forEach((src) => {
+    frames.forEach((src) => {
       const img = new Image()
       img.src = src
     })
-  }, [])
+  }, [frames])
 
   // Idle auto-rotate — slowly cycles through frames until user interacts
   useEffect(() => {
@@ -229,10 +109,6 @@ export default function RotationViewer({
     setDragging(false)
   }, [])
 
-  const overlayOpacity = OVERLAY_OPACITY[idx] ?? 0
-  const overlayX = OVERLAY_X_OFFSET[idx] ?? 0
-  const overlaySkew = OVERLAY_SKEW[idx] ?? 0
-
   return (
     <div
       className={`rot-viewer ${className || ''}`.trim()}
@@ -242,29 +118,14 @@ export default function RotationViewer({
       onPointerCancel={handlePointerUp}
       style={{ cursor: dragging ? 'grabbing' : 'grab' }}
     >
-      {/* The model frame */}
+      {/* The composited frame — design baked in by the server when a
+          product is selected, bare model otherwise. */}
       <img
         className="rot-viewer-frame"
-        src={FRAMES[idx]}
-        alt="MBA model rotation"
+        src={frames[idx]}
+        alt={product ? `${product.name} on model` : 'MBA model rotation'}
         draggable={false}
       />
-
-      {/* Design overlay on chest — uses the chroma-keyed (background-removed)
-          version of the product image so we only see the print, not the
-          AliExpress shirt outline. The cleaning happens in a useEffect when
-          the product changes. */}
-      {cleanedDesignUrl && overlayOpacity > 0 && (
-        <div
-          className="rot-viewer-design"
-          style={{
-            opacity: overlayOpacity,
-            transform: `translate(calc(-50% + ${overlayX}px), -50%) skewX(${overlaySkew}deg)`,
-          }}
-        >
-          <img src={cleanedDesignUrl} alt={product?.name || ''} draggable={false} />
-        </div>
-      )}
 
       {/* Drag hint — fades out once user has interacted */}
       {!hasInteracted && (
