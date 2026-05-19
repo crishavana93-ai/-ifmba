@@ -5027,6 +5027,14 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 /* ═══════════════════════════════════════════════════════
    3D SHOWROOM — interactive t-shirt viewer
    ═══════════════════════════════════════════════════════ */
+/* Override the .section-alt cream background ON the showroom only — we want
+   the video's white studio bg to bleed seamlessly into the section so the
+   model looks like he's standing in a continuous fitting room, not inside
+   a card. Other .section-alt sections (Fan Drop grid, etc.) keep cream. */
+.showroom.section,
+.showroom.section-alt {
+  background: #ffffff;
+}
 .showroom .showroom-body {
   max-width: 540px;
   margin: 12px 0 0;
@@ -5056,25 +5064,19 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .showroom-canvas {
   position: relative;
   /* Drive size from viewport HEIGHT, not from grid column width — keeps the
-     full figure visible on a typical laptop AND prevents the empty beige
-     void we got with the aspect-ratio+max-height combo (those two break
-     each other when max-height kicks in, collapsing the canvas to 0). */
+     full figure visible on a typical laptop. */
   height: 70vh;
-  /* Width derived from the rot-viewer's 540/1024 portrait aspect, so the
-     canvas hugs the figure exactly — no stripes left or right either. */
+  /* Width derived from portrait aspect so the canvas hugs the figure. */
   width: calc(70vh * 540 / 1024);
   max-width: 100%;
   margin-inline: auto;
-  /* Soft studio-y gradient — top brighter, bottom subtle navy haze.
-     The shirt sits centered with a contact shadow grounding it. */
-  background:
-    radial-gradient(ellipse at 50% 30%, #ffffff 0%, #f5f3ec 45%, #e6e2d6 100%);
-  border-radius: 8px;
+  /* PURE WHITE — matches the video's white studio background so the model
+     appears to stand in one continuous fitting room rather than inside a
+     visible card. Was a cream gradient with border + shadow; Cris wanted
+     the seamless look 2026-05-19. */
+  background: #ffffff;
   overflow: hidden;
-  border: 1px solid rgba(11, 18, 32, 0.08);
-  box-shadow:
-    0 4px 24px rgba(11, 18, 32, 0.08),
-    inset 0 -40px 80px rgba(11, 18, 32, 0.04);
+  /* No box-shadow, no border-radius — the canvas should be invisible. */
   touch-action: none;
 }
 @media (min-width: 721px) {
@@ -5224,14 +5226,13 @@ a.news-card:hover { transform: translateY(-3px); transition: transform .3s var(-
 .rot-viewer {
   position: relative;
   width: 100%;
-  /* Updated to match Gemini's 540×1024 frame aspect (was 478×850 from the
-     original video shoot). The frames have pure-white BG already, so the
-     viewer background just needs to be off-white to feel like a studio. */
+  /* Updated to match the 540×1024 frame aspect. White BG matches the
+     video so the model appears in one continuous fitting room — no
+     visible card edges, no rounded corners. */
   aspect-ratio: 540 / 1024;
   max-height: 75vh;
   margin: 0 auto;
   background: #ffffff;
-  border-radius: 8px;
   overflow: hidden;
   user-select: none;
   touch-action: pan-y;
