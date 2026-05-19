@@ -520,6 +520,31 @@ export default function MockupGenerator() {
         <p>Skapa produktbilder utan att betala Printful. Drag designen på modellen, justera, exportera.</p>
       </div>
 
+      {/* "Single source of truth" preview — shows the actual /api/mockup
+          server-rendered frame 0 for the selected product. This is what
+          customers will see on /butik. Cache-busted with a counter so the
+          admin can see updates immediately after saving a new cleanDesign. */}
+      {selectedProductId && (
+        <div className="mockup-gen-serverpreview">
+          <div className="mockup-gen-serverpreview-label">
+            ✓ How customers see it on /butik
+          </div>
+          <img
+            src={`/api/mockup/${encodeURIComponent(selectedProductId)}/0.webp?cb=${saved ? Date.now() : ''}`}
+            alt="Server-rendered mockup"
+            className="mockup-gen-serverpreview-img"
+          />
+          <a
+            href={`/api/mockup/${encodeURIComponent(selectedProductId)}/0.webp?cb=${Date.now()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mockup-gen-serverpreview-link"
+          >
+            Open full size →
+          </a>
+        </div>
+      )}
+
       <div className="mockup-gen-grid">
         {/* LEFT: Live preview stage */}
         <div className="mockup-gen-stage-wrap">
