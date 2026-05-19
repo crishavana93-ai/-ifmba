@@ -76,17 +76,30 @@ async function chromaKeyToTransparent(input: Buffer): Promise<Buffer> {
     const i = (y * w + x) * 4
     return [out[i], out[i + 1], out[i + 2]]
   }
-  const samples: Array<[number, number, number]> = [
-    px(0, 0),
-    px(w - 1, 0),
-    px(0, h - 1),
-    px(w - 1, h - 1),
-    px(Math.floor(w / 2), 0),
-    px(Math.floor(w / 2), h - 1),
-    px(0, Math.floor(h / 2)),
-    px(w - 1, Math.floor(h / 2)),
+  // 8 perimeter samples. These catch the photo's outer background — usually
+  // white or grey on AliExpress catalog shots.
+  const perimeter: Array<[number, number, number]> = [
+    px(0, 0), px(w - 1, 0), px(0, h - 1), px(w - 1, h - 1),
+    px(Math.floor(w / 2), 0), px(Math.floor(w / 2), h - 1),
+    px(0, Math.floor(h / 2)), px(w - 1, Math.floor(h / 2)),
   ]
-  const TOL = 70 // RGB distance — handles slight gradients in shirt fabric
+
+  // Adaptive: if all 8 perimeter samples are LIGHT (shirt is centered in
+  // photo with white margin), we ALSO need to sample dark shirt fabric
+  // colors — otherwise the black shirt around the print leaks through.
+  // 5% inset is safe: past the white margin, into the shirt but not deep
+  // enough to hit a centered print.
+  const allLight = perimeter.every(([r, g, b]) => (r + g + b) / 3 > 200)
+  const samples = [...perimeter]
+  if (allLight) {
+    const ix = Math.floor(w * 0.05)
+    const iy = Math.floor(h * 0.05)
+    samples.push(
+      px(ix, iy), px(w - 1 - ix, iy),
+      px(ix, h - 1 - iy), px(w - 1 - ix, h - 1 - iy),
+    )
+  }
+  const TOL = 70
   for (let i = 0; i < out.length; i += 4) {
     const r = out[i], g = out[i + 1], b = out[i + 2]
     let minDist = Infinity
