@@ -66,7 +66,9 @@ const TEMPLATES: Template[] = [
     label: 'Navy Tee · Male Model',
     imageUrl: '/mockup-templates/navy-tee-male.jpg',
     displacementUrl: '/mockup-templates/navy-tee-male-displacement.jpg',
-    defaultChest: { x: 50, y: 50, width: 22 },
+    // 30% width gives a real chest-print scale on the 1024² template.
+    // Was 22% — readable but felt small next to a real Printful-style mockup.
+    defaultChest: { x: 50, y: 48, width: 30 },
   },
 ]
 
@@ -78,13 +80,18 @@ export default function MockupGenerator() {
   const [designName, setDesignName] = useState<string>('design')
   // Position + size as % of template (so it's resolution-independent)
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
-  // After the live chroma-key auto-trims the print out of its photo padding,
-  // size% now reflects the ACTUAL print width, not the photo bbox. A real
-  // chest print is ~25 cm on a 50 cm shirt — about 22-26% of the template
-  // width once you include the head. 22% is a good default.
-  const [size, setSize] = useState<number>(22)
+  // 30% default after the trim-on-chroma-key fix → the print maps to a
+  // proper chest-print scale (~25 cm on a real shirt, scaled to the
+  // template's 1024² frame). Was 22% — readable but looked small next
+  // to a real Printful mockup.
+  const [size, setSize] = useState<number>(30)
   const [displacement, setDisplacement] = useState<number>(8)
-  const [blendMode, setBlendMode] = useState<'multiply' | 'normal' | 'overlay' | 'soft-light'>('multiply')
+  // 'normal' default → design appears in its true colors (the color shown
+  // on the AliExpress photo). Multiply was darkening designs against the
+  // navy fabric, making them look faded/translucent. Still selectable
+  // from the dropdown if a print really needs the fabric texture to show
+  // through (e.g. a textured/heathered design).
+  const [blendMode, setBlendMode] = useState<'multiply' | 'normal' | 'overlay' | 'soft-light'>('normal')
   const [opacity, setOpacity] = useState<number>(100)
   const [showDispPreview, setShowDispPreview] = useState(false)
   // NEW: shirt color picker — recolors navy shirt areas to any target color
