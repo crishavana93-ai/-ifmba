@@ -53,8 +53,8 @@ const dict: Record<string, { sv: string; en: string }> = {
   'hero.seeTable':    { sv: 'Se tabellen', en: 'See standings' },
   'hero.scroll':      { sv: 'SCROLL',      en: 'SCROLL' },
   'hero.sub':         {
-    sv: 'Inte bara ett lag — en familj, en rörelse, en stad. 9 nationer. 1 tröja. Malmös streetball headquarters.',
-    en: 'Not just a team — a family, a movement, a city. 9 nations. 1 jersey. Malmö\u2019s streetball headquarters.',
+    sv: 'Inte bara ett lag — en familj, en rörelse, en stad. 15 nationer. 1 tröja. Malmös streetball headquarters.',
+    en: 'Not just a team — a family, a movement, a city. 15 nations. 1 jersey. Malmö\u2019s streetball headquarters.',
   },
 
   // Section labels (the small mono label above each H2)
@@ -89,8 +89,8 @@ const dict: Record<string, { sv: string; en: string }> = {
   'teaser.titleEm':     { sv: 'laget',              en: 'the team' },
   'teaser.title2':      { sv: 'står.',              en: 'stands.' },
   'teaser.body':        {
-    sv: 'MBA är Malmös mest internationella basketklubb — 9 nationer, 1 tröja — och vi går in i 2026/27 som nyuppflyttade till Div\u00a02 Skåne Herr. Er logga på matchtröjan, bänksidan, hemsidan och i matchklippen. Paket från 10\u00a0000 kr till 75\u00a0000 kr per tvåårsavtal.',
-    en: 'MBA is Malmö\u2019s most international basketball club — 9 nations, 1 jersey — and we enter 2026/27 as newly promoted to Div\u00a02 Skåne Men\u2019s League. Your logo on the jersey, the bench, the homepage and the game clips. Packages from 10,000 SEK to 75,000 SEK per two-year agreement.',
+    sv: 'MBA är Malmös mest internationella basketklubb — 15 nationer, 1 tröja — och vi går in i 2026/27 som nyuppflyttade till Div\u00a02 Skåne Herr. Er logga på matchtröjan, bänksidan, hemsidan och i matchklippen. Paket från 10\u00a0000 kr till 75\u00a0000 kr per tvåårsavtal.',
+    en: 'MBA is Malmö\u2019s most international basketball club — 15 nations, 1 jersey — and we enter 2026/27 as newly promoted to Div\u00a02 Skåne Men\u2019s League. Your logo on the jersey, the bench, the homepage and the game clips. Packages from 10,000 SEK to 75,000 SEK per two-year agreement.',
   },
   'teaser.stats.nations':   { sv: 'nationer',          en: 'nations' },
   'teaser.stats.promoted':  { sv: 'uppflyttade 2026/27', en: 'promoted 2026/27' },
@@ -111,8 +111,8 @@ const dict: Record<string, { sv: string; en: string }> = {
   'foot.poweredBy':    { sv: 'Powered by Profixio',    en: 'Powered by Profixio' },
   'foot.follow':       { sv: 'Följ oss',               en: 'Follow us' },
   'foot.copyright':    { sv: '© 2026 MBA · Malmö Basket', en: '© 2026 MBA · Malmö Basket' },
-  'foot.subscribeBrand': { sv: 'Malmös mest internationella basketfamilj. 9 nationer, 1 tröja. Uppflyttade till Div 2 Skåne Herr 2026/27.',
-                           en: 'Malmö\u2019s most international basketball family. 9 nations, 1 jersey. Promoted to Div 2 Skåne Men\u2019s League 2026/27.' },
+  'foot.subscribeBrand': { sv: 'Malmös mest internationella basketfamilj. 15 nationer, 1 tröja. Uppflyttade till Div 2 Skåne Herr 2026/27.',
+                           en: 'Malmö\u2019s most international basketball family. 15 nations, 1 jersey. Promoted to Div 2 Skåne Men\u2019s League 2026/27.' },
   'foot.members':      { sv: 'Bli medlem',             en: 'Join the club' },
 
   // Lang toggle

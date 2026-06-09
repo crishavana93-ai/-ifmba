@@ -35,8 +35,8 @@ export const runtime = 'nodejs'
 // Frame URL is stable per product asset; cache aggressively at the CDN.
 export const revalidate = 31536000 // 1 year
 
-const SANITY_PROJECT = '3zuy5n8l'
-const SANITY_DATASET = 'production'
+const SANITY_PROJECT = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '3zuy5n8l'
+const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 type ProductMockupData = {
   url: string | null

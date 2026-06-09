@@ -135,7 +135,7 @@ export default async function Home() {
 
       {/* 06 · THE FAMILY (dark) */}
       <ScrollReveal>
-        <Squad players={players} num="06" numText="THE FAMILY" className="section-dark" />
+        <Squad players={players} num="07" numText="THE FAMILY" className="section-dark" />
       </ScrollReveal>
 
       {/* StatsBar — band between sections */}
@@ -147,31 +147,31 @@ export default async function Home() {
 
       {/* 07 · THE DESK — consolidated news. */}
       <ScrollReveal>
-        <News news={news} swedenNews={swedenNews} num="07" numText="THE DESK" className="section-dark" />
+        <News news={news} swedenNews={swedenNews} num="08" numText="THE DESK" className="section-dark" />
       </ScrollReveal>
 
       {/* 08 · APPAREL (alt) */}
       <ScrollReveal>
-        <Apparel media={media} num="08" numText="APPAREL" className="section-alt" />
+        <Apparel media={media} num="09" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
       {/* 09 · VÅR RESA (dark) */}
       <ScrollReveal>
-        <Journey num="09" numText="VÅR RESA" className="section-dark" />
+        <Journey num="10" numText="VÅR RESA" className="section-dark" />
       </ScrollReveal>
 
       {/* 10 · BLI PARTNER — compact teaser that routes traffic to the
           dedicated /partners page. Full tier breakdown + lead form live
           there so the landing page stays focused and fast. */}
       <ScrollReveal>
-        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="10" numText="PARTNERS" />
+        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="11" numText="PARTNERS" />
       </ScrollReveal>
 
       {/* 11 · STÖD KLUBBEN — Swish donations.
           Renders null entirely if `swishNumber` isn't set in Sanity, so
           the page degrades gracefully until Cris pastes the real number. */}
       <ScrollReveal>
-        <Swish settings={settings} num="11" numText="STÖD" className="section-dark" />
+        <Swish settings={settings} num="12" numText="STÖD" className="section-dark" />
       </ScrollReveal>
 
       {/* 12 · GE UTRUSTNING — in-kind donations for international communities.
@@ -182,7 +182,7 @@ export default async function Home() {
         <GearDonations
           settings={settings}
           media={media}
-          num="12"
+          num="13"
           numText="UTRUSTNING"
           className="section-alt"
         />

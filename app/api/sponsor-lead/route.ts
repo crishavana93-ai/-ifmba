@@ -19,7 +19,7 @@
  *   - Only fires if RESEND_API_KEY is set in the environment. Missing key
  *     is NOT an error — the lead still lands in Sanity, Cris just has to
  *     poll Studio until Resend is wired up.
- *   - Target mailbox: LEAD_NOTIFY_TO (fallback: mba.malmo.basket@gmail.com).
+ *   - Target mailbox: LEAD_NOTIFY_TO (fallback: teammba040@gmail.com).
  *   - From address: LEAD_NOTIFY_FROM (fallback: leads@ifmba.se — requires
  *     the ifmba.se sender to be verified in Resend first, otherwise the
  *     email send silently fails and we just return ok:true from the write).
@@ -41,6 +41,14 @@ function clean(s: unknown, max: number): string {
 
 function isEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)
+}
+
+function escHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 export async function POST(req: Request) {
@@ -92,7 +100,7 @@ export async function POST(req: Request) {
     // eslint-disable-next-line no-console
     console.error('[sponsor-lead] Sanity write env missing', { hasProjectId: !!projectId, hasToken: !!token })
     return NextResponse.json(
-      { ok: false, error: 'Serverkonfiguration saknas. Kontakta oss direkt på mba.malmo.basket@gmail.com.' },
+      { ok: false, error: 'Serverkonfiguration saknas. Kontakta oss direkt på teammba040@gmail.com.' },
       { status: 500 },
     )
   }
@@ -133,16 +141,16 @@ export async function POST(req: Request) {
   // in Sanity and Cris can see it at /studio.
   const resendKey = process.env.RESEND_API_KEY
   if (resendKey) {
-    const to = process.env.LEAD_NOTIFY_TO || 'mba.malmo.basket@gmail.com'
+    const to = process.env.LEAD_NOTIFY_TO || 'teammba040@gmail.com'
     const from = process.env.LEAD_NOTIFY_FROM || 'leads@ifmba.se'
     const subject = `Ny sponsor-lead: ${company} (${tier})`
     const html = `
       <h2>Ny sponsor-lead</h2>
-      <p><strong>${company}</strong> — ${name} &lt;<a href="mailto:${email}">${email}</a>&gt;</p>
+      <p><strong>${escHtml(company)}</strong> — ${escHtml(name)} &lt;<a href="mailto:${escHtml(email)}">${escHtml(email)}</a>&gt;</p>
       <table style="border-collapse:collapse">
-        <tr><td style="padding:4px 10px"><b>Tier</b></td><td style="padding:4px 10px">${tier}</td></tr>
-        <tr><td style="padding:4px 10px"><b>Budget</b></td><td style="padding:4px 10px">${budget}</td></tr>
-        ${phone ? `<tr><td style="padding:4px 10px"><b>Phone</b></td><td style="padding:4px 10px">${phone}</td></tr>` : ''}
+        <tr><td style="padding:4px 10px"><b>Tier</b></td><td style="padding:4px 10px">${escHtml(tier)}</td></tr>
+        <tr><td style="padding:4px 10px"><b>Budget</b></td><td style="padding:4px 10px">${escHtml(budget)}</td></tr>
+        ${phone ? `<tr><td style="padding:4px 10px"><b>Phone</b></td><td style="padding:4px 10px">${escHtml(phone)}</td></tr>` : ''}
       </table>
       ${message ? `<h3>Meddelande</h3><pre style="white-space:pre-wrap;font-family:inherit">${message.replace(/</g, '&lt;')}</pre>` : ''}
       <p style="color:#777;font-size:12px">Sanity doc id: ${created._id}</p>

@@ -29,7 +29,7 @@ export default async function PrivacyPage() {
     safeFetch<any>(QUERIES.settings, null),
     safeFetch<any[]>(QUERIES.courts, []),
   ])
-  const contactEmail = settings?.contactEmail || 'mba.malmo.basket@gmail.com'
+  const contactEmail = settings?.contactEmail || 'teammba040@gmail.com'
 
   return (
     <>

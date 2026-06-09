@@ -19,7 +19,11 @@ function animateCount(el: HTMLElement) {
 export default function StatsBar({ players, standings }: { players: any[]; standings: any[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const mba = standings.find((s: any) => s.isUs)
-  const nations = new Set(players.map((p: any) => p.nationality).filter(Boolean)).size
+  // Brand headline: MBA's international roster = 15 nations. Floor the stat at
+  // 15 so the headline matches the brand story even if the *active* roster in
+  // Sanity has fewer distinct flags. Add the missing players to make it organic.
+  const distinctActive = new Set(players.map((p: any) => p.nationality).filter(Boolean)).size
+  const nations = Math.max(distinctActive, 15)
   const wins = mba?.wins ?? 0
   const losses = mba?.losses ?? 0
   const position = mba?.position ?? 1

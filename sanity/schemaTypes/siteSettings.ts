@@ -5,14 +5,14 @@ export default defineType({
   title: 'Site Settings',
   type: 'document',
   fields: [
-    defineField({name: 'heroTaglineSv', title: 'Hero Tagline (Swedish)', type: 'string', initialValue: 'Inte bara ett lag — en familj, en rörelse, en stad. 9 nationer. 1 tröja. Malmös streetball headquarters.'}),
-    defineField({name: 'heroTaglineEn', title: 'Hero Tagline (English)', type: 'string', initialValue: 'Not just a team — a family, a movement, a city. 9 nations. 1 jersey. Malmö\'s streetball headquarters.'}),
+    defineField({name: 'heroTaglineSv', title: 'Hero Tagline (Swedish)', type: 'string', initialValue: 'Inte bara ett lag — en familj, en rörelse, en stad. 15 nationer. 1 tröja. Malmös streetball headquarters.'}),
+    defineField({name: 'heroTaglineEn', title: 'Hero Tagline (English)', type: 'string', initialValue: 'Not just a team — a family, a movement, a city. 15 nations. 1 jersey. Malmö\'s streetball headquarters.'}),
     defineField({name: 'season', title: 'Season', type: 'string', initialValue: '2025/26'}),
     defineField({name: 'division', title: 'Division', type: 'string', initialValue: 'Div 3 Skåne'}),
     defineField({name: 'heroImage', title: 'Hero Background Image', type: 'image'}),
     defineField({name: 'aboutTextSv', title: 'About Text (Swedish)', type: 'text'}),
     defineField({name: 'aboutTextEn', title: 'About Text (English)', type: 'text'}),
-    defineField({name: 'contactEmail', title: 'Contact Email', type: 'string', initialValue: 'mba.malmo.basket@gmail.com'}),
+    defineField({name: 'contactEmail', title: 'Contact Email', type: 'string', initialValue: 'teammba040@gmail.com'}),
     // ── Social media URLs. Paste full https://... links here.
     // Each one is optional — Footer only renders an icon for platforms
     // that have a non-empty URL, so leaving a field blank hides that icon.
@@ -90,7 +90,7 @@ export default defineType({
       name: 'gearContactEmail',
       title: 'Gear Donations Contact Email',
       type: 'string',
-      initialValue: 'mba.malmo.basket@gmail.com',
+      initialValue: 'teammba040@gmail.com',
       description: 'Email donors message to arrange handoff. Defaults to the club Gmail; once a dedicated alias like gear@ifmba.se is set up, paste that instead.',
     }),
     defineField({

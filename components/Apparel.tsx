@@ -132,7 +132,7 @@ export default function Apparel({
                   <div className="ap-price">{card.price}</div>
                   <a
                     className="ap-cta"
-                    href="/anslut"
+                    href="/butik"
                     aria-label={`Shop ${card.name}`}
                   >
                     Shop →

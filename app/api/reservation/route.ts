@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       hasToken: !!token,
     })
     return NextResponse.json(
-      { ok: false, error: 'Serverkonfiguration saknas. Maila oss på mba.malmo.basket@gmail.com.' },
+      { ok: false, error: 'Serverkonfiguration saknas. Maila oss på teammba040@gmail.com.' },
       { status: 500 },
     )
   }
@@ -147,7 +147,7 @@ export async function POST(req: Request) {
   // ── Email #1 — admin notification to Cris ──────────────────────────
   const resendKey = process.env.RESEND_API_KEY
   if (resendKey) {
-    const adminTo = process.env.RESERVATION_NOTIFY_TO || process.env.LEAD_NOTIFY_TO || 'mba.malmo.basket@gmail.com'
+    const adminTo = process.env.RESERVATION_NOTIFY_TO || process.env.LEAD_NOTIFY_TO || 'teammba040@gmail.com'
     const adminFrom = process.env.RESERVATION_NOTIFY_FROM || process.env.LEAD_NOTIFY_FROM || 'orders@ifmba.se'
     const adminSubject = `🛍️ Ny reservation: ${quantity}× ${product.name}`
     const subTotalSek = (product.priceSek || 0) * quantity
@@ -195,7 +195,7 @@ export async function POST(req: Request) {
         </table>
         <p style="color:#444;margin-top:24px">100 % av vinsten går tillbaka till klubben — tröjor, hallhyra, resor.</p>
         <hr style="border:0;border-top:1px solid #eee;margin:24px 0">
-        <p style="color:#777;font-size:12px">Frågor? Svara på det här mejlet eller skriv till <a href="mailto:mba.malmo.basket@gmail.com">mba.malmo.basket@gmail.com</a></p>
+        <p style="color:#777;font-size:12px">Frågor? Svara på det här mejlet eller skriv till <a href="mailto:teammba040@gmail.com">teammba040@gmail.com</a></p>
         <p style="color:#777;font-size:12px">IFK Malmö Basket · <a href="https://ifmba.se">ifmba.se</a></p>
       </div>
     `

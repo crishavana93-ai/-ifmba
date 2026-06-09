@@ -13,7 +13,7 @@ import { I18nProvider } from '@/lib/i18n'
 const SITE_URL = 'https://www.ifmba.se'
 const SITE_TITLE = 'MBA — Malmö Basket'
 const SITE_DESC =
-  'Malmös internationella basketfamilj. 9 nationer. 1 tröja. Div 3 Skåne.'
+  'Malmös internationella basketfamilj. 15 nationer. 1 tröja. Div 3 Skåne.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -116,7 +116,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   addressCountry: 'SE',
                 },
               },
-              email: 'mba.malmo.basket@gmail.com',
+              email: 'teammba040@gmail.com',
               // Profixio — Div 3 Skåne Herr 2025/26 (MBA's current league).
               sameAs: ['https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117'],
             }),

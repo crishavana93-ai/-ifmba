@@ -1,8 +1,8 @@
 /**
  * POST /api/ingest-news
  *
- * Secured RSS ingestion endpoint. Called by Vercel Cron every 30 minutes
- * (see vercel.json) to pull fresh basketball headlines from SBBF + SVT
+ * Secured RSS ingestion endpoint. Called by Vercel Cron once daily at 05:00 UTC
+ * (see vercel.json — Hobby plan only permits daily crons) to pull SBBF + SVT
  * and write them into the swedenNews Sanity schema.
  *
  * Also supports GET for manual debugging in a browser, but both verbs require

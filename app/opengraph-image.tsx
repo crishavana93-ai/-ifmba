@@ -69,7 +69,7 @@ export default async function OG() {
               maxWidth: 940,
             }}
           >
-            Malmös internationella basketfamilj — 9 nationer, 1 tröja.
+            Malmös internationella basketfamilj — 15 nationer, 1 tröja.
           </div>
         </div>
 

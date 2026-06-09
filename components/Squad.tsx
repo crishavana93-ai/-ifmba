@@ -17,10 +17,10 @@ export default function Squad({
       id="squad"
     >
       <div className="contain">
-        <div className="label r">Säsong 2025/26 · 9 nationer</div>
+        <div className="label r">Säsong 2025/26 · 15 nationer</div>
         <h2
           className="title r"
-          dangerouslySetInnerHTML={{ __html: '9 Nationer, <em>ett lag</em>' }}
+          dangerouslySetInnerHTML={{ __html: '15 Nationer, <em>ett lag</em>' }}
         />
         <div className="ribbon-wrap" style={{ marginTop: 'clamp(24px,3vw,40px)' }}>
           <div

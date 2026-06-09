@@ -62,7 +62,7 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
         <h2 className="title r">Bli en del av <em>familjen</em></h2>
 
         <p className="sp-intro r">
-          MBA är <strong>Malmös mest internationella basketlag</strong> — 9 nationer, 1 tröja,
+          MBA är <strong>Malmös mest internationella basketlag</strong> — 15 nationer, 1 tröja,
           en oslagen säsong. Vi växer snabbt i Skåne och söker partners som delar värderingarna:
           gemenskap, disciplin och kärleken till spelet.
           Nå en internationell publik, stötta lokal idrott, och bli synlig där det händer.
@@ -110,7 +110,7 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
 
                 <a
                   className="tier-cta"
-                  href={`mailto:mba.malmo.basket@gmail.com?subject=MBA%20${tier.key}%20Partnership`}
+                  href={`mailto:teammba040@gmail.com?subject=MBA%20${tier.key}%20Partnership`}
                 >
                   Boka samtal
                 </a>
@@ -133,7 +133,7 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
             </a>
             <a
               className="btn-cta btn-cta-ghost"
-              href="mailto:mba.malmo.basket@gmail.com?subject=MBA%20Partnership%20Inquiry"
+              href="mailto:teammba040@gmail.com?subject=MBA%20Partnership%20Inquiry"
             >
               Kontakta oss
             </a>

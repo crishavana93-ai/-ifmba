@@ -16,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'MBA — Malmö Basket',
     short_name: 'MBA',
     description:
-      'Malmös internationella basketfamilj. 9 nationer. 1 tröja. Div 3 Skåne → Div 2 2026/27.',
+      'Malmös internationella basketfamilj. 15 nationer. 1 tröja. Div 3 Skåne → Div 2 2026/27.',
     start_url: '/',
     scope: '/',
     display: 'standalone',

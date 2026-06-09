@@ -96,7 +96,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
     { label: 'TikTok',    url: settings?.tiktokUrl,    Icon: IconTikTok    },
     { label: 'YouTube',   url: settings?.youtubeUrl,   Icon: IconYouTube   },
   ]
-  const contactEmail = settings?.contactEmail || 'mba.malmo.basket@gmail.com'
+  const contactEmail = settings?.contactEmail || 'teammba040@gmail.com'
 
   return (
     <footer className="foot">
@@ -109,7 +109,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
                 <div className="foot-brand-tag">Malmö Basket Amatörer</div>
               </div>
             </div>
-            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 9 nationer, 1 tröja. Uppflyttade till Div 2 Skåne Herr 2026/27.</div>
+            <div className="foot-brand-sub">Malmös mest internationella basketfamilj. 15 nationer, 1 tröja. Uppflyttade till Div 2 Skåne Herr 2026/27.</div>
             <div className="foot-nl-wrap">
               {/* Hidden honeypot — real users never fill this. */}
               <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>

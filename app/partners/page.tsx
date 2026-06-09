@@ -107,14 +107,14 @@ export default async function PartnersPage() {
             Bli en del av <em>familjen</em>
           </h1>
           <p className="page-lede r v">
-            MBA är <strong>Malmös mest internationella basketlag</strong> — 9 nationer,
+            MBA är <strong>Malmös mest internationella basketlag</strong> — 15 nationer,
             1 tröja, och nyuppflyttade till Div 2 Skåne Herr. Vi söker partners som
             delar värderingarna: gemenskap, disciplin och kärleken till spelet.
           </p>
           <div className="page-hero-cta r v">
             <a
               className="btn-cta"
-              href="mailto:mba.malmo.basket@gmail.com?subject=MBA%20Partnership%20Inquiry"
+              href="mailto:teammba040@gmail.com?subject=MBA%20Partnership%20Inquiry"
             >
               Kontakta oss
             </a>
@@ -216,7 +216,7 @@ export default async function PartnersPage() {
                   )}
                   <a
                     className="tier-cta"
-                    href={`mailto:mba.malmo.basket@gmail.com?subject=MBA%20${tier.key}%20Partnership`}
+                    href={`mailto:teammba040@gmail.com?subject=MBA%20${tier.key}%20Partnership`}
                   >
                     Boka samtal
                   </a>

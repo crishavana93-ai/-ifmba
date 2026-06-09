@@ -108,7 +108,7 @@ async function main() {
       publishedAt: '2026-04-01T08:00:00.000Z',
       body: [
         para('Vi söker 4 partners för säsong 2025/26. Från 3 000 kr (Brons) till 25 000 kr (Platinum) — paket skräddarsys.'),
-        para('Kontakt: mba.malmo.basket@gmail.com. Vi återkommer inom 48 timmar med en prospect deck.'),
+        para('Kontakt: teammba040@gmail.com. Vi återkommer inom 48 timmar med en prospect deck.'),
       ],
     },
   ]
@@ -149,9 +149,9 @@ async function main() {
 
   // ── 4. Sponsor placeholders (tier must be: Platinum | Gold | Silver | Bronze) ──
   const sponsors = [
-    { _id: 'sponsor-platinum-available', _type: 'sponsor', name: 'Platinum — plats tillgänglig', tier: 'Platinum', website: 'mailto:mba.malmo.basket@gmail.com?subject=MBA%20Platinum', active: false },
-    { _id: 'sponsor-gold-available',     _type: 'sponsor', name: 'Guld — plats tillgänglig',     tier: 'Gold',     website: 'mailto:mba.malmo.basket@gmail.com?subject=MBA%20Gold',     active: false },
-    { _id: 'sponsor-silver-available',   _type: 'sponsor', name: 'Silver — plats tillgänglig',   tier: 'Silver',   website: 'mailto:mba.malmo.basket@gmail.com?subject=MBA%20Silver',   active: false },
+    { _id: 'sponsor-platinum-available', _type: 'sponsor', name: 'Platinum — plats tillgänglig', tier: 'Platinum', website: 'mailto:teammba040@gmail.com?subject=MBA%20Platinum', active: false },
+    { _id: 'sponsor-gold-available',     _type: 'sponsor', name: 'Guld — plats tillgänglig',     tier: 'Gold',     website: 'mailto:teammba040@gmail.com?subject=MBA%20Gold',     active: false },
+    { _id: 'sponsor-silver-available',   _type: 'sponsor', name: 'Silver — plats tillgänglig',   tier: 'Silver',   website: 'mailto:teammba040@gmail.com?subject=MBA%20Silver',   active: false },
   ]
 
   for (const doc of sponsors) {
