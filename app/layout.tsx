@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import '../styles/mba.css'
 import InstallPrompt from '@/components/InstallPrompt'
 import CookieConsent from '@/components/CookieConsent'
+import PageCurtain from '@/components/PageCurtain'
 import { I18nProvider } from '@/lib/i18n'
 
 // NOTE: Fonts loaded via <link> at runtime instead of next/font/google,
@@ -46,11 +47,11 @@ export const metadata: Metadata = {
   // / Safari / Firefox install to refetch.
   icons: {
     icon: [
-      { url: '/favicon.ico?v=2', sizes: 'any' },
-      { url: '/icon?v=2', type: 'image/png' },
+      { url: '/icon.svg?v=3', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=3', sizes: 'any' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png?v=2', sizes: '180x180' },
+      { url: '/apple-touch-icon.png?v=3', sizes: '180x180' },
     ],
     shortcut: '/favicon.ico?v=2',
   },
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <CookieConsent />
           <InstallPrompt />
+          {process.env.NEXT_PUBLIC_CINEMATIC === '1' && <PageCurtain />}
         </I18nProvider>
         <script
           type="application/ld+json"

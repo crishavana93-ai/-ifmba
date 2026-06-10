@@ -25,7 +25,7 @@ export const revalidate = 60
 export const metadata: Metadata = {
   title: 'Bli medlem — MBA · Malmö Basket',
   description:
-    'Tre vägar in i MBA: U-10 för barn, Casual Games för vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 500 kr.',
+    'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
   alternates: { canonical: '/anslut' },
 }
 
@@ -46,26 +46,6 @@ type Track = {
 
 const TRACKS: Track[] = [
   {
-    key: 'u10',
-    badge: '🏀 U-10',
-    name: 'MBA U-10',
-    headline: 'Första stegen på planen',
-    subhead:
-      'Grundläggande basketträning för barn mellan 7 och 10 år. Fokus på glädje, koordination och lagkänsla — inga tidigare erfarenheter krävs.',
-    bullets: [
-      'Certifierade ungdomsledare',
-      'Tis + tor kl. 17:00 · Latinskolans sporthall',
-      'Glädjefokuserat upplägg — match är på gång',
-      'Föräldragrupp och social gemenskap kring laget',
-    ],
-    fee: '500 kr',
-    feeUnit: '/ termin',
-    schedule: 'Tis & Tor · 17:00 – 18:30',
-    audience: 'Barn 7–10 år',
-    mailtoSubject: 'Anmäl barn till MBA U-10',
-    accent: 'sky',
-  },
-  {
     key: 'casual',
     badge: '🔥 Casual',
     name: 'Casual Games',
@@ -78,7 +58,7 @@ const TRACKS: Track[] = [
       'Söndagar kl. 18:00 · Latinskolan',
       'Perfekt om du vill hitta community utan att commita till en säsong',
     ],
-    fee: '500 kr',
+    fee: '750 kr',
     feeUnit: '/ termin',
     schedule: 'Söndagar · 18:00 – 20:00',
     audience: 'Vuxna, alla nivåer',
@@ -98,7 +78,7 @@ const TRACKS: Track[] = [
       'Tröja, uppvärmning och matchkit ingår',
       'Resor till bortamatcher i Skåne organiseras av klubben',
     ],
-    fee: '500 kr',
+    fee: '2000 kr',
     feeUnit: '/ säsong',
     schedule: 'Mån + Ons · 19:30 – 21:30 + helgmatcher',
     audience: 'Män 18+, erfaren basket',
@@ -207,7 +187,7 @@ export default async function AnslutPage() {
               <h3>Hur hanteras avgiften?</h3>
               <p>
                 Avgiften faktureras via Swish efter intresseanmälan och
-                inskrivning. Syskonrabatt finns för U-10.
+                inskrivning.
               </p>
             </div>
             <div className="join-faq-item">

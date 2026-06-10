@@ -3,7 +3,6 @@ import Loader from '@/components/Loader'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 // Drop (next tip-off split) retired 2026-04-24 — rendered empty without nextMatchDate.
-import Marquee from '@/components/Marquee'
 import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
 import Journey from '@/components/Journey'
@@ -31,6 +30,9 @@ import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
 import ScrollProgress from '@/components/ScrollProgress'
 import BackToTop from '@/components/BackToTop'
+import CinematicScroll from '@/components/CinematicScroll'
+import BannerTape from '@/components/BannerTape'
+import TeamCollage from '@/components/TeamCollage'
 
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
@@ -46,6 +48,7 @@ export default async function Home() {
     settings,
     media,
     swedenNews,
+    shopProducts,
   ] = await Promise.all([
     safeFetch<any[]>(QUERIES.players, []),
     safeFetch<any[]>(QUERIES.standings, []),
@@ -55,6 +58,7 @@ export default async function Home() {
     safeFetch<any>(QUERIES.settings, null),
     safeFetch<any[]>(QUERIES.mediaAll, []),
     safeFetch<any[]>(QUERIES.swedenNews, []),
+    safeFetch<any[]>(QUERIES.shopProducts, []),
   ])
 
   // Prediction data — fetched separately so the homepage still renders if
@@ -65,6 +69,12 @@ export default async function Home() {
     safeFetch<any>(QUERIES.predictionLatestFinal, null),
   ])
 
+  const CINE = process.env.NEXT_PUBLIC_CINEMATIC === '1'
+  const teamPhotos = (media || [])
+    .filter((m: any) => m?.imageUrl && m?.kind !== 'video' &&
+      ['team', 'fans', 'gameday', 'matchday', 'community'].includes(m?.category))
+    .map((m: any) => m.imageUrl)
+
   return (
     <>
       <Loader />
@@ -73,6 +83,7 @@ export default async function Home() {
       <Navbar />
 
       <main id="main">
+      {process.env.NEXT_PUBLIC_CINEMATIC === '1' && <CinematicScroll />}
       {/* HERO — 3-line MALMÖ / BASKET / AMATÖRER */}
       <Hero settings={settings} />
 
@@ -81,7 +92,7 @@ export default async function Home() {
           Sanity. Component kept in /components in case we revive a
           match-day countdown on a future match page. */}
 
-      <Marquee />
+      <BannerTape />
 
       {/* 01 · IDENTITY (dark) — wrapped in ScrollReveal so the `.r` children
           (label, title, body, flags) actually fade in. Without this wrapper
@@ -91,10 +102,14 @@ export default async function Home() {
         <About settings={settings} num="01" numText="IDENTITY" className="section-dark" />
       </ScrollReveal>
 
-      {/* 02 · SEASON IN PHOTOS (alt) */}
+      {/* 02 · SEASON IN PHOTOS — stacking cards (cinematic) else grid */}
+      {CINE ? (
+        <TeamCollage images={teamPhotos} label="02 · SÄSONGEN I BILDER" title="FAMILJEN" />
+      ) : (
       <ScrollReveal>
         <MediaWall media={media} num="02" numText="SEASON IN PHOTOS" className="section-alt" />
       </ScrollReveal>
+      )}
 
       {/* 03 · TOP PLAYS (dark) */}
       <ScrollReveal>
@@ -152,7 +167,7 @@ export default async function Home() {
 
       {/* 08 · APPAREL (alt) */}
       <ScrollReveal>
-        <Apparel media={media} num="09" numText="APPAREL" className="section-alt" />
+        <Apparel products={shopProducts} media={media} num="09" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
       {/* 09 · VÅR RESA (dark) */}

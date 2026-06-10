@@ -22,11 +22,11 @@ const NEW_EMAIL = 'teammba040@gmail.com'
 // ── Fill these in once you've confirmed each player's real nationality. ──
 // Key = player _id (run `node sanity/list-players.mjs` to get ids).
 // Leave empty {} to only do the email + tagline fixes.
-const PLAYER_FIXES = {
-  // 'player-xxxx': { nationality: 'Kosovo',  flag: '🇽🇰' },  // Hekuran Pireva (was "Albenia")
-  // 'player-yyyy': { nationality: 'Albania', flag: '🇦🇱' },  // Anti Zeinelchotza (was "Greece")
-  // 'player-zzzz': { nationality: 'Cuba',    flag: '🇨🇺' },  // C. Ortiz Suárez (was "Cuban")
-}
+const PLAYER_FIXES_BY_NUMBER = [
+  { number: 1,  nationality: 'Kosovo',  flag: '🇽🇰' }, // Hekuran Pireva (was "Albenia" + wrong)
+  { number: 34, nationality: 'Albania', flag: '🇦🇱' }, // Anti Zeinelchotza (was labelled "Greece")
+  { number: 77, nationality: 'Cuba',    flag: '🇨🇺' }, // Cristian Ortiz Suárez (was "Cuban")
+]
 
 function fix9to15(v) {
   if (typeof v !== 'string') return v
@@ -84,20 +84,24 @@ async function main() {
     console.log(`   #${p.number ?? '?'} ${p.firstName || ''} ${p.lastName || ''} · ${p.flag || '∅'} "${p.nationality || ''}" id=${p._id}${tag}`)
   }
 
-  // 3b — apply confirmed player fixes
-  const ids = Object.keys(PLAYER_FIXES)
-  if (ids.length) {
-    console.log('\n▸ Applying PLAYER_FIXES:')
-    for (const id of ids) {
-      const fix = PLAYER_FIXES[id]
-      console.log(`   ${id} -> ${JSON.stringify(fix)}`)
-      if (APPLY) {
-        await client.patch(id).set(fix).commit()
-        console.log('   ✓ written')
+  // 3b — apply confirmed player fixes, matched by jersey number so we catch
+  // BOTH the published doc and any draft (drafts.player-N) with the same number.
+  if (PLAYER_FIXES_BY_NUMBER.length) {
+    console.log('\n▸ Applying roster fixes (by jersey number, incl. drafts):')
+    for (const fix of PLAYER_FIXES_BY_NUMBER) {
+      const docs = await client.fetch(
+        `*[_type=="player" && number == $n]{_id, firstName, lastName, nationality, flag}`,
+        { n: fix.number },
+      )
+      if (!docs.length) { console.log(`   ⚠ no player with #${fix.number} found`); continue }
+      for (const d of docs) {
+        console.log(`   #${fix.number} ${d.firstName||''} ${d.lastName||''}: ${d.flag||'∅'}"${d.nationality||''}" -> ${fix.flag}"${fix.nationality}"  (${d._id})`)
+        if (APPLY) {
+          await client.patch(d._id).set({ nationality: fix.nationality, flag: fix.flag }).commit()
+          console.log('     ✓ written')
+        }
       }
     }
-  } else {
-    console.log('\n(ℹ PLAYER_FIXES is empty — fill it with confirmed nationalities to auto-fix, or edit each player in /studio.)')
   }
 
   console.log('\nDone.')
