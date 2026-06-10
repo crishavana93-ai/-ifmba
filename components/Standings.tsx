@@ -26,18 +26,20 @@ export default function Standings({
 }) {
   const [tab, setTab] = useState<'div3' | 'div2'>('div3')
 
-  // ── Div 3 Skåne Herr · 2025/26 — current season ─────────────────────
-  // MBA at 7-0 (undefeated, top of the table). Other teams' GP shifted
-  // upward to keep the table internally consistent (most teams now ~7 GP).
+  // ── Div 3 Skåne Herr · 2025/26 — VÅR (spring) final standings ────────
+  // MBA won the spring grundserie undefeated 7-0 (+190), sealing promotion
+  // to Div 2. Source: Profixio leagueid17491, category 1176149 (2026-06-09).
+  // (Live data comes from Sanity `standing` docs; this is the build-time
+  // fallback so the table is correct even before the seed script runs.)
   const div3Sample: Row[] = [
     { team: 'Malmö Basket Amatörer', position: 1, wins: 7, losses: 0, points: 14, isUs: true },
-    { team: 'Team4Q Div3', position: 2, wins: 5, losses: 2, points: 10 },
+    { team: 'Team4Q Div3', position: 2, wins: 6, losses: 1, points: 12 },
     { team: 'Malmö Ballers', position: 3, wins: 5, losses: 2, points: 10 },
     { team: 'Malbas Motion', position: 4, wins: 4, losses: 3, points: 8 },
     { team: 'Halmstad BC', position: 5, wins: 3, losses: 4, points: 6 },
     { team: 'Helamalmö Basket', position: 6, wins: 2, losses: 5, points: 4 },
-    { team: 'Malbas Vit', position: 7, wins: 1, losses: 6, points: 2 },
-    { team: 'IK Eos Lund HJ', position: 8, wins: 0, losses: 7, points: 0 },
+    { team: 'Malbas Vit', position: 7, wins: 0, losses: 6, points: 0 },
+    { team: 'IK Eos Lund HJ', position: 8, wins: 0, losses: 6, points: 0 },
   ]
 
   const fromSanity = standings || []
@@ -73,7 +75,7 @@ export default function Standings({
             onClick={() => setTab('div3')}
           >
             Div 3 Skåne Herr · 2025/26
-            <span className="st-tab-meta">Pågående säsong</span>
+            <span className="st-tab-meta">Vår · slutställning</span>
           </button>
           <button
             type="button"
@@ -124,7 +126,7 @@ export default function Standings({
               target="_blank"
               rel="noopener"
             >
-              ⚡ Profixio · Div 3 live-data
+              ⚡ Profixio · Div 3 Skåne (vår slutställning)
             </a>
           </>
         )}

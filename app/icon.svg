@@ -1,0 +1,48 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MBA — Malmö Basket">
+  <defs>
+    <linearGradient id="navy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a5cab"/>
+      <stop offset="1" stop-color="#14315c"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd23d"/>
+      <stop offset="1" stop-color="#e8a400"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16213b"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background disc so the crest reads on light browser tabs -->
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="url(#bgGrad)"/>
+
+  <!-- shield -->
+  <g>
+    <path d="M256 56 L432 110 V250 C432 352 352 426 256 460 C160 426 80 352 80 250 V110 Z"
+          fill="url(#gold)"/>
+    <path d="M256 86 L406 132 V250 C406 338 338 402 256 432 C174 402 106 338 106 250 V132 Z"
+          fill="url(#navy)" stroke="#0e2548" stroke-width="4"/>
+
+    <!-- gear ring (cog) behind the basketball -->
+    <circle cx="256" cy="205" r="92"
+            fill="none" stroke="url(#gold)" stroke-width="20"
+            stroke-dasharray="20 18" stroke-linecap="butt"/>
+    <circle cx="256" cy="205" r="74" fill="none" stroke="url(#gold)" stroke-width="8"/>
+
+    <!-- basketball -->
+    <circle cx="256" cy="205" r="62" fill="url(#navy)" stroke="url(#gold)" stroke-width="9"/>
+    <g stroke="url(#gold)" stroke-width="8" fill="none" stroke-linecap="round">
+      <line x1="256" y1="143" x2="256" y2="267"/>
+      <line x1="194" y1="205" x2="318" y2="205"/>
+      <path d="M210 152 C236 184 236 226 210 258"/>
+      <path d="M302 152 C276 184 276 226 302 258"/>
+    </g>
+
+    <!-- MBA banner -->
+    <rect x="150" y="318" width="212" height="76" rx="14" fill="url(#gold)"/>
+    <text x="256" y="376" text-anchor="middle"
+          font-family="Arial Black, Arial, sans-serif" font-weight="900"
+          font-size="62" letter-spacing="2" fill="#14315c">MBA</text>
+  </g>
+</svg>
