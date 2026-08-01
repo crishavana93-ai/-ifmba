@@ -5,7 +5,10 @@
  * `dropshipProduct` documents (QUERIES.shopProducts) so the landing page always
  * matches what's actually for sale. Each card links to /butik#<slug>.
  * Falls back to legacy media cards only if the shop has no products yet.
+ * Perf (2026-08-01): images render as ~640px CDN thumbnails, lazy-loaded.
  */
+
+import { thumb } from '@/lib/sanity'
 
 type Product = {
   _id: string
@@ -73,7 +76,7 @@ export default function Apparel({
                       {p.tag && <span className="ap-tag">{p.tag}</span>}
                       {img ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={img} alt={p.name} />
+                        <img src={thumb(img, 640)} alt={p.name} loading="lazy" decoding="async" />
                       ) : (
                         <div className="ap-photo-empty">Photo pending</div>
                       )}
@@ -99,7 +102,7 @@ export default function Apparel({
                       {card.tag && <span className="ap-tag">{card.tag}</span>}
                       {img ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={img} alt={asset?.captionEn || asset?.title || card.name} />
+                        <img src={thumb(img, 640)} alt={asset?.captionEn || asset?.title || card.name} loading="lazy" decoding="async" />
                       ) : (
                         <div className="ap-photo-empty">Photo pending</div>
                       )}

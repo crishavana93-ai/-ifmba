@@ -18,6 +18,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { thumb } from '@/lib/sanity'
 
 type Player = {
   _id?: string
@@ -169,7 +170,7 @@ function Ballot({
                 <div className="ballot-card-img">
                   {p.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.photoUrl} alt={`${p.firstName} ${p.lastName}`} />
+                    <img src={thumb(p.photoUrl, 400)} alt={`${p.firstName} ${p.lastName}`} loading="lazy" decoding="async" />
                   ) : (
                     <div className="ballot-card-img-fallback">#{p.number}</div>
                   )}

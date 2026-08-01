@@ -12,11 +12,14 @@
  *     mousewheel/drag-to-scroll. Cards all share one size so the rail
  *     looks symmetrical regardless of clip count.
  *   - Placeholder tiles fill the tail so the rail never looks empty.
+ *   - Perf (2026-08-01): slides preload NOTHING (poster only, thumbnail-sized);
+ *     the IntersectionObserver starts playback only when a slide is visible.
  */
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import VideoModal from './VideoModal'
+import { thumb } from '@/lib/sanity'
 
 type MediaRow = {
   _id: string
@@ -165,7 +168,7 @@ export default function Highlights({
       {playing && (
         <VideoModal
           src={playing.videoUrl!}
-          poster={playing.posterUrl || undefined}
+          poster={thumb(playing.posterUrl, 1280)}
           title={playing.captionSv || playing.captionEn || playing.title}
           onClose={() => setPlaying(null)}
         />
@@ -207,11 +210,11 @@ function HighlightSlide({ clip, onOpen }: { clip: MediaRow; onOpen: () => void }
       <video
         ref={ref}
         src={clip.videoUrl!}
-        poster={clip.posterUrl || undefined}
+        poster={thumb(clip.posterUrl, 640)}
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
       />
       <div className="hl-slide-overlay" aria-hidden="true">
         <span className="hl-slide-play">▶</span>
