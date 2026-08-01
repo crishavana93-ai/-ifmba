@@ -26,6 +26,7 @@
  */
 
 import { useLang } from '@/lib/i18n'
+import { thumb } from '@/lib/sanity'
 
 type Settings = {
   gearContactEmail?: string
@@ -205,7 +206,7 @@ export default function GearDonations({
               {photos.map((p) => (
                 <figure key={p._id} className="gd-photo">
                   <img
-                    src={p.imageUrl!}
+                    src={thumb(p.imageUrl, 640)!}
                     alt={(lang === 'en' ? p.captionEn : p.captionSv) || p.title || ''}
                     loading="lazy"
                     decoding="async"

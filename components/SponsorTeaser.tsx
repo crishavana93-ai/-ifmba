@@ -45,7 +45,7 @@ export default function SponsorTeaser({
 
         <div className="sponsor-teaser-stats r">
           <div>
-            <span className="sts-num">9</span>
+            <span className="sts-num">15</span>
             <span className="sts-lbl">nationer</span>
           </div>
           <div>

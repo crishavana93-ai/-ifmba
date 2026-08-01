@@ -72,7 +72,7 @@ export default function SponsorLeadForm() {
 
   if (status === 'success') {
     return (
-      <div className="lead-success r">
+      <div className="lead-success r v">
         <div className="lead-success-icon" aria-hidden="true">✓</div>
         <h3>Tack — vi hör av oss.</h3>
         <p>
@@ -91,7 +91,7 @@ export default function SponsorLeadForm() {
   }
 
   return (
-    <form className="lead-form r" onSubmit={submit} noValidate>
+    <form className="lead-form r v" onSubmit={submit} noValidate>
       {/* Honeypot — visually hidden but present in the DOM. */}
       <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
         <label>Website (lämna tomt)

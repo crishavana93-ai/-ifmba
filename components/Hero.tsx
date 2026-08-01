@@ -13,10 +13,10 @@ function fmtSweDate(d: Date) {
 export default function Hero({ settings }: { settings: any }) {
   const t = useT()
   const heroUrl = settings?.heroImage
-    ? urlFor(settings.heroImage).width(1920).quality(85).url()
+    ? urlFor(settings.heroImage).width(1920).quality(80).auto('format').url()
     : '/mba_family_hero.jpeg'
 
-  const season = settings?.season || '2025/26'
+  const season = settings?.season || '2026/27'
   const division = settings?.division || 'Div 2 Skåne · Uppflyttade'
   const nextMatchDate: string | undefined = settings?.nextMatchDate
   const nextOpp: string | undefined = settings?.nextMatchOpponent || 'IK Eos Lund HJ'
@@ -52,6 +52,8 @@ export default function Hero({ settings }: { settings: any }) {
           className="hero-fallback"
           src={heroUrl}
           alt="MBA Basketball — The Family"
+          fetchPriority="high"
+          decoding="async"
         />
       </div>
       <div className="hero-overlay" />

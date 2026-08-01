@@ -255,7 +255,7 @@ export default async function PartnersPage() {
           </h2>
           <div className="partners-why">
             <div className="partners-why-item r v">
-              <div className="partners-why-num">9</div>
+              <div className="partners-why-num">15</div>
               <div className="partners-why-lbl">Nationer</div>
               <p>
                 Publiken sträcker sig från Malmö till Atén, Lagos, Manila och Mexiko
@@ -266,7 +266,7 @@ export default async function PartnersPage() {
               <div className="partners-why-num">Div 2</div>
               <div className="partners-why-lbl">Nyuppflyttade</div>
               <p>
-                Vi går in i 2025/26 efter obesegrad säsong. Ni syns när laget är på
+                Vi går in i 2026/27 efter en obesegrad säsong. Ni syns när laget är på
                 uppgång — maximal mediauppmärksamhet.
               </p>
             </div>

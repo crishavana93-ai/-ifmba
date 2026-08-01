@@ -23,7 +23,7 @@ import { safeFetch, QUERIES } from '@/lib/sanity'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Bli medlem — MBA · Malmö Basket',
+  title: 'Spela basket i Malmö — Bli medlem | MBA Malmö Basket',
   description:
     'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
   alternates: { canonical: '/anslut' },
@@ -105,7 +105,7 @@ export default async function AnslutPage() {
         <div className="contain">
           <div className="label r v">Bli medlem</div>
           <h1 className="title r v" style={{ marginBottom: '18px' }}>
-            Tre vägar <em>in i familjen</em>
+            Två vägar <em>in i familjen</em>
           </h1>
           <p className="page-lede r v">
             MBA är inte bara ett lag. Vi är en klubb för barn som tar sina

@@ -7,8 +7,8 @@ export default defineType({
   fields: [
     defineField({name: 'heroTaglineSv', title: 'Hero Tagline (Swedish)', type: 'string', initialValue: 'Inte bara ett lag — en familj, en rörelse, en stad. 15 nationer. 1 tröja. Malmös streetball headquarters.'}),
     defineField({name: 'heroTaglineEn', title: 'Hero Tagline (English)', type: 'string', initialValue: 'Not just a team — a family, a movement, a city. 15 nations. 1 jersey. Malmö\'s streetball headquarters.'}),
-    defineField({name: 'season', title: 'Season', type: 'string', initialValue: '2025/26'}),
-    defineField({name: 'division', title: 'Division', type: 'string', initialValue: 'Div 3 Skåne'}),
+    defineField({name: 'season', title: 'Season', type: 'string', initialValue: '2026/27'}),
+    defineField({name: 'division', title: 'Division', type: 'string', initialValue: 'Div 2 Skåne'}),
     defineField({name: 'heroImage', title: 'Hero Background Image', type: 'image'}),
     defineField({name: 'aboutTextSv', title: 'About Text (Swedish)', type: 'text'}),
     defineField({name: 'aboutTextEn', title: 'About Text (English)', type: 'text'}),
@@ -43,7 +43,7 @@ export default defineType({
       name: 'swishPayee',
       title: 'Swish Payee Name',
       type: 'string',
-      initialValue: 'IFK Malmö Basket',
+      initialValue: 'MBA Malmö Basket',
       description: 'Shown to donor in their banking app after they scan.',
     }),
     defineField({

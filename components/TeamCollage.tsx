@@ -11,6 +11,7 @@
  * Safe: prefers-reduced-motion / GSAP-fail → static scattered collage still shows.
  */
 import { useEffect, useRef, useState } from 'react'
+import { thumb } from '@/lib/sanity'
 
 const SPOTS = [
   { l: 3,  t: 12, w: 19, r: -7, d: 80 },
@@ -114,7 +115,7 @@ export default function TeamCollage({
               <div style={{ animation: `tcFloat ${5 + (i % 5) * 0.7}s ease-in-out ${i * 0.35}s infinite` }}>
                 <div style={{ transform: `rotate(${sp.r}deg)`, borderRadius: 14, overflow: 'hidden', border: '5px solid #fff', boxShadow: '0 22px 55px rgba(0,0,0,0.55)', background: '#111', transition: 'transform .25s ease' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" style={{ width: '100%', aspectRatio: '4 / 5', objectFit: 'cover', display: 'block' }} />
+                  <img src={thumb(src, 480)} alt="MBA lagfoto" loading="lazy" decoding="async" style={{ width: '100%', aspectRatio: '4 / 5', objectFit: 'cover', display: 'block' }} />
                 </div>
               </div>
             </div>
@@ -131,7 +132,7 @@ export default function TeamCollage({
           style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(8,12,22,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', padding: '4vh' }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={zoom} alt="" style={{ maxWidth: '92vw', maxHeight: '92vh', borderRadius: 12, border: '4px solid #fff', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }} />
+          <img src={thumb(zoom, 1600)} alt="MBA lagfoto (förstorad)" style={{ maxWidth: '92vw', maxHeight: '92vh', borderRadius: 12, border: '4px solid #fff', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }} />
           <button
             onClick={() => setZoom(null)}
             aria-label="Stäng"

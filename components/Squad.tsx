@@ -1,3 +1,4 @@
+import { thumb } from '@/lib/sanity'
 export default function Squad({
   players,
   num,
@@ -17,7 +18,7 @@ export default function Squad({
       id="squad"
     >
       <div className="contain">
-        <div className="label r">Säsong 2025/26 · 15 nationer</div>
+        <div className="label r">Säsong 2026/27 · 15 nationer</div>
         <h2
           className="title r"
           dangerouslySetInnerHTML={{ __html: '15 Nationer, <em>ett lag</em>' }}
@@ -50,7 +51,7 @@ export default function Squad({
                     <div className="card-front">
                       {hasPhoto ? (
                         <img
-                          src={p.photoUrl}
+                          src={thumb(p.photoUrl, 520)}
                           alt={`${p.firstName} ${p.lastName}`}
                           className="card-photo"
                           loading="lazy"

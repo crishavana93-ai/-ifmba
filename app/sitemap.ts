@@ -11,8 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${url}/anslut`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${url}/nyheter`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${url}/hallar`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${url}/#news`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${url}/#standings`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${url}/#squad`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    // Fragment URLs (/#news …) removed 2026-08-01 — invalid in sitemaps,
+    // Google strips them into duplicate "/" entries.
+    { url: `${url}/integritetspolicy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ]
 }

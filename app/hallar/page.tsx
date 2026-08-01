@@ -47,7 +47,7 @@ const FALLBACK_COURTS: Court[] = [
     address: 'Lorensborgsgatan 1, 217 45 Malmö',
     isHome: true,
     description:
-      'MBA:s hemmaarena. Alla hemmamatcher i Div 3 Skåne Herr spelas här, ' +
+      'MBA:s hemmaarena. Alla hemmamatcher i Div 2 Skåne Herr spelas här, ' +
       'liksom den övervägande delen av veckoträningarna.',
   },
 ]
@@ -177,7 +177,7 @@ export default async function HallarPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Profixio · Div 3 Skåne
+              Profixio · Div 2 Skåne
             </a>.
           </p>
         </div>

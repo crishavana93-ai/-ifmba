@@ -12,9 +12,11 @@ import { I18nProvider } from '@/lib/i18n'
 // even if Google Fonts is blocked at runtime.
 
 const SITE_URL = 'https://www.ifmba.se'
-const SITE_TITLE = 'MBA — Malmö Basket'
+const SITE_TITLE = 'MBA — Malmö Basket | Basketklubb i Malmö'
 const SITE_DESC =
-  'Malmös internationella basketfamilj. 15 nationer. 1 tröja. Div 3 Skåne.'
+  'Basketklubb i Malmö — MBA är Malmös mest internationella basketfamilj. ' +
+  '15 nationer, 1 tröja. Herrlag i Div 2 Skåne 2026/27. Spela basket i Malmö, ' +
+  'bli partner eller följ resan.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

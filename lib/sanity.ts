@@ -45,6 +45,13 @@ export async function safeFetch<T>(query: string, fallback: T): Promise<T> {
   }
 }
 
+// ── Sanity CDN thumbnail helper ────────────────────────────────────────
+// The CDN resizes + transcodes for free via query params. ALWAYS wrap raw
+// asset->url values in this before rendering <img>: full-res phone uploads
+// are 3–8 MB; thumb() turns them into ~40–120 KB WebP/AVIF (auto=format).
+export const thumb = (url?: string | null, w = 800) =>
+  url ? `${url}${url.includes('?') ? '&' : '?'}w=${w}&q=75&auto=format` : undefined
+
 // ═══ QUERIES ═══
 export const QUERIES = {
   players: `*[_type == "player" && active == true] | order(number asc){

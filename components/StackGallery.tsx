@@ -1,5 +1,7 @@
 'use client'
 
+import { thumb } from '@/lib/sanity'
+
 /**
  * StackGallery — "cards pile up as you scroll" team-photo section.
  *
@@ -59,7 +61,7 @@ export default function StackGallery({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              <img src={thumb(src, 1200)} alt="MBA lagfoto" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
           </div>
         ))}
