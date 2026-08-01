@@ -189,59 +189,77 @@ export default async function PartnersPage() {
               gap: 'clamp(16px, 2.5vw, 28px)',
             }}
           >
-            {FOUNDING_PARTNERS.map((fp) => (
-              <article
-                key={fp.name}
-                style={{
-                  border: '1px solid rgba(255,255,255,0.10)',
-                  background: 'rgba(255,255,255,0.03)',
-                  padding: 'clamp(24px, 3vw, 40px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '14px',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '11px',
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: 'var(--yellow)',
-                  }}
-                >
-                  Founding partner · {fp.role}
-                </div>
-                <div
-                  style={{
-                    fontSize: 'clamp(26px, 3.4vw, 40px)',
-                    fontWeight: 800,
-                    letterSpacing: '-0.01em',
-                    lineHeight: 1.05,
-                  }}
-                >
-                  {fp.name}
-                </div>
-                <p style={{ opacity: 0.85, lineHeight: 1.65, margin: 0 }}>{fp.story}</p>
-                {fp.url && (
-                  <a
-                    href={fp.url}
-                    target="_blank"
-                    rel="noopener"
+            {/* Whole card is the link (Cris 2026-08-01: "when user clicks
+                turquino or kofi they should be redirected to their website").
+                Cards without a url render as plain articles until we have one. */}
+            {FOUNDING_PARTNERS.map((fp) => {
+              const cardStyle: React.CSSProperties = {
+                border: '1px solid rgba(255,255,255,0.10)',
+                background: 'rgba(255,255,255,0.03)',
+                padding: 'clamp(24px, 3vw, 40px)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px',
+                color: 'inherit',
+                textDecoration: 'none',
+              }
+              const inner = (
+                <>
+                  <div
                     style={{
-                      marginTop: 'auto',
-                      alignSelf: 'flex-start',
-                      fontSize: '13px',
-                      letterSpacing: '0.08em',
+                      fontSize: '11px',
+                      letterSpacing: '0.18em',
                       textTransform: 'uppercase',
-                      borderBottom: '1px solid var(--yellow)',
-                      paddingBottom: '2px',
+                      color: 'var(--yellow)',
                     }}
                   >
-                    Besök {fp.shortName} →
-                  </a>
-                )}
-              </article>
-            ))}
+                    Founding partner · {fp.role}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 'clamp(26px, 3.4vw, 40px)',
+                      fontWeight: 800,
+                      letterSpacing: '-0.01em',
+                      lineHeight: 1.05,
+                    }}
+                  >
+                    {fp.name}
+                  </div>
+                  <p style={{ opacity: 0.85, lineHeight: 1.65, margin: 0 }}>{fp.story}</p>
+                  {fp.url && (
+                    <span
+                      style={{
+                        marginTop: 'auto',
+                        alignSelf: 'flex-start',
+                        fontSize: '13px',
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        borderBottom: '1px solid var(--yellow)',
+                        paddingBottom: '2px',
+                      }}
+                    >
+                      Besök {fp.shortName} →
+                    </span>
+                  )}
+                </>
+              )
+              return fp.url ? (
+                <a
+                  key={fp.name}
+                  href={fp.url}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={`${fp.name} — öppna webbplats`}
+                  style={{ ...cardStyle, cursor: 'pointer' }}
+                >
+                  {inner}
+                </a>
+              ) : (
+                <article key={fp.name} style={cardStyle}>
+                  {inner}
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>
