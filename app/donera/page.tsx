@@ -23,6 +23,14 @@ export const metadata: Metadata = {
   description:
     'Stöd Malmös mest internationella basketfamilj. Donera direkt via Swish — varje krona går till tröjor, hallhyra och resor för säsongen.',
   alternates: { canonical: '/donera' },
+  openGraph: {
+    title: 'Stöd MBA — Donera via Swish · Malmö Basket',
+    description: 'Stöd Malmös mest internationella basketfamilj. Donera direkt via Swish — varje krona går till tröjor, hallhyra och resor för säsongen.',
+    url: '/donera',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
 }
 
 export default async function DoneraPage() {

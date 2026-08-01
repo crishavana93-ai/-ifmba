@@ -31,6 +31,14 @@ export const metadata: Metadata = {
   description:
     'Officiell MBA-utrustning + handplockad Fan Drop. Tröjor, kepsar, t-shirts och accessoarer. Designad i Malmö, levererad från EU.',
   alternates: { canonical: '/butik' },
+  openGraph: {
+    title: 'MBA Shop — Klubbmärke & Fan Drop · Malmö Basket',
+    description: 'Officiell MBA-utrustning + handplockad Fan Drop. Tröjor, kepsar, t-shirts och accessoarer. Designad i Malmö, levererad från EU.',
+    url: '/butik',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
 }
 
 export default async function ButikPage() {
@@ -48,6 +56,39 @@ export default async function ButikPage() {
 
   return (
     <>
+      {/* Product structured data — lets Google show shop items as rich
+          results. Only in-stock products with a price are listed. */}
+      {products.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              itemListElement: products
+                .filter((p) => typeof p.priceSek === 'number' && p.name)
+                .slice(0, 20)
+                .map((p, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  item: {
+                    '@type': 'Product',
+                    name: p.name,
+                    image: p.imageUrl ? `${p.imageUrl}?w=800&auto=format` : undefined,
+                    url: `https://www.ifmba.se/butik${p.slug ? `#${p.slug}` : ''}`,
+                    brand: { '@type': 'Brand', name: 'MBA — Malmö Basket' },
+                    offers: {
+                      '@type': 'Offer',
+                      price: p.priceSek,
+                      priceCurrency: 'SEK',
+                      availability: 'https://schema.org/InStock',
+                    },
+                  },
+                })),
+            }),
+          }}
+        />
+      )}
       <ScrollProgress />
       <BackToTop />
       <Navbar />

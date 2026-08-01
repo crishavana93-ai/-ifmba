@@ -27,6 +27,14 @@ export const metadata: Metadata = {
   description:
     'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
   alternates: { canonical: '/anslut' },
+  openGraph: {
+    title: 'Spela basket i Malmö — Bli medlem | MBA Malmö Basket',
+    description: 'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
+    url: '/anslut',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
 }
 
 type Track = {

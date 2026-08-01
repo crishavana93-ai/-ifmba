@@ -20,6 +20,14 @@ export const metadata: Metadata = {
   description:
     'Alla nyheter och reportage från MBA samt kurerad svensk basket-nyhetsström från SBBF, SVT Sport och FIBA.',
   alternates: { canonical: '/nyheter' },
+  openGraph: {
+    title: 'Nyheter — MBA · Malmö Basket',
+    description: 'Alla nyheter och reportage från MBA samt kurerad svensk basket-nyhetsström från SBBF, SVT Sport och FIBA.',
+    url: '/nyheter',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
 }
 
 function formatDate(iso?: string) {

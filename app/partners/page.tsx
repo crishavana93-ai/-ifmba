@@ -26,6 +26,14 @@ export const metadata: Metadata = {
   description:
     'Bli partner med Malmös mest internationella basketlag. Paket från Bronze till Platinum — exponering, gemenskap, och mätbar räckvidd i Skåne.',
   alternates: { canonical: '/partners' },
+  openGraph: {
+    title: 'Partners — MBA · Malmö Basket',
+    description: 'Bli partner med Malmös mest internationella basketlag. Paket från Bronze till Platinum — exponering, gemenskap, och mätbar räckvidd i Skåne.',
+    url: '/partners',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
 }
 
 type Tier = {

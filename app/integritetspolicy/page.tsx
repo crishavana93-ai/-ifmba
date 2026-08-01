@@ -21,6 +21,14 @@ export const metadata: Metadata = {
   description:
     'Hur MBA — Malmö Basket samlar in, använder och skyddar dina personuppgifter enligt GDPR.',
   alternates: { canonical: '/integritetspolicy' },
+  openGraph: {
+    title: 'Integritetspolicy — MBA · Malmö Basket',
+    description: 'Hur MBA — Malmö Basket samlar in, använder och skyddar dina personuppgifter enligt GDPR.',
+    url: '/integritetspolicy',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
   robots: { index: true, follow: true },
 }
 

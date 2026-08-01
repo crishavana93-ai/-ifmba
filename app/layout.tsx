@@ -4,6 +4,7 @@ import InstallPrompt from '@/components/InstallPrompt'
 import CookieConsent from '@/components/CookieConsent'
 import PageCurtain from '@/components/PageCurtain'
 import { I18nProvider } from '@/lib/i18n'
+import { safeFetch, QUERIES } from '@/lib/sanity'
 
 // NOTE: Fonts loaded via <link> at runtime instead of next/font/google,
 // because next/font requires network access to fonts.googleapis.com AT BUILD TIME —
@@ -66,7 +67,10 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Social URLs come from Sanity siteSettings so the schema.org sameAs list
+  // stays in sync with the footer icons — no redeploy when Cris adds a channel.
+  const settings = await safeFetch<any>(QUERIES.settings, null)
   // Plausible Analytics — cookieless, GDPR-friendly, €9/mo. Set
   // NEXT_PUBLIC_PLAUSIBLE_DOMAIN on Vercel (e.g. "ifmba.se") to enable.
   // Until that env var is set, no script loads and no tracking happens.
@@ -106,23 +110,46 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
+              // SportsOrganization + local signals (address, area served) —
+              // this is the markup Google uses for the local pack / knowledge
+              // panel for "basketklubb malmö"-type queries.
               '@type': 'SportsOrganization',
+              '@id': `${SITE_URL}/#organization`,
               name: 'MBA — Malmö Basket',
+              alternateName: ['MBA Malmö', 'Malmö Basket Amatörer'],
+              description:
+                'Basketklubb i Malmö — 15 nationer, 1 tröja. Herrlag i Div 2 Skåne 2026/27, casual games och gemenskap.',
               url: SITE_URL,
               logo: `${SITE_URL}/apple-touch-icon.png`,
               image: `${SITE_URL}/opengraph-image`,
               sport: 'Basketball',
+              keywords: 'basketklubb Malmö, basket Malmö, spela basket Malmö, basketlag Skåne',
+              areaServed: { '@type': 'City', name: 'Malmö' },
               location: {
-                '@type': 'Place',
+                '@type': 'SportsActivityLocation',
+                name: 'Latinskolans sporthall',
                 address: {
                   '@type': 'PostalAddress',
+                  streetAddress: 'Lorensborgsgatan 1',
+                  postalCode: '217 45',
                   addressLocality: 'Malmö',
                   addressCountry: 'SE',
                 },
               },
               email: 'info@ifmba.se',
-              // Profixio — Div 3 Skåne Herr 2025/26 (MBA's current league).
-              sameAs: ['https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117'],
+              memberOf: {
+                '@type': 'SportsOrganization',
+                name: 'Svenska Basketbollförbundet',
+                url: 'https://www.basket.se',
+              },
+              sameAs: [
+                // Profixio — Div 2 Skåne Herr 2026/27 team page.
+                'https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117',
+                settings?.instagramUrl,
+                settings?.facebookUrl,
+                settings?.tiktokUrl,
+                settings?.youtubeUrl,
+              ].filter(Boolean),
             }),
           }}
         />

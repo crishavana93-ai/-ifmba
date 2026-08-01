@@ -23,6 +23,14 @@ export const metadata: Metadata = {
   description:
     'Latinskolans sporthall är MBA:s hemmaarena. Se träningstider, parkering, kommunikationer och övriga planer vi spelar på.',
   alternates: { canonical: '/hallar' },
+  openGraph: {
+    title: 'Hallar & planer — MBA · Malmö Basket',
+    description: 'Latinskolans sporthall är MBA:s hemmaarena. Se träningstider, parkering, kommunikationer och övriga planer vi spelar på.',
+    url: '/hallar',
+    siteName: 'MBA — Malmö Basket',
+    locale: 'sv_SE',
+    type: 'website',
+  },
 }
 
 type Court = {
@@ -82,6 +90,28 @@ export default async function HallarPage() {
 
   return (
     <>
+      {/* Home-arena structured data — the local-pack signal for
+          "basket malmö": a real venue with a street address. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SportsActivityLocation',
+            name: home?.name || 'Latinskolans sporthall',
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: (home?.address || 'Lorensborgsgatan 1, 217 45 Malmö').split(',')[0],
+              addressLocality: 'Malmö',
+              postalCode: '217 45',
+              addressCountry: 'SE',
+            },
+            url: 'https://www.ifmba.se/hallar',
+            isAccessibleForFree: false,
+            containedInPlace: { '@type': 'City', name: 'Malmö' },
+          }),
+        }}
+      />
       <ScrollProgress />
       <BackToTop />
       <Navbar />

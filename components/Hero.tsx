@@ -82,9 +82,11 @@ export default function Hero({ settings }: { settings: any }) {
           <span>Säsong {season} · {division} · #1</span>
         </div>
 
+        {/* The {' '} text nodes matter: without them crawlers/screen readers
+            read the stacked spans as one word ("VÄLKOMMENMBAFAMILJEN"). */}
         <h1 className="hero-h1">
-          <span className="outline">{t('hero.welcome')}</span><br />
-          <span className="accent">MBA</span><br />
+          <span className="outline">{t('hero.welcome')}</span>{' '}<br />
+          <span className="accent">MBA</span>{' '}<br />
           {t('hero.family')}
         </h1>
 
