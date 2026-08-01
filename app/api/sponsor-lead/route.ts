@@ -19,7 +19,7 @@
  *   - Only fires if RESEND_API_KEY is set in the environment. Missing key
  *     is NOT an error — the lead still lands in Sanity, Cris just has to
  *     poll Studio until Resend is wired up.
- *   - Target mailbox: LEAD_NOTIFY_TO (fallback: teammba040@gmail.com).
+ *   - Target mailbox: LEAD_NOTIFY_TO (fallback: sponsorship@ifmba.se).
  *   - From address: LEAD_NOTIFY_FROM (fallback: leads@ifmba.se — requires
  *     the ifmba.se sender to be verified in Resend first, otherwise the
  *     email send silently fails and we just return ok:true from the write).
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
     // eslint-disable-next-line no-console
     console.error('[sponsor-lead] Sanity write env missing', { hasProjectId: !!projectId, hasToken: !!token })
     return NextResponse.json(
-      { ok: false, error: 'Serverkonfiguration saknas. Kontakta oss direkt på teammba040@gmail.com.' },
+      { ok: false, error: 'Serverkonfiguration saknas. Kontakta oss direkt på sponsorship@ifmba.se.' },
       { status: 500 },
     )
   }
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
   // in Sanity and Cris can see it at /studio.
   const resendKey = process.env.RESEND_API_KEY
   if (resendKey) {
-    const to = process.env.LEAD_NOTIFY_TO || 'teammba040@gmail.com'
+    const to = process.env.LEAD_NOTIFY_TO || 'sponsorship@ifmba.se'
     const from = process.env.LEAD_NOTIFY_FROM || 'leads@ifmba.se'
     const subject = `Ny sponsor-lead: ${company} (${tier})`
     const html = `

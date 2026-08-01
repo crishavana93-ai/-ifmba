@@ -110,7 +110,7 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
 
                 <a
                   className="tier-cta"
-                  href={`mailto:teammba040@gmail.com?subject=MBA%20${tier.key}%20Partnership`}
+                  href={`mailto:sponsorship@ifmba.se?subject=MBA%20${tier.key}%20Partnership`}
                 >
                   Boka samtal
                 </a>
@@ -133,7 +133,7 @@ export default function Sponsors({ sponsors, num, numText, className }: { sponso
             </a>
             <a
               className="btn-cta btn-cta-ghost"
-              href="mailto:teammba040@gmail.com?subject=MBA%20Partnership%20Inquiry"
+              href="mailto:sponsorship@ifmba.se?subject=MBA%20Partnership%20Inquiry"
             >
               Kontakta oss
             </a>

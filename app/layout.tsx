@@ -118,7 +118,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   addressCountry: 'SE',
                 },
               },
-              email: 'teammba040@gmail.com',
+              email: 'info@ifmba.se',
               // Profixio — Div 3 Skåne Herr 2025/26 (MBA's current league).
               sameAs: ['https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117'],
             }),

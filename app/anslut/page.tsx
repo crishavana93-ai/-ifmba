@@ -93,7 +93,7 @@ export default async function AnslutPage() {
     safeFetch<any[]>(QUERIES.courts, []),
   ])
 
-  const contactEmail = settings?.contactEmail || 'teammba040@gmail.com'
+  const contactEmail = settings?.contactEmail || 'info@ifmba.se'
 
   return (
     <>

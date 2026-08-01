@@ -12,7 +12,7 @@ export default defineType({
     defineField({name: 'heroImage', title: 'Hero Background Image', type: 'image'}),
     defineField({name: 'aboutTextSv', title: 'About Text (Swedish)', type: 'text'}),
     defineField({name: 'aboutTextEn', title: 'About Text (English)', type: 'text'}),
-    defineField({name: 'contactEmail', title: 'Contact Email', type: 'string', initialValue: 'teammba040@gmail.com'}),
+    defineField({name: 'contactEmail', title: 'Contact Email', type: 'string', initialValue: 'info@ifmba.se'}),
     // ── Social media URLs. Paste full https://... links here.
     // Each one is optional — Footer only renders an icon for platforms
     // that have a non-empty URL, so leaving a field blank hides that icon.
@@ -90,8 +90,8 @@ export default defineType({
       name: 'gearContactEmail',
       title: 'Gear Donations Contact Email',
       type: 'string',
-      initialValue: 'teammba040@gmail.com',
-      description: 'Email donors message to arrange handoff. Defaults to the club Gmail; once a dedicated alias like gear@ifmba.se is set up, paste that instead.',
+      initialValue: 'info@ifmba.se',
+      description: 'Email donors message to arrange handoff. Defaults to info@ifmba.se; if a dedicated alias like gear@ifmba.se is set up later, paste that instead.',
     }),
     defineField({
       name: 'gearWhatsappNumber',

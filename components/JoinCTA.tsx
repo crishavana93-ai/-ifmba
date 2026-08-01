@@ -4,7 +4,7 @@ export default function JoinCTA({ num, numText, className }: { num?: string; num
       <div className="contain" style={{ textAlign: 'center' }}>
         <h2 className="r">JOIN THE<br /><em>FAMILY</em></h2>
         <div className="r d2" style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a className="btn-cta" href="mailto:teammba040@gmail.com" style={{ padding: '16px 40px', fontSize: '15px' }}>Kontakta oss</a>
+          <a className="btn-cta" href="mailto:info@ifmba.se" style={{ padding: '16px 40px', fontSize: '15px' }}>Kontakta oss</a>
         </div>
       </div>
     </section>

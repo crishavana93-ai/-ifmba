@@ -51,8 +51,8 @@ export default async function DoneraPage() {
               <p style={{ marginTop: 16, opacity: 0.85, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
                 Vi sätter upp Swish-numret den här veckan. Återkom snart, eller
                 maila oss på{' '}
-                <a href={`mailto:${settings?.contactEmail || 'teammba040@gmail.com'}`} style={{ color: 'var(--yellow)' }}>
-                  {settings?.contactEmail || 'teammba040@gmail.com'}
+                <a href={`mailto:${settings?.contactEmail || 'info@ifmba.se'}`} style={{ color: 'var(--yellow)' }}>
+                  {settings?.contactEmail || 'info@ifmba.se'}
                 </a>
                 .
               </p>

@@ -14,6 +14,10 @@ import React, { useState } from 'react'
  *   instagramUrl · facebookUrl · tiktokUrl · youtubeUrl · contactEmail
  */
 
+// Turquino Studios designer-credit logo. Empty string = text-only credit.
+// Drop the logo into /public and point this at it, e.g. '/turquino-logo.svg'.
+const TURQUINO_LOGO = ''
+
 // ── Brand SVG icons ────────────────────────────────────────────────────
 const IconInstagram = ({ size = 20 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
@@ -96,7 +100,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
     { label: 'TikTok',    url: settings?.tiktokUrl,    Icon: IconTikTok    },
     { label: 'YouTube',   url: settings?.youtubeUrl,   Icon: IconYouTube   },
   ]
-  const contactEmail = settings?.contactEmail || 'teammba040@gmail.com'
+  const contactEmail = settings?.contactEmail || 'info@ifmba.se'
 
   return (
     <footer className="foot">
@@ -190,6 +194,23 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
             <a href="/integritetspolicy">Integritetspolicy</a>
             <span className="foot-bottom-sep">·</span>
             <a href="https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117" target="_blank" rel="noopener">Powered by Profixio</a>
+            <span className="foot-bottom-sep">·</span>
+            {/* Designer credit — founding partner Turquino Studios. When their
+                logo file lands in /public (e.g. turquino-logo.svg), set
+                TURQUINO_LOGO below to its path and the mark renders inline. */}
+            <a
+              href="/partners#founding"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              {TURQUINO_LOGO && (
+                <img
+                  src={TURQUINO_LOGO}
+                  alt="Turquino Studios"
+                  style={{ height: '16px', width: 'auto', display: 'block' }}
+                />
+              )}
+              Designed by Turquino Studios
+            </a>
           </span>
         </div>
       </div>

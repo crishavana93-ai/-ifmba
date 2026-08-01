@@ -142,7 +142,7 @@ export default function Drop({ settings, media }: { settings: any; media: any[] 
             <div className="drop-cta-row">
               <a
                 className="drop-cta drop-cta-primary"
-                href="mailto:teammba040@gmail.com?subject=Kom%20p%C3%A5%20match%20%E2%80%94%20MBA"
+                href="mailto:info@ifmba.se?subject=Kom%20p%C3%A5%20match%20%E2%80%94%20MBA"
               >
                 Kom på match
               </a>
