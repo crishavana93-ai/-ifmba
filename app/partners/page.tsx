@@ -380,7 +380,10 @@ export default async function PartnersPage() {
       {/* Lead form — replaces the plain mailto CTA. Writes to Sanity's
           `sponsorLead` doc type; optional Resend notification fires to Cris
           if RESEND_API_KEY is configured. */}
-      <section className="section section-dark" id="lead">
+      {/* id renamed from "lead" -> "kontakt" (2026-08-01): old /partners#lead
+          links in history/bookmarks now find no anchor and land at the top,
+          which is where the pitch starts. */}
+      <section className="section section-dark" id="kontakt">
         <div className="contain" style={{ maxWidth: '860px', margin: '0 auto' }}>
           <div className="label r v">Bli partner</div>
           <h2 className="title r v" style={{ marginBottom: '18px' }}>
