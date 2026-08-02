@@ -16,7 +16,7 @@ import React, { useState } from 'react'
 
 // Turquino Studios designer-credit logo. Empty string = text-only credit.
 // Drop the logo into /public and point this at it, e.g. '/turquino-logo.svg'.
-const TURQUINO_LOGO = ''
+const TURQUINO_LOGO = '/turquino-logo.png'
 
 // ── Brand SVG icons ────────────────────────────────────────────────────
 const IconInstagram = ({ size = 20 }: { size?: number }) => (

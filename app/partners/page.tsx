@@ -107,6 +107,7 @@ const FOUNDING_PARTNERS: {
   role: string
   story: string
   url?: string
+  logo?: string
 }[] = [
   {
     name: 'KOFI',
@@ -122,6 +123,7 @@ const FOUNDING_PARTNERS: {
   {
     name: 'Turquino Studios',
     shortName: 'Turquino Studios',
+    logo: '/turquino-logo.png',
     role: 'Kreativ partner',
     story:
       'Turquino Studios var en av de första att tro på MBA-projektet och ' +
@@ -223,16 +225,28 @@ export default async function PartnersPage() {
                   >
                     Founding partner · {fp.role}
                   </div>
-                  <div
-                    style={{
-                      fontSize: 'clamp(26px, 3.4vw, 40px)',
-                      fontWeight: 800,
-                      letterSpacing: '-0.01em',
-                      lineHeight: 1.05,
-                    }}
-                  >
-                    {fp.name}
-                  </div>
+                  {fp.logo ? (
+                    // Real partner logo (white/transparent) — replaces the
+                    // text wordmark; alt keeps the name for SEO/AT.
+                    <img
+                      src={fp.logo}
+                      alt={fp.name}
+                      loading="lazy"
+                      decoding="async"
+                      style={{ width: 'min(220px, 60%)', height: 'auto', display: 'block' }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        fontSize: 'clamp(26px, 3.4vw, 40px)',
+                        fontWeight: 800,
+                        letterSpacing: '-0.01em',
+                        lineHeight: 1.05,
+                      }}
+                    >
+                      {fp.name}
+                    </div>
+                  )}
                   <p style={{ opacity: 0.85, lineHeight: 1.65, margin: 0 }}>{fp.story}</p>
                   {fp.url && (
                     <span

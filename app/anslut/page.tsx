@@ -25,11 +25,11 @@ export const revalidate = 60
 export const metadata: Metadata = {
   title: 'Spela basket i Malmö — Bli medlem | MBA Malmö Basket',
   description:
-    'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
+    'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Årsavgift 100 kr + träningsavgift från 500 kr.',
   alternates: { canonical: '/anslut' },
   openGraph: {
     title: 'Spela basket i Malmö — Bli medlem | MBA Malmö Basket',
-    description: 'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
+    description: 'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Årsavgift 100 kr + träningsavgift från 500 kr.',
     url: '/anslut',
     siteName: 'MBA — Malmö Basket',
     locale: 'sv_SE',
@@ -162,6 +162,15 @@ export default async function AnslutPage() {
                 >
                   Anmäl intresse →
                 </a>
+                {/* mailto: does nothing on devices without a mail app —
+                    always show the address so nobody hits a dead button. */}
+                <p style={{ marginTop: 10, fontSize: 13, opacity: 0.75 }}>
+                  Öppnas inget mejl? Skriv till{' '}
+                  <a href={`mailto:${contactEmail}`} style={{ color: 'var(--yellow)' }}>
+                    {contactEmail}
+                  </a>{' '}
+                  med ämnet &quot;{t.mailtoSubject}&quot;.
+                </p>
               </article>
             ))}
           </div>
@@ -194,8 +203,13 @@ export default async function AnslutPage() {
             <div className="join-faq-item">
               <h3>Hur hanteras avgiften?</h3>
               <p>
-                Avgiften faktureras via Swish efter intresseanmälan och
-                inskrivning.
+                Allt betalas via Swish till <strong>123 066 18 76</strong>.
+                Årsavgift <strong>100 kr</strong> (senast 1 augusti) för alla
+                medlemmar. Träningsavgift <strong>750 kr</strong>/termin för
+                casual players eller <strong>500 kr</strong> för betalande
+                lagspelare. För tävlingslagen (D2 &amp; D3) tillkommer
+                lagavgift <strong>2 000 kr</strong>/säsong. Se alla avgifter på{' '}
+                <Link href="/donera#avgifter">avgiftssidan</Link>.
               </p>
             </div>
             <div className="join-faq-item">
