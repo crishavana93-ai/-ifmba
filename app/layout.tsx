@@ -50,13 +50,13 @@ export const metadata: Metadata = {
   // / Safari / Firefox install to refetch.
   icons: {
     icon: [
-      { url: '/icon.svg?v=3', type: 'image/svg+xml' },
-      { url: '/favicon.ico?v=3', sizes: 'any' },
+      { url: '/icon.svg?v=4', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=4', sizes: 'any' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png?v=3', sizes: '180x180' },
+      { url: '/apple-touch-icon.png?v=4', sizes: '180x180' },
     ],
-    shortcut: '/favicon.ico?v=2',
+    shortcut: '/favicon.ico?v=4',
   },
   robots: { index: true, follow: true },
 }

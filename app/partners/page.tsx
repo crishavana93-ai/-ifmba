@@ -122,13 +122,14 @@ const FOUNDING_PARTNERS: {
   },
   {
     name: 'Turquino Studios',
-    shortName: 'Turquino Studios',
-    logo: '/turquino-logo.png',
+    shortName: 'turquinostudios.com',
+    logo: '/turquino-logo-dark.png',
     role: 'Kreativ partner',
     story:
       'Turquino Studios var en av de första att tro på MBA-projektet och ' +
       'står bakom kreativt arbete kring klubbens berättelse. Namnet delar ' +
       'rötter med vår internationella själ — 15 nationer, 1 tröja.',
+    url: 'https://turquinostudios.com',
   },
 ]
 

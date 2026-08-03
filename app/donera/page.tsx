@@ -19,13 +19,13 @@ import GearDonations from '@/components/GearDonations'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Stöd MBA — Donera via Swish · Malmö Basket',
+  title: 'Betala avgifter via Swish — MBA · Malmö Basket',
   description:
-    'Stöd Malmös mest internationella basketfamilj. Donera direkt via Swish — varje krona går till tröjor, hallhyra och resor för säsongen.',
+    'Betala medlems-, tränings- och lagavgifter via Swish 123 066 18 76 — eller stöd MBA med en donation. Allt går direkt till klubben.',
   alternates: { canonical: '/donera' },
   openGraph: {
-    title: 'Stöd MBA — Donera via Swish · Malmö Basket',
-    description: 'Stöd Malmös mest internationella basketfamilj. Donera direkt via Swish — varje krona går till tröjor, hallhyra och resor för säsongen.',
+    title: 'Betala avgifter via Swish — MBA · Malmö Basket',
+    description: 'Betala medlems-, tränings- och lagavgifter via Swish 123 066 18 76 — eller stöd MBA med en donation. Allt går direkt till klubben.',
     url: '/donera',
     siteName: 'MBA — Malmö Basket',
     locale: 'sv_SE',

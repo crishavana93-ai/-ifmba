@@ -176,7 +176,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
               <a href="/hallar">Hallar</a>
               <a href="/partners">Partners</a>
               <a href="/anslut">Bli medlem</a>
-              <a href="/donera">Donera (Swish)</a>
+              <a href="/donera">Swish — avgifter &amp; stöd</a>
             </div>
           </div>
           <div>
@@ -199,7 +199,9 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
                 logo file lands in /public (e.g. turquino-logo.svg), set
                 TURQUINO_LOGO below to its path and the mark renders inline. */}
             <a
-              href="/partners#founding"
+              href="https://turquinostudios.com"
+              target="_blank"
+              rel="noopener"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
               {TURQUINO_LOGO && (

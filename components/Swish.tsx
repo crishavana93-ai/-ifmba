@@ -1,11 +1,16 @@
 'use client'
 /**
- * Swish — donation block.
+ * Swish — payment + support block.
  *
- * Swish is the dominant person-to-person and donation rail in Sweden — 8M+
+ * Reframed 2026-08-02 (Cris): Swish is primarily how members PAY CLUB FEES
+ * (årsavgift, träningsavgift, lagavgift) — donations are the secondary use.
+ * Copy below leads with payments; /donera lists the fee presets right under
+ * this block (#avgifter).
+ *
+ * Swish is the dominant person-to-person payment rail in Sweden — 8M+
  * users, ~70% of the population. We surface the club's Swish number plus a
  * scannable QR that auto-fills the recipient + a pre-filled message so
- * donations are easy to reconcile.
+ * payments are easy to reconcile.
  *
  * Config lives in Sanity `siteSettings`:
  *   swishNumber, swishPayee, swishMessage,
@@ -13,7 +18,7 @@
  *   swishGoalLabelSv / swishGoalLabelEn
  *
  * If `swishNumber` is empty, the whole component renders null so the page
- * doesn't show a half-broken donation block on a fresh install.
+ * doesn't show a half-broken block on a fresh install.
  *
  * QR encoding: we use the Swish "swish://payment?…" URI which most modern
  * Swedish banking apps recognise. For maximum compatibility we also link
@@ -67,7 +72,7 @@ export default function Swish({
   const number = (settings?.swishNumber || '').replace(/\s+/g, '')
   if (!number) return null // hide entirely until Cris pastes the real number
 
-  const payee = settings?.swishPayee || 'IFK Malmö Basket'
+  const payee = settings?.swishPayee || 'MBA Malmö Basket'
   const message = settings?.swishMessage || 'MBA'
   const goal = Math.max(1, settings?.swishGoalSek ?? 50000)
   const raised = Math.max(0, settings?.swishRaisedSek ?? 0)
@@ -86,10 +91,10 @@ export default function Swish({
 
   const copy = lang === 'en'
     ? {
-        eyebrow: 'Support the club',
-        title: 'Donate via Swish',
+        eyebrow: 'Pay & support',
+        title: 'Pay via Swish',
         titleEm: 'in 10 seconds',
-        body: `100% goes straight to the club. Scan the QR with your Swish app or send to the number below. We update the season tracker after every reconciliation.`,
+        body: `Membership, practice and team fees — and donations — all go through the club's Swish. Scan the QR with your Swish app or send to the number below, and write your name + what the payment is for. All fee amounts are listed below.`,
         scan: 'Scan with Swish',
         number: 'Swish number',
         copy: 'Copy number',
@@ -100,10 +105,10 @@ export default function Swish({
         thanks: 'Tack — every krona builds the family.',
       }
     : {
-        eyebrow: 'Stöd klubben',
-        title: 'Donera via Swish',
+        eyebrow: 'Betala & stöd',
+        title: 'Betala via Swish',
         titleEm: 'på 10 sekunder',
-        body: `100% går direkt till klubben. Skanna QR-koden med din Swish-app eller skicka till numret nedan. Vi uppdaterar säsongsmätaren efter varje avstämning.`,
+        body: `Medlems-, tränings- och lagavgifter — och donationer — går via klubbens Swish. Skanna QR-koden med din Swish-app eller skicka till numret nedan, och skriv ditt namn + vad betalningen gäller. Alla avgifter listas nedan.`,
         scan: 'Skanna med Swish',
         number: 'Swish-nummer',
         copy: 'Kopiera numret',
