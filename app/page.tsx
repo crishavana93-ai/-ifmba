@@ -5,7 +5,9 @@ import Hero from '@/components/Hero'
 // Drop (next tip-off split) retired 2026-04-24 — rendered empty without nextMatchDate.
 import StatsBar from '@/components/StatsBar'
 import About from '@/components/About'
-import Journey from '@/components/Journey'
+// Journey retired from the landing page 2026-08-03 (audit): static origin
+// timeline duplicated the About story and added a full extra scroll. Component
+// kept in /components — one import + one JSX block to revive.
 import News from '@/components/News'
 // SwedenNews component kept in repo but no longer rendered on landing.
 // (User consolidated: one news block on home, dedicated /nyheter page for full feed.)
@@ -24,7 +26,8 @@ import SponsorTeaser from '@/components/SponsorTeaser'
 import Spotlight from '@/components/Spotlight'
 import Predict from '@/components/Predict'
 import Swish from '@/components/Swish'
-import GearDonations from '@/components/GearDonations'
+// GearDonations retired from the landing page 2026-08-03 (audit): it already
+// has a full home on /donera and made the landing page one section too long.
 // Manifesto + JoinCTA retired 2026-04-24 — kept in /components for easy revival.
 import Footer from '@/components/Footer'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -102,7 +105,9 @@ export default async function Home() {
         <About settings={settings} num="01" numText="IDENTITY" className="section-dark" />
       </ScrollReveal>
 
-      {/* 02 · SEASON IN PHOTOS — stacking cards (cinematic) else grid */}
+      {/* 02 · SEASON IN PHOTOS — stacking cards (cinematic) else grid.
+          TeamCollage carries id="media" so the GALLERI nav link works in
+          cinematic mode too, and fades in/out with scroll. */}
       {CINE ? (
         <TeamCollage images={teamPhotos} label="02 · SÄSONGEN I BILDER" title="FAMILJEN" />
       ) : (
@@ -111,7 +116,8 @@ export default async function Home() {
       </ScrollReveal>
       )}
 
-      {/* 03 · TOP PLAYS (dark) */}
+      {/* 03 · TOP PLAYS (dark) — hides itself when no clips are uploaded
+          (audit 2026-08-03). */}
       <ScrollReveal>
         <Highlights media={media} num="03" numText="TOP PLAYS" className="section-dark" />
       </ScrollReveal>
@@ -145,10 +151,7 @@ export default async function Home() {
         <Standings standings={standings} num="06" numText="THE GRID" className="section-dark" />
       </ScrollReveal>
 
-      {/* SwishMeter removed 2026-04-24 — data now lives in Standings (Profixio).
-          Fan-vote / Spotlight moved into the next position. */}
-
-      {/* 06 · THE FAMILY (dark) */}
+      {/* 07 · THE FAMILY (dark) */}
       <ScrollReveal>
         <Squad players={players} num="07" numText="THE FAMILY" className="section-dark" />
       </ScrollReveal>
@@ -160,48 +163,35 @@ export default async function Home() {
           /hallar page + footer summary. Courts component is still imported
           by /hallar. */}
 
-      {/* 07 · THE DESK — consolidated news. */}
+      {/* 08 · THE DESK — consolidated news. */}
       <ScrollReveal>
         <News news={news} swedenNews={swedenNews} num="08" numText="THE DESK" className="section-dark" />
       </ScrollReveal>
 
-      {/* 08 · APPAREL (alt) */}
+      {/* 09 · APPAREL (alt) */}
       <ScrollReveal>
         <Apparel products={shopProducts} media={media} num="09" numText="APPAREL" className="section-alt" />
       </ScrollReveal>
 
-      {/* 09 · VÅR RESA (dark) */}
-      <ScrollReveal>
-        <Journey num="10" numText="VÅR RESA" className="section-dark" />
-      </ScrollReveal>
+      {/* Journey (VÅR RESA) retired 2026-08-03 (audit) — origin story now
+          lives inside About/identity; timeline component kept in /components. */}
 
       {/* 10 · BLI PARTNER — compact teaser that routes traffic to the
           dedicated /partners page. Full tier breakdown + lead form live
           there so the landing page stays focused and fast. */}
       <ScrollReveal>
-        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="11" numText="PARTNERS" />
+        <SponsorTeaser sponsorCount={sponsors?.length || 0} num="10" numText="PARTNERS" />
       </ScrollReveal>
 
-      {/* 11 · STÖD KLUBBEN — Swish donations.
-          Renders null entirely if `swishNumber` isn't set in Sanity, so
-          the page degrades gracefully until Cris pastes the real number. */}
+      {/* 11 · BETALA — Swish payments (fees). Reframed from donations
+          2026-08-03. Renders null entirely if `swishNumber` isn't set in
+          Sanity, so the page degrades gracefully. */}
       <ScrollReveal>
-        <Swish settings={settings} num="12" numText="STÖD" className="section-dark" />
+        <Swish settings={settings} num="11" numText="BETALA" className="section-dark" />
       </ScrollReveal>
 
-      {/* 12 · GE UTRUSTNING — in-kind donations for international communities.
-          Email-primary, WhatsApp optional. Photo gallery pulls from Sanity
-          mediaAsset (category='community'). Hides itself if neither
-          gearContactEmail nor gearWhatsappNumber is set. */}
-      <ScrollReveal>
-        <GearDonations
-          settings={settings}
-          media={media}
-          num="13"
-          numText="UTRUSTNING"
-          className="section-alt"
-        />
-      </ScrollReveal>
+      {/* GearDonations retired from home 2026-08-03 (audit) — lives on
+          /donera. Footer links there. */}
 
       </main>
 

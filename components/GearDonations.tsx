@@ -1,7 +1,11 @@
 'use client'
 /**
  * GearDonations — in-kind donations of basketball gear for international
- * communities in need. Companion to <Swish> (money).
+ * communities in need. Companion to <Swish> (payments).
+ *
+ * NOTE (2026-08-03): this section keeps its donation language on purpose —
+ * unlike the Swish block (which is the club's payment rail), donating used
+ * gear IS a donation programme.
  *
  * Pattern: donor reads the pitch + sees a photo gallery showing where the
  * gear ends up, taps "Email MBA" → opens their mail client with a pre-filled
@@ -10,7 +14,9 @@
  *
  * Photo gallery pulls from Sanity `mediaAsset` documents tagged
  * `category: 'community'`. Cris uploads photos via Studio → they appear here
- * with no code change.
+ * with no code change. Gallery images render through thumb() (same-origin
+ * /_next/image proxy) — fixes photos not loading on networks that can't
+ * reach cdn.sanity.io.
  *
  * Stats panel under the CTAs shows what the club has collected & distributed.
  * Numbers are edited by hand in Sanity Studio (Site Settings → Gear Stats).
@@ -205,8 +211,9 @@ export default function GearDonations({
             <div className="gd-gallery">
               {photos.map((p) => (
                 <figure key={p._id} className="gd-photo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={thumb(p.imageUrl, 640)!}
+                    src={thumb(p.imageUrl, 640)}
                     alt={(lang === 'en' ? p.captionEn : p.captionSv) || p.title || ''}
                     loading="lazy"
                     decoding="async"

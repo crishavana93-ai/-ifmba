@@ -12,11 +12,10 @@ import React, { useState } from 'react'
  *
  * Editable URLs live in Studio under Site settings:
  *   instagramUrl · facebookUrl · tiktokUrl · youtubeUrl · contactEmail
+ *
+ * Bottom row carries the Turquino Studios web credit (dark logo variant —
+ * the light one disappears on light backgrounds) → https://turquinostudios.com.
  */
-
-// Turquino Studios designer-credit logo. Empty string = text-only credit.
-// Drop the logo into /public and point this at it, e.g. '/turquino-logo.svg'.
-const TURQUINO_LOGO = '/turquino-logo.png'
 
 // ── Brand SVG icons ────────────────────────────────────────────────────
 const IconInstagram = ({ size = 20 }: { size?: number }) => (
@@ -100,7 +99,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
     { label: 'TikTok',    url: settings?.tiktokUrl,    Icon: IconTikTok    },
     { label: 'YouTube',   url: settings?.youtubeUrl,   Icon: IconYouTube   },
   ]
-  const contactEmail = settings?.contactEmail || 'info@ifmba.se'
+  const contactEmail = settings?.contactEmail || 'teammba040@gmail.com'
 
   return (
     <footer className="foot">
@@ -176,7 +175,10 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
               <a href="/hallar">Hallar</a>
               <a href="/partners">Partners</a>
               <a href="/anslut">Bli medlem</a>
-              <a href="/donera">Swish — avgifter &amp; stöd</a>
+              {/* /donera reframed 2026-08-03: it's the club's PAYMENT page
+                  (fees via Swish), not a donation page. URL unchanged —
+                  it's printed on posters. */}
+              <a href="/donera">Betala avgift (Swish)</a>
             </div>
           </div>
           <div>
@@ -195,23 +197,24 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
             <span className="foot-bottom-sep">·</span>
             <a href="https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117" target="_blank" rel="noopener">Powered by Profixio</a>
             <span className="foot-bottom-sep">·</span>
-            {/* Designer credit — founding partner Turquino Studios. When their
-                logo file lands in /public (e.g. turquino-logo.svg), set
-                TURQUINO_LOGO below to its path and the mark renders inline. */}
+            {/* Web credit — dark logo variant so it stays visible on the
+                light footer strip. */}
             <a
               href="https://turquinostudios.com"
               target="_blank"
-              rel="noopener"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              rel="noopener noreferrer"
+              aria-label="Webb av Turquino Studios"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, verticalAlign: 'middle' }}
             >
-              {TURQUINO_LOGO && (
-                <img
-                  src={TURQUINO_LOGO}
-                  alt="Turquino Studios"
-                  style={{ height: '16px', width: 'auto', display: 'block' }}
-                />
-              )}
-              Designed by Turquino Studios
+              <span>Webb av</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/turquino-logo-dark.png"
+                alt="Turquino Studios"
+                height={18}
+                style={{ height: 18, width: 'auto', display: 'inline-block', verticalAlign: 'middle' }}
+                loading="lazy"
+              />
             </a>
           </span>
         </div>

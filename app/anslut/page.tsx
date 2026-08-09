@@ -1,9 +1,12 @@
 /**
  * /anslut — "Join the club" page.
  *
- * Three player-facing tracks, each with headline, subhead, fee, schedule,
- * and a contact CTA prefilled with the track name. Fee is a uniform 500 kr
- * placeholder for all three until the real pricing lands.
+ * Two player-facing tracks (Casual Games + Div 2 men's squad), each with
+ * headline, subhead, fee, schedule, and a contact CTA prefilled with the
+ * track name.
+ *
+ * 2026-08-03: heading fixed to "Två vägar" (it said "Tre" after the U-10
+ * track was removed) and the lede no longer mentions kids.
  *
  * This page is separate from /partners (which is the sponsor-facing page).
  *
@@ -23,18 +26,10 @@ import { safeFetch, QUERIES } from '@/lib/sanity'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Spela basket i Malmö — Bli medlem | MBA Malmö Basket',
+  title: 'Bli medlem — MBA · Malmö Basket',
   description:
-    'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Årsavgift 100 kr + träningsavgift från 500 kr.',
+    'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Medlemskap från 750 kr.',
   alternates: { canonical: '/anslut' },
-  openGraph: {
-    title: 'Spela basket i Malmö — Bli medlem | MBA Malmö Basket',
-    description: 'Två vägar in i MBA: Casual Games för alla vuxna, och Herrlaget i Div 2 Skåne 2026/27. Årsavgift 100 kr + träningsavgift från 500 kr.',
-    url: '/anslut',
-    siteName: 'MBA — Malmö Basket',
-    locale: 'sv_SE',
-    type: 'website',
-  },
 }
 
 type Track = {
@@ -101,7 +96,7 @@ export default async function AnslutPage() {
     safeFetch<any[]>(QUERIES.courts, []),
   ])
 
-  const contactEmail = settings?.contactEmail || 'info@ifmba.se'
+  const contactEmail = settings?.contactEmail || 'teammba040@gmail.com'
 
   return (
     <>
@@ -116,14 +111,14 @@ export default async function AnslutPage() {
             Två vägar <em>in i familjen</em>
           </h1>
           <p className="page-lede r v">
-            MBA är inte bara ett lag. Vi är en klubb för barn som tar sina
-            första kliv på planen, vuxna som bara vill spela för nöjets skull,
-            och tävlingsspelare som vill vinna i Div 2. Välj din väg nedan.
+            MBA är inte bara ett lag. Vi är en klubb för vuxna som bara vill
+            spela för nöjets skull, och tävlingsspelare som vill vinna i
+            Div 2. Välj din väg nedan.
           </p>
         </div>
       </main>
 
-      {/* Three-track cards */}
+      {/* Track cards */}
       <section className="section section-alt" id="tracks">
         <div className="contain">
           <div className="join-tracks">
@@ -162,15 +157,6 @@ export default async function AnslutPage() {
                 >
                   Anmäl intresse →
                 </a>
-                {/* mailto: does nothing on devices without a mail app —
-                    always show the address so nobody hits a dead button. */}
-                <p style={{ marginTop: 10, fontSize: 13, opacity: 0.75 }}>
-                  Öppnas inget mejl? Skriv till{' '}
-                  <a href={`mailto:${contactEmail}`} style={{ color: 'var(--yellow)' }}>
-                    {contactEmail}
-                  </a>{' '}
-                  med ämnet &quot;{t.mailtoSubject}&quot;.
-                </p>
               </article>
             ))}
           </div>
@@ -203,13 +189,12 @@ export default async function AnslutPage() {
             <div className="join-faq-item">
               <h3>Hur hanteras avgiften?</h3>
               <p>
-                Allt betalas via Swish till <strong>123 066 18 76</strong>.
-                Årsavgift <strong>100 kr</strong> (senast 1 augusti) för alla
-                medlemmar. Träningsavgift <strong>750 kr</strong>/termin för
-                casual players eller <strong>500 kr</strong> för betalande
-                lagspelare. För tävlingslagen (D2 &amp; D3) tillkommer
-                lagavgift <strong>2 000 kr</strong>/säsong. Se alla avgifter på{' '}
-                <Link href="/donera#avgifter">avgiftssidan</Link>.
+                Avgiften betalas via klubbens Swish efter intresseanmälan och
+                inskrivning — nummer, QR-kod och alla belopp finns på{' '}
+                <Link href="/donera" style={{ color: 'var(--yellow)' }}>
+                  betalsidan
+                </Link>
+                .
               </p>
             </div>
             <div className="join-faq-item">

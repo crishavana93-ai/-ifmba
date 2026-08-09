@@ -1,14 +1,12 @@
 /**
  * /partners — dedicated sponsor / partnership page.
  *
- * Structure (2026-08-01 redesign, modeled on how elite clubs present partners
- * — Real Madrid/Warriors-style spotlight cards for the few partners we have,
- * tier ladder shown as an OFFER menu, gratitude before the sales pitch):
- *   hero → Founding Partners spotlight (KOFI + Turquino Studios) →
- *   why-MBA proof points → tier menu → Sanity partner wall → lead form.
+ * Fuller pitch + full tier breakdown + all published Sponsor documents grouped
+ * by tier. Links from the homepage "PARTNERS" section + Footer point here.
  *
- * All sponsor CTAs go to sponsorship@ifmba.se (Zoho group). General contact
- * is info@ifmba.se.
+ * 2026-08-03: added the Turquino Studios web-partner credit (dark logo — the
+ * light variant was invisible on the light section background) and fixed the
+ * season copy (2026/27).
  */
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -26,14 +24,6 @@ export const metadata: Metadata = {
   description:
     'Bli partner med Malmös mest internationella basketlag. Paket från Bronze till Platinum — exponering, gemenskap, och mätbar räckvidd i Skåne.',
   alternates: { canonical: '/partners' },
-  openGraph: {
-    title: 'Partners — MBA · Malmö Basket',
-    description: 'Bli partner med Malmös mest internationella basketlag. Paket från Bronze till Platinum — exponering, gemenskap, och mätbar räckvidd i Skåne.',
-    url: '/partners',
-    siteName: 'MBA — Malmö Basket',
-    locale: 'sv_SE',
-    type: 'website',
-  },
 }
 
 type Tier = {
@@ -99,40 +89,6 @@ const TIERS: Tier[] = [
   },
 ]
 
-// Hardcoded founding partners — the two organisations that backed MBA first.
-// Cris: tweak the stories/URLs freely; keep the "founding" label permanent.
-const FOUNDING_PARTNERS: {
-  name: string
-  shortName: string
-  role: string
-  story: string
-  url?: string
-  logo?: string
-}[] = [
-  {
-    name: 'KOFI',
-    shortName: 'wearekofi.com',
-    role: 'Digital partner',
-    story:
-      'Konsultbyrån KOFI har varit med och byggt MBA:s digitala grund — från ' +
-      'domän och e-postinfrastruktur till rådgivning kring e-handel och ' +
-      'betalningar. Ett partnerskap som handlar om att göra klubben lika ' +
-      'professionell utanför planen som på den.',
-    url: 'https://wearekofi.com',
-  },
-  {
-    name: 'Turquino Studios',
-    shortName: 'turquinostudios.com',
-    logo: '/turquino-logo-dark.png',
-    role: 'Kreativ partner',
-    story:
-      'Turquino Studios var en av de första att tro på MBA-projektet och ' +
-      'står bakom kreativt arbete kring klubbens berättelse. Namnet delar ' +
-      'rötter med vår internationella själ — 15 nationer, 1 tröja.',
-    url: 'https://turquinostudios.com',
-  },
-]
-
 export default async function PartnersPage() {
   const [sponsors, settings, courts] = await Promise.all([
     safeFetch<any[]>(QUERIES.sponsors, []),
@@ -162,7 +118,7 @@ export default async function PartnersPage() {
           <div className="page-hero-cta r v">
             <a
               className="btn-cta"
-              href="mailto:sponsorship@ifmba.se?subject=MBA%20Partnership%20Inquiry"
+              href="mailto:teammba040@gmail.com?subject=MBA%20Partnership%20Inquiry"
             >
               Kontakta oss
             </a>
@@ -176,117 +132,6 @@ export default async function PartnersPage() {
         </div>
       </main>
 
-      {/* Founding partners — the clubs we studied (Real Madrid, GS Warriors)
-          give a FEW partners rich spotlight cards instead of drowning them in
-          an empty logo wall. "Founding Partner" framing (Warriors × Rakuten)
-          turns "we only have two" into "these two were first". Hardcoded on
-          purpose: acknowledgment must not depend on Sanity content state. */}
-      <section className="section section-alt" id="founding">
-        <div className="contain">
-          <div className="label r v">Founding partners</div>
-          <h2 className="title r v" style={{ marginBottom: '18px' }}>
-            Byggt <em>tillsammans</em>
-          </h2>
-          <p className="page-lede r v" style={{ marginBottom: '40px' }}>
-            Innan första matchen i Div 2 fanns de här två vid vår sida. Som
-            founding partners är de en permanent del av MBA:s historia — tack.
-          </p>
-
-          <div
-            className="r v"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: 'clamp(16px, 2.5vw, 28px)',
-            }}
-          >
-            {/* Whole card is the link (Cris 2026-08-01: "when user clicks
-                turquino or kofi they should be redirected to their website").
-                Cards without a url render as plain articles until we have one. */}
-            {FOUNDING_PARTNERS.map((fp) => {
-              const cardStyle: React.CSSProperties = {
-                border: '1px solid rgba(255,255,255,0.10)',
-                background: 'rgba(255,255,255,0.03)',
-                padding: 'clamp(24px, 3vw, 40px)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '14px',
-                color: 'inherit',
-                textDecoration: 'none',
-              }
-              const inner = (
-                <>
-                  <div
-                    style={{
-                      fontSize: '11px',
-                      letterSpacing: '0.18em',
-                      textTransform: 'uppercase',
-                      color: 'var(--yellow)',
-                    }}
-                  >
-                    Founding partner · {fp.role}
-                  </div>
-                  {fp.logo ? (
-                    // Real partner logo (white/transparent) — replaces the
-                    // text wordmark; alt keeps the name for SEO/AT.
-                    <img
-                      src={fp.logo}
-                      alt={fp.name}
-                      loading="lazy"
-                      decoding="async"
-                      style={{ width: 'min(220px, 60%)', height: 'auto', display: 'block' }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: 'clamp(26px, 3.4vw, 40px)',
-                        fontWeight: 800,
-                        letterSpacing: '-0.01em',
-                        lineHeight: 1.05,
-                      }}
-                    >
-                      {fp.name}
-                    </div>
-                  )}
-                  <p style={{ opacity: 0.85, lineHeight: 1.65, margin: 0 }}>{fp.story}</p>
-                  {fp.url && (
-                    <span
-                      style={{
-                        marginTop: 'auto',
-                        alignSelf: 'flex-start',
-                        fontSize: '13px',
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                        borderBottom: '1px solid var(--yellow)',
-                        paddingBottom: '2px',
-                      }}
-                    >
-                      Besök {fp.shortName} →
-                    </span>
-                  )}
-                </>
-              )
-              return fp.url ? (
-                <a
-                  key={fp.name}
-                  href={fp.url}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label={`${fp.name} — öppna webbplats`}
-                  style={{ ...cardStyle, cursor: 'pointer' }}
-                >
-                  {inner}
-                </a>
-              ) : (
-                <article key={fp.name} style={cardStyle}>
-                  {inner}
-                </article>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Why partner with MBA */}
       <section className="section section-alt">
         <div className="contain">
@@ -296,7 +141,7 @@ export default async function PartnersPage() {
           </h2>
           <div className="partners-why">
             <div className="partners-why-item r v">
-              <div className="partners-why-num">15</div>
+              <div className="partners-why-num">9</div>
               <div className="partners-why-lbl">Nationer</div>
               <p>
                 Publiken sträcker sig från Malmö till Atén, Lagos, Manila och Mexiko
@@ -307,7 +152,7 @@ export default async function PartnersPage() {
               <div className="partners-why-num">Div 2</div>
               <div className="partners-why-lbl">Nyuppflyttade</div>
               <p>
-                Vi går in i 2026/27 efter en obesegrad säsong. Ni syns när laget är på
+                Vi går in i 2026/27 efter obesegrad säsong. Ni syns när laget är på
                 uppgång — maximal mediauppmärksamhet.
               </p>
             </div>
@@ -375,7 +220,7 @@ export default async function PartnersPage() {
                   )}
                   <a
                     className="tier-cta"
-                    href={`mailto:sponsorship@ifmba.se?subject=MBA%20${tier.key}%20Partnership`}
+                    href={`mailto:teammba040@gmail.com?subject=MBA%20${tier.key}%20Partnership`}
                   >
                     Boka samtal
                   </a>
@@ -418,13 +263,46 @@ export default async function PartnersPage() {
         </section>
       )}
 
+      {/* Web partner — Turquino Studios built and maintains ifmba.se.
+          Dark logo variant on purpose: the light one vanishes against the
+          alt (light) section background. */}
+      <section className="section section-alt">
+        <div className="contain" style={{ textAlign: 'center' }}>
+          <div className="label r v">Webbpartner</div>
+          <a
+            className="r v"
+            href="https://turquinostudios.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Turquino Studios — webbpartner"
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 12,
+              marginTop: 18,
+              textDecoration: 'none',
+              color: 'inherit',
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/turquino-logo-dark.png"
+              alt="Turquino Studios"
+              style={{ height: 56, width: 'auto' }}
+              loading="lazy"
+            />
+            <span style={{ opacity: 0.75, fontSize: '0.95em' }}>
+              ifmba.se är byggd av Turquino Studios — websites people actually click.
+            </span>
+          </a>
+        </div>
+      </section>
+
       {/* Lead form — replaces the plain mailto CTA. Writes to Sanity's
           `sponsorLead` doc type; optional Resend notification fires to Cris
           if RESEND_API_KEY is configured. */}
-      {/* id renamed from "lead" -> "kontakt" (2026-08-01): old /partners#lead
-          links in history/bookmarks now find no anchor and land at the top,
-          which is where the pitch starts. */}
-      <section className="section section-dark" id="kontakt">
+      <section className="section section-dark" id="lead">
         <div className="contain" style={{ maxWidth: '860px', margin: '0 auto' }}>
           <div className="label r v">Bli partner</div>
           <h2 className="title r v" style={{ marginBottom: '18px' }}>

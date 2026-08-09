@@ -1,4 +1,5 @@
 import { thumb } from '@/lib/sanity'
+
 export default function Squad({
   players,
   num,
@@ -18,7 +19,7 @@ export default function Squad({
       id="squad"
     >
       <div className="contain">
-        <div className="label r">Säsong 2026/27 · 15 nationer</div>
+        <div className="label r">Säsong 2025/26 · 15 nationer</div>
         <h2
           className="title r"
           dangerouslySetInnerHTML={{ __html: '15 Nationer, <em>ett lag</em>' }}
@@ -50,8 +51,13 @@ export default function Squad({
                   <div className="card-inner">
                     <div className="card-front">
                       {hasPhoto ? (
+                        // Player photos go through thumb() — same-origin
+                        // /_next/image proxy (2026-08-03): fixes photos not
+                        // rendering on networks that block cdn.sanity.io and
+                        // trims payload to card size.
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={thumb(p.photoUrl, 520)}
+                          src={thumb(p.photoUrl, 640)}
                           alt={`${p.firstName} ${p.lastName}`}
                           className="card-photo"
                           loading="lazy"

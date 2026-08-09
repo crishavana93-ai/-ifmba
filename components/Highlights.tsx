@@ -5,6 +5,10 @@
  * (or 'matchday-reel'). We show up to 8 so you can build a real reel
  * without rewriting the component.
  *
+ * Audit 2026-08-03: the section now hides itself entirely when there are
+ * ZERO clips — an all-placeholder "Snart" rail made the landing page feel
+ * unfinished. Upload one gameday video in /studio → the section reappears.
+ *
  * Interaction:
  *   - Mobile: native touch scroll with CSS scroll-snap → tap card → video
  *     modal plays the clip full-screen with sound.
@@ -90,6 +94,9 @@ export default function Highlights({
     el.scrollBy({ left: step * dir, behavior: 'smooth' })
   }
 
+  // No clips at all → no section. (Audit 2026-08-03.)
+  if (clips.length === 0) return null
+
   return (
     <section
       className={`highlights section ${className || ''}`.trim()}
@@ -144,20 +151,14 @@ export default function Highlights({
           {Array.from({ length: placeholderCount }).map((_, i) => (
             <div key={`empty-${i}`} className="hl-slide hl-slide-empty" aria-hidden="true">
               <div className="hl-empty-play">▶</div>
-              <div className="hl-empty-tag">
-                {clips.length === 0 ? `Clip #${i + 1}` : 'Snart'}
-              </div>
+              <div className="hl-empty-tag">Snart</div>
             </div>
           ))}
         </div>
 
         {clips.length < 3 && (
           <div className="hl-empty-copy r">
-            <strong>
-              {clips.length === 0
-                ? 'Höjdpunkter laddas upp snart.'
-                : `${clips.length} klipp uppladdat — fler på väg.`}
-            </strong>
+            <strong>{`${clips.length} klipp uppladdat — fler på väg.`}</strong>
             <span>
               Klubben publicerar nya klipp via <b>/studio</b> efter varje match.
             </span>

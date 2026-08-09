@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { urlFor } from '@/lib/sanity'
+import { urlFor, thumb } from '@/lib/sanity'
 
 /**
  * News — the consolidated news block on the homepage.
@@ -8,6 +8,10 @@ import { urlFor } from '@/lib/sanity'
  * `swedenNews` schema). Each card links to a full article page:
  *   - MBA posts  → /nyheter/{slug}
  *   - External   → the original URL (opens new tab)
+ *
+ * Sanity cover images route through thumb() (same-origin /_next/image proxy,
+ * 2026-08-03) — fixes covers not loading on networks that can't reach
+ * cdn.sanity.io. External og:images (svtstatic etc.) pass through untouched.
  *
  * The old SwedenNews landing section was removed per request; this is now
  * the single news block on home.
@@ -79,18 +83,19 @@ export default function News({
     tag: post.tag || 'MBA',
     date: post.publishedAt,
     imgUrl: post.coverImage
-      ? urlFor(post.coverImage).width(800).height(500).fit('crop').url()
+      ? thumb(urlFor(post.coverImage).width(800).height(500).fit('crop').url(), 828) || null
       : null,
     href: post.slug?.current ? `/nyheter/${post.slug.current}` : '/nyheter',
     external: false,
   }))
 
   const curated: UnifiedItem[] = swedenNews.map((item, i) => {
-    // Precedence: manually uploaded Sanity asset > og:image URL from RSS cron
+    // Precedence: manually uploaded Sanity asset > og:image URL from RSS cron.
+    // thumb() proxies Sanity assets and passes external URLs through as-is.
     const manual = item.uploadedImageUrl
     const scraped = item.imageUrl
     const imgUrl = manual
-      ? manual + '?w=800&h=500&fit=crop'
+      ? thumb(manual, 828) || null
       : scraped || null
     return {
       id: item._id || `ext-${i}`,
@@ -137,7 +142,8 @@ export default function News({
                 <>
                   <div className="news-card-img">
                     {item.imgUrl ? (
-                      <img src={item.imgUrl} alt={item.title} />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.imgUrl} alt={item.title} loading="lazy" decoding="async" />
                     ) : (
                       <div className="news-card-placeholder">MBA</div>
                     )}

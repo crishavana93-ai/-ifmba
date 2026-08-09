@@ -45,12 +45,31 @@ export async function safeFetch<T>(query: string, fallback: T): Promise<T> {
   }
 }
 
-// ── Sanity CDN thumbnail helper ────────────────────────────────────────
-// The CDN resizes + transcodes for free via query params. ALWAYS wrap raw
-// asset->url values in this before rendering <img>: full-res phone uploads
-// are 3–8 MB; thumb() turns them into ~40–120 KB WebP/AVIF (auto=format).
-export const thumb = (url?: string | null, w = 800) =>
-  url ? `${url}${url.includes('?') ? '&' : '?'}w=${w}&q=75&auto=format` : undefined
+// ─── Image helpers ────────────────────────────────────────────────────
+//
+// thumb(url, w) — returns a SAME-ORIGIN URL for a Sanity CDN image by
+// routing it through Next's image optimizer (/_next/image). Why:
+//
+//   1. Perf: originals uploaded via Studio are often 2–4 MB phone photos.
+//      The optimizer resizes + re-encodes to AVIF/WebP at the requested
+//      width, so a 4096px original becomes a ~30 KB thumbnail.
+//   2. Reachability (bug found 2026-08-02): some networks/DNS filters
+//      fail to reach cdn.sanity.io directly, which rendered every gallery
+//      card as a black box. With the proxy, the visitor's browser only
+//      ever talks to www.ifmba.se — Vercel fetches from Sanity server-side
+//      and caches the result on its edge.
+//
+// Non-Sanity URLs (e.g. svtstatic og:images) pass through untouched.
+// `w` is snapped to Next's allowed width list — /_next/image rejects
+// arbitrary widths with a 400.
+const NEXT_IMAGE_WIDTHS = [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]
+
+export function thumb(url?: string | null, w = 640): string | undefined {
+  if (!url) return undefined
+  if (!url.startsWith('https://cdn.sanity.io/')) return url
+  const width = NEXT_IMAGE_WIDTHS.find((x) => x >= w) ?? 3840
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=75`
+}
 
 // ═══ QUERIES ═══
 export const QUERIES = {

@@ -4,11 +4,23 @@
  * TeamCollage — "FAMILJEN" scattered team-photo section (à la wondermakers.digital).
  *
  * Big centred title with photos scattered around it. Each photo:
+ *   • fades IN as the section scrolls into view and fades OUT as it leaves
+ *     (GSAP ScrollTrigger, scrubbed both directions — Cris 2026-08-02)
  *   • drifts with its own scroll parallax (GSAP)
  *   • floats gently and continuously (CSS keyframes)
  *   • is clickable → opens a full-size lightbox
  *
+ * Images are served through thumb() (same-origin /_next/image proxy) instead
+ * of hitting cdn.sanity.io directly — fixes the black-card bug on networks
+ * that can't reach the Sanity CDN, and cuts multi-MB originals down to real
+ * thumbnails. A card whose image still fails to load hides itself entirely
+ * (onError) so we never show empty black frames.
+ *
  * Safe: prefers-reduced-motion / GSAP-fail → static scattered collage still shows.
+ *
+ * id="media" — the Navbar "GALLERI" link points to /#media. MediaWall carries
+ * this id in grid mode; in cinematic mode this section IS the gallery, so it
+ * must carry the same anchor or the nav link silently does nothing.
  */
 import { useEffect, useRef, useState } from 'react'
 import { thumb } from '@/lib/sanity'
@@ -62,10 +74,19 @@ export default function TeamCollage({
       const tws: any[] = []
       cards.forEach((card) => {
         const d = Number(card.dataset.depth || 60)
-        gsap.fromTo(card, { autoAlpha: 0, scale: 0.8 }, {
+        // Fade IN while the section scrolls into view…
+        const tIn = gsap.fromTo(card, { autoAlpha: 0, scale: 0.8 }, {
           autoAlpha: 1, scale: 1, ease: 'power2.out',
           scrollTrigger: { trigger: section, start: 'top 80%', end: 'top 35%', scrub: 0.6 },
         })
+        tws.push(tIn)
+        // …and fade OUT as the section scrolls away (Cris 2026-08-02).
+        const tOut = gsap.fromTo(card, { autoAlpha: 1 }, {
+          autoAlpha: 0, scale: 0.92, ease: 'power1.in', immediateRender: false,
+          scrollTrigger: { trigger: section, start: 'bottom 55%', end: 'bottom 18%', scrub: 0.6 },
+        })
+        tws.push(tOut)
+        // Per-card parallax drift.
         const t = gsap.fromTo(card, { y: d }, {
           y: -d, ease: 'none',
           scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
@@ -88,7 +109,7 @@ export default function TeamCollage({
   if (!pics.length) return null
 
   return (
-    <section ref={sectionRef} className="section section-dark" style={{ height: '200vh', position: 'relative' }}>
+    <section ref={sectionRef} id="media" className="section section-dark" style={{ height: '200vh', position: 'relative' }}>
       <style>{`@keyframes tcFloat { 0%,100% { transform: translateY(-10px); } 50% { transform: translateY(10px); } }`}</style>
 
       <div ref={stageRef} style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
@@ -115,7 +136,19 @@ export default function TeamCollage({
               <div style={{ animation: `tcFloat ${5 + (i % 5) * 0.7}s ease-in-out ${i * 0.35}s infinite` }}>
                 <div style={{ transform: `rotate(${sp.r}deg)`, borderRadius: 14, overflow: 'hidden', border: '5px solid #fff', boxShadow: '0 22px 55px rgba(0,0,0,0.55)', background: '#111', transition: 'transform .25s ease' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumb(src, 480)} alt="MBA lagfoto" loading="lazy" decoding="async" style={{ width: '100%', aspectRatio: '4 / 5', objectFit: 'cover', display: 'block' }} />
+                  <img
+                    src={thumb(src, 640)}
+                    alt=""
+                    loading={i < 4 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    onError={(e) => {
+                      // Image unreachable → hide the whole card instead of
+                      // showing an empty black frame.
+                      const card = (e.currentTarget as HTMLElement).closest('.tc-card') as HTMLElement | null
+                      if (card) card.style.display = 'none'
+                    }}
+                    style={{ width: '100%', aspectRatio: '4 / 5', objectFit: 'cover', display: 'block' }}
+                  />
                 </div>
               </div>
             </div>
@@ -123,7 +156,7 @@ export default function TeamCollage({
         })}
       </div>
 
-      {/* lightbox */}
+      {/* lightbox — larger proxied rendition, still same-origin */}
       {zoom && (
         <div
           onClick={() => setZoom(null)}
@@ -132,7 +165,7 @@ export default function TeamCollage({
           style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(8,12,22,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', padding: '4vh' }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={thumb(zoom, 1600)} alt="MBA lagfoto (förstorad)" style={{ maxWidth: '92vw', maxHeight: '92vh', borderRadius: 12, border: '4px solid #fff', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }} />
+          <img src={thumb(zoom, 1920)} alt="" style={{ maxWidth: '92vw', maxHeight: '92vh', borderRadius: 12, border: '4px solid #fff', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }} />
           <button
             onClick={() => setZoom(null)}
             aria-label="Stäng"
