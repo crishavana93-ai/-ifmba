@@ -5,17 +5,17 @@
  *   1. Hero pitch
  *   2. "Byggt tillsammans" — the two FOUNDING PARTNERS (KOFI + Turquino
  *      Studios). Hardcoded on purpose: these two are a permanent part of the
- *      club's story, independent of the paid tier system below. KOFI's logo
- *      is pulled from the Studio image asset Cris uploaded (filename must
- *      contain "kofi"); Turquino uses the dark logo from /public (the light
- *      variant vanishes on light backgrounds).
+ *      club's story, independent of the paid tier system below. Both logos
+ *      live in /public: wearekofi.png (transparent cutout) and
+ *      turquino-logo-dark.png (the light variant vanishes on light
+ *      backgrounds).
  *   3. Why MBA (15 nationer)
  *   4. Paid tiers Bronze→Platinum + published Sponsor documents
  *   5. Sponsor wall + lead form
  */
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { safeFetch, QUERIES, urlFor, thumb } from '@/lib/sanity'
+import { safeFetch, QUERIES, urlFor } from '@/lib/sanity'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollProgress from '@/components/ScrollProgress'
@@ -108,17 +108,10 @@ type Founding = {
 }
 
 export default async function PartnersPage() {
-  const [sponsors, settings, courts, kofiLogoUrl] = await Promise.all([
+  const [sponsors, settings, courts] = await Promise.all([
     safeFetch<any[]>(QUERIES.sponsors, []),
     safeFetch<any>(QUERIES.settings, null),
     safeFetch<any[]>(QUERIES.courts, []),
-    // The "We Are Kofi" logo Cris uploaded to Studio assets — newest image
-    // asset whose filename mentions kofi. Falls back to a text wordmark if
-    // nothing matches, so the card never breaks.
-    safeFetch<string | null>(
-      `*[_type == "sanity.imageAsset" && originalFilename match "*kofi*"] | order(_createdAt desc)[0].url`,
-      null,
-    ),
   ])
 
   const FOUNDING: Founding[] = [
@@ -133,7 +126,9 @@ export default async function PartnersPage() {
         'professionell utanför planen som på den.',
       url: 'https://wearekofi.com',
       urlLabel: 'Besök wearekofi.com →',
-      logoUrl: thumb(kofiLogoUrl, 640) ?? null,
+      // Transparent-background cutout of the official mark, lives in /public
+      // (source: weareKofi.jpeg from Cris, processed 2026-08-09).
+      logoUrl: '/wearekofi.png',
       logoAlt: 'We Are Kofi',
     },
     {
@@ -194,7 +189,12 @@ export default async function PartnersPage() {
           <h2 className="title r v" style={{ marginBottom: '18px' }}>
             Byggt <em>tillsammans</em>
           </h2>
-          <p className="page-lede r v" style={{ marginBottom: 'clamp(28px,4vw,56px)' }}>
+          {/* Plain paragraph on purpose — .page-lede is tuned for the dark
+              hero and reads washed-out on this light section. */}
+          <p
+            className="r v"
+            style={{ margin: '0 0 clamp(28px,4vw,56px)', maxWidth: 640, opacity: 0.85, fontSize: '1.06em' }}
+          >
             Innan första matchen i Div 2 fanns de här två vid vår sida. Som
             founding partners är de en permanent del av MBA:s historia — tack.
           </p>

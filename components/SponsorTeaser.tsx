@@ -65,7 +65,7 @@ export default function SponsorTeaser({
         </div>
 
         <div className="sponsor-teaser-cta r">
-          <Link href="/partners#lead" className="btn-cta">
+          <Link href="/partners" className="btn-cta">
             Bli sponsor — skicka förfrågan →
           </Link>
           <Link href="/anslut" className="btn-cta btn-cta-ghost">
