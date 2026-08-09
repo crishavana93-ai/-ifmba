@@ -1,16 +1,21 @@
 /**
  * /partners — dedicated sponsor / partnership page.
  *
- * Fuller pitch + full tier breakdown + all published Sponsor documents grouped
- * by tier. Links from the homepage "PARTNERS" section + Footer point here.
- *
- * 2026-08-03: added the Turquino Studios web-partner credit (dark logo — the
- * light variant was invisible on the light section background) and fixed the
- * season copy (2026/27).
+ * Structure (2026-08-09):
+ *   1. Hero pitch
+ *   2. "Byggt tillsammans" — the two FOUNDING PARTNERS (KOFI + Turquino
+ *      Studios). Hardcoded on purpose: these two are a permanent part of the
+ *      club's story, independent of the paid tier system below. KOFI's logo
+ *      is pulled from the Studio image asset Cris uploaded (filename must
+ *      contain "kofi"); Turquino uses the dark logo from /public (the light
+ *      variant vanishes on light backgrounds).
+ *   3. Why MBA (15 nationer)
+ *   4. Paid tiers Bronze→Platinum + published Sponsor documents
+ *   5. Sponsor wall + lead form
  */
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { safeFetch, QUERIES, urlFor } from '@/lib/sanity'
+import { safeFetch, QUERIES, urlFor, thumb } from '@/lib/sanity'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ScrollProgress from '@/components/ScrollProgress'
@@ -22,7 +27,7 @@ export const revalidate = 60
 export const metadata: Metadata = {
   title: 'Partners — MBA · Malmö Basket',
   description:
-    'Bli partner med Malmös mest internationella basketlag. Paket från Bronze till Platinum — exponering, gemenskap, och mätbar räckvidd i Skåne.',
+    'Bli partner med Malmös mest internationella basketlag. Founding partners KOFI och Turquino Studios — och paket från Bronze till Platinum.',
   alternates: { canonical: '/partners' },
 }
 
@@ -89,12 +94,62 @@ const TIERS: Tier[] = [
   },
 ]
 
+// ── Founding partners (hardcoded — permanent part of the story) ─────────
+type Founding = {
+  key: string
+  roleLabel: string
+  name: string
+  body: string
+  url: string
+  urlLabel: string
+  /** '/public' path or resolved at render time (KOFI ← Sanity asset). */
+  logoUrl?: string | null
+  logoAlt: string
+}
+
 export default async function PartnersPage() {
-  const [sponsors, settings, courts] = await Promise.all([
+  const [sponsors, settings, courts, kofiLogoUrl] = await Promise.all([
     safeFetch<any[]>(QUERIES.sponsors, []),
     safeFetch<any>(QUERIES.settings, null),
     safeFetch<any[]>(QUERIES.courts, []),
+    // The "We Are Kofi" logo Cris uploaded to Studio assets — newest image
+    // asset whose filename mentions kofi. Falls back to a text wordmark if
+    // nothing matches, so the card never breaks.
+    safeFetch<string | null>(
+      `*[_type == "sanity.imageAsset" && originalFilename match "*kofi*"] | order(_createdAt desc)[0].url`,
+      null,
+    ),
   ])
+
+  const FOUNDING: Founding[] = [
+    {
+      key: 'kofi',
+      roleLabel: 'Founding partner · Digital partner',
+      name: 'KOFI',
+      body:
+        'Konsultbyrån KOFI har varit med och byggt MBA:s digitala grund — från ' +
+        'domän och e-postinfrastruktur till rådgivning kring e-handel och ' +
+        'betalningar. Ett partnerskap som handlar om att göra klubben lika ' +
+        'professionell utanför planen som på den.',
+      url: 'https://wearekofi.com',
+      urlLabel: 'Besök wearekofi.com →',
+      logoUrl: thumb(kofiLogoUrl, 640) ?? null,
+      logoAlt: 'We Are Kofi',
+    },
+    {
+      key: 'turquino',
+      roleLabel: 'Founding partner · Kreativ partner',
+      name: 'Turquino Studios',
+      body:
+        'Turquino Studios var en av de första att tro på MBA-projektet och står ' +
+        'bakom kreativt arbete kring klubbens berättelse. Namnet delar rötter ' +
+        'med vår internationella själ — 15 nationer, 1 tröja.',
+      url: 'https://turquinostudios.com',
+      urlLabel: 'Besök turquinostudios.com →',
+      logoUrl: '/turquino-logo-dark.png',
+      logoAlt: 'Turquino Studios',
+    },
+  ]
 
   const byTier = (tier: string) => sponsors.filter((s: any) => s.tier === tier)
 
@@ -132,8 +187,85 @@ export default async function PartnersPage() {
         </div>
       </main>
 
+      {/* Founding partners — Byggt tillsammans */}
+      <section className="section section-alt" id="founding">
+        <div className="contain">
+          <div className="label r v">Founding partners</div>
+          <h2 className="title r v" style={{ marginBottom: '18px' }}>
+            Byggt <em>tillsammans</em>
+          </h2>
+          <p className="page-lede r v" style={{ marginBottom: 'clamp(28px,4vw,56px)' }}>
+            Innan första matchen i Div 2 fanns de här två vid vår sida. Som
+            founding partners är de en permanent del av MBA:s historia — tack.
+          </p>
+
+          <div
+            className="r v"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: 'clamp(28px, 5vw, 72px)',
+              alignItems: 'start',
+            }}
+          >
+            {FOUNDING.map((f) => (
+              <article key={f.key}>
+                <div className="label" style={{ marginBottom: 14 }}>{f.roleLabel}</div>
+                {f.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={f.logoUrl}
+                    alt={f.logoAlt}
+                    loading="lazy"
+                    decoding="async"
+                    style={{
+                      display: 'block',
+                      width: 'min(100%, 300px)',
+                      maxHeight: 300,
+                      objectFit: 'contain',
+                      marginBottom: 22,
+                    }}
+                    // If the asset ever goes missing, drop to the text
+                    // wordmark below instead of a broken image icon.
+                    onError={undefined}
+                  />
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      fontFamily: 'Inter Tight, Arial Black, sans-serif',
+                      fontWeight: 900,
+                      fontSize: 'clamp(40px, 5vw, 64px)',
+                      lineHeight: 1,
+                      marginBottom: 22,
+                    }}
+                  >
+                    {f.name}
+                  </div>
+                )}
+                <p style={{ margin: '0 0 26px', maxWidth: 560 }}>{f.body}</p>
+                <a
+                  href={f.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    fontWeight: 700,
+                    borderBottom: '2px solid var(--yellow)',
+                    paddingBottom: 4,
+                  }}
+                >
+                  {f.urlLabel}
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Why partner with MBA */}
-      <section className="section section-alt">
+      <section className="section section-dark">
         <div className="contain">
           <div className="label r v">Varför MBA</div>
           <h2 className="title r v" style={{ marginBottom: '32px' }}>
@@ -141,7 +273,7 @@ export default async function PartnersPage() {
           </h2>
           <div className="partners-why">
             <div className="partners-why-item r v">
-              <div className="partners-why-num">9</div>
+              <div className="partners-why-num">15</div>
               <div className="partners-why-lbl">Nationer</div>
               <p>
                 Publiken sträcker sig från Malmö till Atén, Lagos, Manila och Mexiko
@@ -169,7 +301,7 @@ export default async function PartnersPage() {
       </section>
 
       {/* Tiers */}
-      <section className="section section-dark" id="tiers">
+      <section className="section section-alt" id="tiers">
         <div className="contain">
           <div className="label r v">Paket</div>
           <h2 className="title r v" style={{ marginBottom: '32px' }}>
@@ -263,45 +395,8 @@ export default async function PartnersPage() {
         </section>
       )}
 
-      {/* Web partner — Turquino Studios built and maintains ifmba.se.
-          Dark logo variant on purpose: the light one vanishes against the
-          alt (light) section background. */}
-      <section className="section section-alt">
-        <div className="contain" style={{ textAlign: 'center' }}>
-          <div className="label r v">Webbpartner</div>
-          <a
-            className="r v"
-            href="https://turquinostudios.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Turquino Studios — webbpartner"
-            style={{
-              display: 'inline-flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 12,
-              marginTop: 18,
-              textDecoration: 'none',
-              color: 'inherit',
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/turquino-logo-dark.png"
-              alt="Turquino Studios"
-              style={{ height: 56, width: 'auto' }}
-              loading="lazy"
-            />
-            <span style={{ opacity: 0.75, fontSize: '0.95em' }}>
-              ifmba.se är byggd av Turquino Studios — websites people actually click.
-            </span>
-          </a>
-        </div>
-      </section>
-
-      {/* Lead form — replaces the plain mailto CTA. Writes to Sanity's
-          `sponsorLead` doc type; optional Resend notification fires to Cris
-          if RESEND_API_KEY is configured. */}
+      {/* Lead form — writes to Sanity's `sponsorLead` doc type; optional
+          Resend notification fires to Cris if RESEND_API_KEY is configured. */}
       <section className="section section-dark" id="lead">
         <div className="contain" style={{ maxWidth: '860px', margin: '0 auto' }}>
           <div className="label r v">Bli partner</div>

@@ -65,11 +65,8 @@ export default function SponsorTeaser({
         </div>
 
         <div className="sponsor-teaser-cta r">
-          {/* Links to the TOP of /partners (not #lead) — deep-linking to the
-              bottom anchor made visitors land on an almost-empty screen past
-              the whole pitch. The page itself walks them to the form. */}
-          <Link href="/partners" className="btn-cta">
-            Bli sponsor — se våra partners →
+          <Link href="/partners#lead" className="btn-cta">
+            Bli sponsor — skicka förfrågan →
           </Link>
           <Link href="/anslut" className="btn-cta btn-cta-ghost">
             Spela för MBA
