@@ -185,7 +185,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
             <div className="foot-col-h">Kontakt</div>
             <div className="foot-links">
               <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-              <a href="https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117" target="_blank" rel="noopener">Profixio</a>
+              <a href="https://www.profixio.com/app/lx/competition/leagueid27739/teams/1589295" target="_blank" rel="noopener">Profixio</a>
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function Footer({ settings, courts = [] }: { settings: any; court
           <span className="foot-bottom-links">
             <a href="/integritetspolicy">Integritetspolicy</a>
             <span className="foot-bottom-sep">·</span>
-            <a href="https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117" target="_blank" rel="noopener">Powered by Profixio</a>
+            <a href="https://www.profixio.com/app/lx/competition/leagueid27739/teams/1589295" target="_blank" rel="noopener">Powered by Profixio</a>
             <span className="foot-bottom-sep">·</span>
             {/* Web credit — dark logo variant so it stays visible on the
                 light footer strip. */}

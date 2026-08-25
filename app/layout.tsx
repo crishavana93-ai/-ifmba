@@ -143,8 +143,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 url: 'https://www.basket.se',
               },
               sameAs: [
-                // Profixio — Div 2 Skåne Herr 2026/27 team page.
-                'https://www.profixio.com/app/lx/competition/leagueid17491/teams/1413022?k=1161117',
+                // Profixio — Div 2 Skåne Herr 2026/27 team page (leagueid27739,
+                // updated 2026-08-23 when the 26/27 schedule was published).
+                'https://www.profixio.com/app/lx/competition/leagueid27739/teams/1589295',
                 settings?.instagramUrl,
                 settings?.facebookUrl,
                 settings?.tiktokUrl,

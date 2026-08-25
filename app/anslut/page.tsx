@@ -215,6 +215,53 @@ export default async function AnslutPage() {
       </section>
 
       <Footer settings={settings} courts={courts} />
+
+      {/* FAQPage structured data (SEO 2026-08-23) — mirrors the visible FAQ
+          above so "spela basket i Malmö"-type queries can earn rich results.
+          Keep in sync with the join-faq section when editing questions. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'Behöver jag egen utrustning för att spela basket i MBA?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Inneskor med halksäker sula räcker för att börja. Boll och matchkläder får du genom klubben.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Måste jag bo i Malmö för att gå med i MBA?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Nej. Träning och hemmamatcher är i Malmö (Latinskolans sporthall), men många spelare pendlar från grannkommunerna.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Hur betalas medlemsavgiften?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Avgiften betalas via klubbens Swish efter intresseanmälan och inskrivning. Casual Games kostar 750 kr per termin och Div 2-truppen 2000 kr per säsong.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'När börjar basketsäsongen?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Höstsäsongen startar i september. Casual Games är igång året runt förutom juli.',
+                },
+              },
+            ],
+          }),
+        }}
+      />
     </>
   )
 }
